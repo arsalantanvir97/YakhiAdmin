@@ -7,6 +7,8 @@ import Toasty from "../utils/toast";
 import { validateEmail } from "../utils/ValidateEmail";
 
 const EditProfile = () => {
+  const [loading, setloading] = useState(false);
+
   const [firstName, setfirstName] = useState();
   const [lastName, setlastName] = useState();
   const [email, setemail] = useState();
@@ -33,6 +35,7 @@ const EditProfile = () => {
     console.log("addEmployeeHandler");
     if (emailvalidation == true) {
       if (firstName?.length > 0 && lastName?.length > 0 && email.length > 0) {
+        setloading(true);
         const formData = new FormData();
         formData.append("user_image", image);
         formData.append("firstName", firstName);
@@ -41,11 +44,15 @@ const EditProfile = () => {
 
         const body = formData;
         await dispatch(updateAdminInfoAction(body));
+        setloading(false);
+
         setIsEdit(false);
       } else {
+        setloading(false);
         Toasty("error", `Please fill out all the required fields`);
       }
     } else {
+      setloading(false);
       Toasty("error", `Please enter a valid email`);
     }
   };
@@ -152,19 +159,23 @@ const EditProfile = () => {
                           </div>
                           <div className="row detail-row d-flex align-items-center mb-1">
                             <div className="col-12">
-                              <Link
-                                to="#"
-                                onClick={() => {
-                                  if (!is_edit) {
-                                    setIsEdit(true);
-                                  } else {
-                                    updateProfileData();
-                                  }
-                                }}
-                                className="btn btn-primary btn-fixed-190"
-                              >
-                                Update
-                              </Link>
+                              {!loading ? (
+                                <Link
+                                  to="#"
+                                  onClick={() => {
+                                    if (!is_edit) {
+                                      setIsEdit(true);
+                                    } else {
+                                      updateProfileData();
+                                    }
+                                  }}
+                                  className="btn btn-primary btn-fixed-190"
+                                >
+                                  Update
+                                </Link>
+                              ) : (
+                                <i className="fas fa-spinner fa-pulse"></i>
+                              )}
                             </div>
                           </div>
                         </div>

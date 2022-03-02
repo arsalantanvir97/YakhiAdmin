@@ -40,7 +40,7 @@ export default function App() {
     <Router>
       <Route path="/" component={Login} exact />
       <Route path="/forgotpassword" component={ForgotPassword} exact />
-      <Route path="/verificationcode" component={VerificationCode} exact />
+      <Route path="/verificationcode:email" component={VerificationCode} exact />
       <Route path="/resetPassword" component={ResetPassword} exact />
       <PrivateRoute exact path="/Dashboard" component={Dashboard} />
       <PrivateRoute exact path="/EditProfile" component={EditProfile} />
@@ -53,9 +53,13 @@ export default function App() {
       <PrivateRoute exact path="/AddProduct" component={AddProduct} />
       <PrivateRoute exact path="/AddCategory" component={AddCategory} />
       <PrivateRoute exact path="/NewUser" component={NewUser} />
+      <PrivateRoute exact path="/Notification" component={Notification} />
+
 
       <PrivateRoute exact path="/EditCategory:id" component={EditCategory} />
       <PrivateRoute exact path="/ProductEdit:id" component={ProductEdit} />
+      <PrivateRoute exact path="/OrderDetails:id" component={OrderDetails} />
+
       <PrivateRoute
         exact
         path="/FeedbackDetails:id"
@@ -65,6 +69,7 @@ export default function App() {
       <PrivateRoute exact path="/EditUser:id" component={EditUser} />
 
       <PrivateRoute exact path="/Products" component={Products} />
+
     </Router>
   );
 }

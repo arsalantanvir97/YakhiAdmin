@@ -1,6 +1,59 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { baseURL } from "../utils/api";
+import axios from "axios";
+import moment from "moment";
+import DatePicker from "react-datepicker";
+import { useSelector } from "react-redux";
 
+import { Link } from "react-router-dom";
+import Pagination from "../components/Padgination";
+import Swal from "sweetalert2";
+import ShowEntries from "../components/ShowEntries";
+import Calender from "../components/Calender";
+import SearchFilter from "../components/SearchFilter";
 const Orders = () => {
+  const adminLogin = useSelector((state) => state.adminLogin);
+  const { adminInfo } = adminLogin;
+  const [sort, setsort] = useState();
+
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [searchString, setSearchString] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [status, setStatus] = useState("");
+  const [orders, setorders] = useState([]);
+
+  useEffect(() => {
+    handleGetOrders();
+  }, [page, perPage, from, to, status, searchString, sort]);
+
+  const handleGetOrders = async () => {
+    try {
+      const res = await axios({
+        url: `${baseURL}/order/logs`,
+        method: "GET",
+        params: {
+          page,
+          perPage,
+          searchString,
+          from,
+          to,
+          status,
+          sort
+        },
+        headers: {
+          Authorization: `Bearer ${adminInfo.token}`
+        }
+      });
+
+      console.log("res", res);
+      setorders(res.data?.order);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+
   return (
     <div>
       <div className="app-content dashboard content">
@@ -26,12 +79,11 @@ const Orders = () => {
                               <div className="row align-items-center justify-content-between">
                                 <div className="col-xl-3 col-md-6 col-12 mt-2">
                                   <label>Show entries </label>
-                                  <select className="w-100 form-control form-control-sm">
-                                    <option value={10}>10</option>
-                                    <option value={25}>25</option>
-                                    <option value={50}>50</option>
-                                    <option value={100}>100</option>
-                                  </select>
+                                  <ShowEntries
+                                    perPage={perPage}
+                                    setPerPage={setPerPage}
+                                    setPage={setPage}
+                                  />
                                 </div>
                                 <div className="col-xl-3 col-md-6 col-12 mt-2">
                                   <label htmlFor className="d-block">
@@ -40,30 +92,21 @@ const Orders = () => {
                                   <select
                                     name
                                     className="w-100 form-control sort-select"
-                                    id
+                                    value={sort}
+                                    onChange={(e) => {
+                                      setsort(e.target.value);
+                                    }}
                                   >
-                                    <option value>Latest</option>
-                                    <option value>Earlier</option>
+                                    <option value={"asc"}>Latest</option>
+                                    <option value={"des"}>Earlier</option>
                                   </select>
                                 </div>
-                                <div className="col-xl-3 col-md-6 col-12 mt-2">
-                                  <label htmlFor className="d-block">
-                                    From
-                                  </label>
-                                  <input
-                                    type="date"
-                                    className="form-control form-control-sm"
-                                  />
-                                </div>
-                                <div className="col-xl-3 col-md-6 col-12 mt-2">
-                                  <label htmlFor className="d-block">
-                                    To
-                                  </label>
-                                  <input
-                                    type="date"
-                                    className="form-control form-control-sm"
-                                  />
-                                </div>
+                                <Calender
+                                  from={from}
+                                  to={to}
+                                  setFrom={setFrom}
+                                  setTo={setTo}
+                                />
                               </div>
                             </div>
                             <div className="col-xl-3">
@@ -71,10 +114,11 @@ const Orders = () => {
                                 <div className="col-12 mt-2">
                                   <div className="search-filter w-100">
                                     <label>Search:</label>
-                                    <input
-                                      type="search"
-                                      className="form-control form-control-sm"
-                                      placeholder="Search"
+                                    <SearchFilter
+                                      searchString={searchString}
+                                      setSearchString={setSearchString}
+                                      setPage={setPage}
+                                      functionhandler={handleGetOrders}
                                     />
                                   </div>
                                 </div>
@@ -99,194 +143,59 @@ const Orders = () => {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>ABC</td>
-                                        <td>In Process</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-details.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>ABC</td>
-                                        <td>In Process</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-details.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>ABC</td>
-                                        <td>In Process</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-details.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>ABC</td>
-                                        <td>Delivered</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-delivered.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>ABC</td>
-                                        <td>In Process</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-details.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
+                                      {orders?.docs?.length > 0 &&
+                                        orders?.docs?.map((orderr, index) => (
+                                          <tr>
+                                            <td className>{index + 1}</td>
+                                            <td>${orderr?.totalPrice}</td>
+                                            <td>
+                                              {
+                                                orderr?.shippingAddress
+                                                  ?.billingname
+                                              }
+                                            </td>
+                                            <td>{orderr?.status}</td>
+                                            <td>
+                                              {moment
+                                                .utc(orderr?.createdAt)
+                                                .format("LL")}
+                                            </td>
+                                            <td>
+                                              <div className="btn-group ml-1">
+                                                <button
+                                                  type="button"
+                                                  className="btn btn-drop-table btn-sm"
+                                                  data-toggle="dropdown"
+                                                >
+                                                  <i className="fa fa-ellipsis-v" />
+                                                </button>
+                                                <div className="dropdown-menu">
+                                                  <Link
+                                                    to={`/OrderDetails${orderr?._id}`}
+                                                    className="dropdown-item"
+                                                  >
+                                                    <i className="fa fa-eye" />
+                                                    View Detail
+                                                  </Link>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        ))}
                                     </tbody>
                                   </table>
                                 </div>
                               </div>
-                              <div className="row">
-                                <div className="col-sm-12 col-md-5">
-                                  <div
-                                    className="dataTables_info"
-                                    id="DataTables_Table_0_info"
-                                    role="status"
-                                    aria-live="polite"
-                                  >
-                                    Showing 1 to 3 of 3 entries
-                                  </div>
-                                </div>
-                                <div className="col-sm-12 col-md-7">
-                                  <div
-                                    className="dataTables_paginate paging_simple_numbers"
-                                    id="DataTables_Table_0_paginate"
-                                  >
-                                    <ul className="pagination">
-                                      <li className="paginate_button page-item previous disabled">
-                                        <a href="#" className="page-link">
-                                          <i className="fa fa-chevron-left red" />
-                                        </a>
-                                      </li>
-                                      <li className="paginate_button page-item active">
-                                        <a href="#" className="page-link">
-                                          1
-                                        </a>
-                                      </li>
-                                      <li className="paginate_button page-item">
-                                        <a href="#" className="page-link">
-                                          2
-                                        </a>
-                                      </li>
-                                      <li className="paginate_button page-item">
-                                        <a href="#" className="page-link">
-                                          3
-                                        </a>
-                                      </li>
-                                      <li
-                                        className="paginate_button page-item next disabled"
-                                        i
-                                      >
-                                        <a href="#" className="page-link">
-                                          <i className="fa fa-chevron-right red" />
-                                        </a>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </div>
-                              </div>
+                              {orders?.docs?.length > 0 && (
+                                <Pagination
+                                  totalDocs={orders?.totalDocs}
+                                  totalPages={orders?.totalPages}
+                                  currentPage={orders?.page}
+                                  setPage={setPage}
+                                  hasNextPage={orders?.hasNextPage}
+                                  hasPrevPage={orders?.hasPrevPage}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>

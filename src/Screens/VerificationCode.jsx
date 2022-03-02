@@ -7,27 +7,31 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import InputNumber from "../components/InputNumber";
-const VerificationCode = (props) => {
-  useEffect(() => {
-    console.log("props", props);
-  }, [props]);
+const VerificationCode = ({ match, history }) => {
+  const [loading, setloading] = useState(false);
   const [code, setcode] = useState(0);
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const onSubmitHandler = async () => {
     try {
-      console.log("body", code, props?.location?.state?.email);
-      const body = { code, email: props?.location?.state?.email };
+      console.log("body", code, match?.params?.email);
+      const body = { code, email: match?.params?.email };
       console.log("TEST");
       // try {
+        setloading(true);
+
       const res = await api.post("/auth/adminverifyRecoverCode", body);
       console.log("res", res);
-      props?.history?.push({
+      setloading(false);
+
+      history?.push({
         pathname: "/resetPassword",
-        state: { code: code, email: props?.location?.state?.email },
+        state: { code: code, email: match?.params?.email }
       });
     } catch (error) {
       console.log("error", error?.response);
+      setloading(false);
+
       // alert(error?.response?.data?.message)
       Toasty("error", `🦄 ${error?.response?.data?.message}!`);
     }
@@ -44,7 +48,7 @@ const VerificationCode = (props) => {
   };
   const resentCodeHandler = async (e) => {
     e.preventDefault();
-    const useremail = props?.location?.state?.email;
+    const useremail = match?.params?.email;
     const body = { email: useremail };
 
     try {
@@ -56,7 +60,7 @@ const VerificationCode = (props) => {
           title: "SUCCESS",
           text: "Verification Code Sent to your mail",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 1500
         });
       }
     } catch (error) {
@@ -76,7 +80,7 @@ const VerificationCode = (props) => {
                     <img src="images/login-logo.png" alt="" />
                   </div>
                   <h1 className>Password Recovery</h1>
-                  <form >
+                  <form>
                     <div className="row">
                       <div className="col-12 form-group position-relative mb-1">
                         <label htmlFor>
@@ -113,6 +117,7 @@ const VerificationCode = (props) => {
                     </div>
                     <div className="row">
                       <div className="d-block col-12 text-center mt-1">
+                      {!loading ? (
                         <button
                           type="button"
                           onClick={() =>
@@ -127,13 +132,14 @@ const VerificationCode = (props) => {
                         >
                           Continue
                         </button>
+                         ) : (
+                          <i className="fas fa-spinner fa-pulse"></i>
+                        )}
                       </div>
                     </div>
                     <div className="row">
                       <div className="d-block col-12 text-center mt-2">
-                        <Link to='/'
-                          className="primary-text font-weight-bold"
-                        >
+                        <Link to="/" className="primary-text font-weight-bold">
                           Back To Login
                         </Link>
                       </div>

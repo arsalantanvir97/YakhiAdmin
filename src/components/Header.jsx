@@ -1,12 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../actions/adminActions";
-import { imageURL } from "../utils/api";
+import { baseURL, imageURL } from "../utils/api";
 import moment from "moment";
 import { markReadAllNotif } from "../actions/notifAction";
+import axios from "axios";
 
 export default function Header(props) {
+  const [notifications, setnotifications] = useState([]);
   const dispatch = useDispatch();
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
@@ -15,13 +17,7 @@ export default function Header(props) {
   const logOutHandler = async () => {
     dispatch(logout());
   };
-  useEffect(() => {
-    console.log("notifcationdata", notifcationdata);
-  }, [notifcationdata]);
-
-  useEffect(() => {
-    console.log("props", props);
-  }, [props]);
+  
   return (
     <>
       <div>
@@ -65,19 +61,17 @@ export default function Header(props) {
                 <ul className="nav navbar-nav mr-auto float-left"></ul>
                 <ul className="nav navbar-nav float-right">
                   <li className="dropdown dropdown-notification nav-item">
-                    <a
+                    <Link to='/Notification'
                       className="nav-link nav-link-label"
-                      href="#"
+                   
                       data-toggle="dropdown"
                       aria-expanded="true"
                     >
                       <i className="fa fa-bell" />{" "}
-                      <span className="badge badge-pill badge-default badge-danger badge-default badge-up">
-                        5
-                      </span>{" "}
-                    </a>
-                    <ul className="dropdown-menu dropdown-menu-media dropdown-menu-right">
-                      <li className="dropdown-menu-header">
+                      
+                    </Link>
+                    {/* <ul className="dropdown-menu dropdown-menu-media dropdown-menu-right"> */}
+                      {/* <li className="dropdown-menu-header">
                         <h6 className="dropdown-header m-0 d-flex justify-content-between align-items-center">
                           {" "}
                           <span className="grey darken-2">
@@ -90,8 +84,8 @@ export default function Header(props) {
                             View all
                           </a>{" "}
                         </h6>
-                      </li>
-                      <li
+                      </li> */}
+                      {/* <li
                         className="scrollable-container media-list ps-container ps-theme-dark"
                         data-ps-id="d5fef0e9-91e2-3ba9-4f25-864856e1fad0"
                       >
@@ -288,8 +282,8 @@ export default function Header(props) {
                             style={{ top: "0px", height: "0px" }}
                           />
                         </div>
-                      </li>
-                    </ul>
+                      </li> */}
+                    {/* </ul> */}
                   </li>
                   <li className="dropdown dropdown-user nav-item">
                     <a
@@ -370,7 +364,11 @@ export default function Header(props) {
                   <div className="col-12 text-center">
                     <i className="fa fa-question red" />
                     <h3>Are you sure you want to logout?</h3>
-                    <button type="button" onClick={logOutHandler} className="btn btn-secondary mr-1">
+                    <button
+                      type="button"
+                      onClick={logOutHandler}
+                      className="btn btn-secondary mr-1"
+                    >
                       yes
                     </button>
                     <button

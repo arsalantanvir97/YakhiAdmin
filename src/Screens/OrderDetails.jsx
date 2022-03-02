@@ -1,6 +1,77 @@
-import React from "react";
+import axios from "axios";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import { baseURL } from "../utils/api";
+import Toasty from "../utils/toast";
 
-const OrderDetails = () => {
+const OrderDetails = ({ match, history }) => {
+  const adminLogin = useSelector((state) => state.adminLogin);
+  const { adminInfo } = adminLogin;
+  const [orderdetails, setorderdetails] = useState("");
+  const [status, setstatus] = useState(false);
+
+  useEffect(() => {
+    handleGetFeedback();
+  }, []);
+
+  const handleGetFeedback = async () => {
+    try {
+      const res = await axios({
+        url: `${baseURL}/order/getOrderById/${match?.params?.id}`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${adminInfo.token}`
+        }
+      });
+      console.log("res", res);
+      setorderdetails(res?.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const updateOrderStatusHandler = async () => {
+    console.log("createCategoryHandler");
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${adminInfo.token}`
+        }
+      };
+      const res = await axios.post(
+        `${baseURL}/order/updateOrderToDelivered/${orderdetails?._id}`,
+        {status},
+        config
+      );
+      console.log("res", res);
+      if (res?.status == 200) {
+        console.log("blockkk");
+        Swal.fire({
+          icon: "success",
+          title: "",
+          text: "Order Updated Successfully",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        console.log("blockkk2");
+
+        history.push("/Orders");
+        console.log("blockkk3");
+      }
+    } catch (error) {
+      console.log("error", error?.response?.data);
+      Swal.fire({
+        icon: "error",
+        title: "ERROR",
+        text: "Internal Server Error",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  };
+
   return (
     <div>
       <div className="app-content dashboard content">
@@ -16,9 +87,14 @@ const OrderDetails = () => {
                         <div className="row">
                           <div className="col-12 col-md-6 col-lg-6">
                             <h1>
-                              <a href="orders.php">
+                              <Link
+                                to="#"
+                                onClick={() => {
+                                  history.goBack();
+                                }}
+                              >
                                 <i className="fa fa-angle-left" />
-                              </a>
+                              </Link>
                               Order Details
                             </h1>
                           </div>
@@ -38,50 +114,78 @@ const OrderDetails = () => {
                                 <div className="row">
                                   <div className="col-12 mb-2">
                                     <h4>Order Date</h4>
-                                    <p>mm/dd/yyyy</p>
+                                    <p>
+                                      {" "}
+                                      {moment
+                                        .utc(orderdetails?.createdAt)
+                                        .format("LL")}
+                                    </p>
                                   </div>
                                 </div>
                                 <div className="row">
                                   <div className="col-12">
                                     <h4>Order Status</h4>
-                                    <div className="d-block mt-1">
-                                      <div className="form-check form-check-inline radio">
-                                        <input
-                                          id="radio-1"
-                                          name="radio"
-                                          type="radio"
-                                          defaultChecked
-                                        />
-                                        <label
-                                          htmlFor="radio-1"
-                                          className="radio-label"
-                                        >
-                                          {" "}
-                                          In Process
-                                        </label>
-                                      </div>
-                                      <div className="radio form-check form-check-inline">
-                                        <input
-                                          id="radio-2"
-                                          name="radio"
-                                          type="radio"
-                                        />
-                                        <label
-                                          htmlFor="radio-2"
-                                          className="radio-label"
-                                        >
-                                          Delivered
-                                        </label>
-                                      </div>
-                                    </div>
-                                    <a
-                                      href="edit-category.php"
-                                      className="btn btn-primary mt-2"
-                                      data-toggle="modal"
-                                      data-target=".order-update"
-                                    >
-                                      Update Status
-                                    </a>
+                                    {orderdetails?.isPaid == true && (
+                                      <>
+                                        {orderdetails?.isDelivered == false && (
+                                          <>
+                                            <div className="d-block mt-1">
+                                              <div className="form-check form-check-inline radio">
+                                                <input
+                                                  id="radio-1"
+                                                  name="radio"
+                                                  type="radio"
+                                                  defaultChecked
+                                                  value={status}
+                                                  onChange={() => {
+                                                    setstatus(false);
+                                                  }}
+                                                />
+                                                <label
+                                                  htmlFor="radio-1"
+                                                  className="radio-label"
+                                                >
+                                                  {" "}
+                                                  In Process
+                                                </label>
+                                              </div>
+                                              <div className="radio form-check form-check-inline">
+                                                <input
+                                                  id="radio-2"
+                                                  name="radio"
+                                                  type="radio"
+                                                  value={status}
+                                                  onChange={() => {
+                                                    setstatus(true);
+                                                  }}
+                                                />
+                                                <label
+                                                  htmlFor="radio-2"
+                                                  className="radio-label"
+                                                >
+                                                  Delivered
+                                                </label>
+                                              </div>
+                                            </div>
+                                            <Link
+                                              to="#"
+                                              onClick={updateOrderStatusHandler}
+                                              className="btn btn-primary mt-2"
+                                              data-toggle="modal"
+                                              data-target=".order-update"
+                                            >
+                                              Update Status
+                                            </Link>{" "}
+                                          </>
+                                        )}
+                                      </>
+                                    )}
+                                    <p>
+                                      {orderdetails?.isPaid == false
+                                        ? "Not paid"
+                                        : orderdetails?.isDelivered == true &&
+                                          "Delivered"}{" "}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
@@ -94,13 +198,17 @@ const OrderDetails = () => {
                                 <div className="row">
                                   <div className="col-12 mb-2">
                                     <h4>Customer Name</h4>
-                                    <p>Abc</p>
+                                    <p>
+                                      {orderdetails?.user?.firstName +
+                                        " " +
+                                        orderdetails?.user?.lastName}
+                                    </p>
                                   </div>
                                 </div>
                                 <div className="row">
                                   <div className="col-12">
                                     <h4>Email</h4>
-                                    <p>test@email.com</p>
+                                    <p> {orderdetails?.user?.email}</p>
                                   </div>
                                 </div>
                               </div>
@@ -122,10 +230,10 @@ const OrderDetails = () => {
                                 <div className="row">
                                   <div className="col-12 col-md-6 col-xl-4">
                                     <p>
-                                      Lorem ipsum dolor sit amet, consectetur
-                                      adipiscing elit. Aenean euismod bibendum
-                                      laoreet. Proin gravida dolor sit amet
-                                      lacus accumsan et viverra justo commodo. .
+                                      {
+                                        orderdetails?.shippingAddress
+                                          ?.billingaddress
+                                      }
                                     </p>
                                   </div>
                                 </div>
@@ -140,12 +248,15 @@ const OrderDetails = () => {
                             Payment and Shipping
                           </h3>
                           <div className="col-md-6 col-12 align-self-end text-right">
-                            <a
-                              href="orders-invoice.php"
+                            <Link
+                              to="#"
+                              onClick={() => {
+                                window.print();
+                              }}
                               className="btn btn-primary"
                             >
                               Print Invoice
-                            </a>
+                            </Link>
                           </div>
                           <div className="col-12 mt-2">
                             <div className="card light-primary-bg">
@@ -156,7 +267,12 @@ const OrderDetails = () => {
                                 <div className="row">
                                   <div className="col-12">
                                     <h4>Payment Method</h4>
-                                    <p>Card</p>
+                                    <p>
+                                      {
+                                        orderdetails?.paymentMethod
+                                          ?.paymentmethod
+                                      }
+                                    </p>
                                   </div>
                                 </div>
                               </div>
@@ -175,7 +291,7 @@ const OrderDetails = () => {
                                 <div className="row">
                                   <div className="col-12">
                                     <h4>Shipping Price</h4>
-                                    <p>$10.00</p>
+                                    <p>${orderdetails?.shippingPrice}</p>
                                   </div>
                                 </div>
                               </div>
@@ -196,8 +312,7 @@ const OrderDetails = () => {
                                     <tr>
                                       <th className="product-sku">SKU</th>
                                       <th className="product-name">Product</th>
-                                      <th className="product-color">Color</th>
-                                      <th className="product-color">Size</th>
+
                                       <th className="product-quantity">Qty</th>
                                       <th className="product-price-per">
                                         Price per unit
@@ -216,71 +331,76 @@ const OrderDetails = () => {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    <tr>
-                                      <td
-                                        className="product-sku"
-                                        data-title="sku"
-                                      >
-                                        1sdnk
-                                      </td>
-                                      <td className="product-name">
-                                        Product abc
-                                      </td>
-                                      <td
-                                        className="product-color"
-                                        data-title="sku"
-                                      >
-                                        Red
-                                      </td>
-                                      <td
-                                        className="product-color"
-                                        data-title="size"
-                                      >
-                                        Large
-                                      </td>
-                                      <td
-                                        className="product-quantity"
-                                        data-title="quantity"
-                                      >
-                                        1
-                                      </td>
-                                      <td
-                                        className="product-price-per"
-                                        data-title="sku"
-                                      >
-                                        $00.00
-                                      </td>
-                                      <td
-                                        className="product-price"
-                                        data-title="sku"
-                                      >
-                                        $00.00
-                                      </td>
-                                      <td
-                                        className="product-subtotal"
-                                        data-title="subtotal"
-                                      >
-                                        $00.00
-                                      </td>
-                                      <td
-                                        className="product-tax"
-                                        data-title="tax"
-                                      >
-                                        $20.00
-                                      </td>
-                                      <td
-                                        className="product-tax-amount"
-                                        data-title="tax-amount"
-                                      >
-                                        $00.00
-                                      </td>
-                                      <td
-                                        className="product-total"
-                                        data-title="total"
-                                      >
-                                        $00.00
-                                      </td>
-                                    </tr>
+                                    {orderdetails?.orderItems?.length > 0 &&
+                                      orderdetails?.orderItems?.map((ord) => (
+                                        <tr>
+                                          <td
+                                            className="product-sku"
+                                            data-title="sku"
+                                          >
+                                            {ord?._id}
+                                          </td>
+                                          <td className="product-name">
+                                            {ord?.name}
+                                          </td>
+
+                                          <td
+                                            className="product-quantity"
+                                            data-title="quantity"
+                                          >
+                                            {ord?.qty}
+                                          </td>
+                                          <td
+                                            className="product-price-per"
+                                            data-title="sku"
+                                          >
+                                            ${ord?.price}
+                                          </td>
+                                          <td
+                                            className="product-price"
+                                            data-title="sku"
+                                          >
+                                            ${ord?.price * ord?.qty}
+                                          </td>
+                                          <td
+                                            className="product-subtotal"
+                                            data-title="subtotal"
+                                          >
+                                            ${ord?.price * ord?.qty}
+                                          </td>
+                                          <td
+                                            className="product-tax"
+                                            data-title="tax"
+                                          >
+                                            $
+                                            {Number(
+                                              orderdetails?.taxperproduct / 100
+                                            ) *
+                                              Number(
+                                                ord?.price * ord?.qty
+                                              ).toFixed(0)}
+                                          </td>
+                                          <td
+                                            className="product-tax-amount"
+                                            data-title="tax-amount"
+                                          >
+                                            %{orderdetails?.taxperproduct}
+                                          </td>
+                                          <td
+                                            className="product-total"
+                                            data-title="total"
+                                          >
+                                            ${" "}
+                                            {Number(
+                                              orderdetails?.taxperproduct / 100
+                                            ) *
+                                              Number(
+                                                ord?.price * ord?.qty
+                                              ).toFixed(0) +
+                                              ord?.price * ord?.qty}
+                                          </td>
+                                        </tr>
+                                      ))}
                                   </tbody>
                                 </table>
                               </div>
@@ -300,7 +420,8 @@ const OrderDetails = () => {
                                 <td data-title="Subtotal">
                                   <span className="amount">
                                     <span className="currencySymbol">$</span>
-                                    44.00
+                                    {orderdetails?.totalPrice -
+                                      orderdetails?.taxPrice}
                                   </span>
                                 </td>
                               </tr>
@@ -309,7 +430,7 @@ const OrderDetails = () => {
                                 <td data-title="Subtotal">
                                   <span className="amount">
                                     <span className="currencySymbol">$</span>
-                                    0.00
+                                    {orderdetails?.shippingPrice}
                                   </span>
                                 </td>
                               </tr>
@@ -318,7 +439,7 @@ const OrderDetails = () => {
                                 <td data-title="Total">
                                   <span className="amount">
                                     <span className="currencySymbol">$</span>
-                                    $52.80
+                                    {orderdetails?.taxPrice}
                                   </span>{" "}
                                 </td>
                               </tr>
@@ -327,7 +448,7 @@ const OrderDetails = () => {
                                 <td data-title="Total">
                                   <span className="amount">
                                     <span className="currencySymbol">$</span>
-                                    $52.80
+                                    {orderdetails?.totalPrice}
                                   </span>{" "}
                                 </td>
                               </tr>

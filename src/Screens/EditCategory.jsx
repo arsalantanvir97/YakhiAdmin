@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 
 const EditCategory = ({ match, history }) => {
+  const [loading, setloading] = useState(false);
+
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
 
@@ -44,6 +46,7 @@ const EditCategory = ({ match, history }) => {
     }
   };
   const updateCategoryData = async () => {
+    setloading(true)
     console.log("updateCategoryData", image);
 
     const formData = new FormData();
@@ -67,6 +70,8 @@ const EditCategory = ({ match, history }) => {
           Authorization: `Bearer ${adminInfo.token}`
         }
       });
+      setloading(false)
+
 
       console.log("res", res);
       if (res?.status == 201) {
@@ -90,6 +95,8 @@ const EditCategory = ({ match, history }) => {
 
       // }
     } catch (error) {
+      setloading(false)
+
       console.log("error", error);
       Swal.fire({
         icon: "error",
@@ -122,6 +129,7 @@ const EditCategory = ({ match, history }) => {
                             </h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
+                          {!loading ? (
                             <Link
                               onClick={() => {
                                 if (!is_edit) {
@@ -134,7 +142,9 @@ const EditCategory = ({ match, history }) => {
                               className="btn btn-primary"
                             >
                               {is_edit ? "Update" : "Edit"}
-                            </Link>
+                            </Link>) : (
+                              <i className="fas fa-spinner fa-pulse"></i>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -278,6 +288,10 @@ const EditCategory = ({ match, history }) => {
         </div>
       </div>
     </div>
+
+
+
+
   );
 };
 

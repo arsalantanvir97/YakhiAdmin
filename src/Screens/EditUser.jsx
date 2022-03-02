@@ -16,7 +16,7 @@ const EditUser = ({ match, history }) => {
   const [lastName, setlastName] = useState("");
   const [email, setemail] = useState("");
   const [image, setimage] = useState("");
-
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     handleGetFeedback();
@@ -46,9 +46,15 @@ const EditUser = ({ match, history }) => {
     const emailvalidation = validateEmail(email);
     console.log("emmmm", emailvalidation);
     console.log("addEmployeeHandler");
-    console.log('firstName?.length',firstName?.length,lastName?.length,email?.length);
+    console.log(
+      "firstName?.length",
+      firstName?.length,
+      lastName?.length,
+      email?.length
+    );
     if (emailvalidation == true) {
       if (firstName?.length > 0 && lastName?.length > 0 && email?.length > 0) {
+        setloading(true);
         const config = {
           headers: {
             Authorization: `Bearer ${adminInfo.token}`
@@ -77,14 +83,18 @@ const EditUser = ({ match, history }) => {
             timer: 1500
           });
           console.log("blockkk2");
-  
+
           history.push("/Users");
           console.log("blockkk3");
         }
       } else {
+        setloading(false);
+
         Toasty("error", `Please fill out all the required fields`);
       }
     } else {
+      setloading(false);
+
       Toasty("error", `Please enter a valid email`);
     }
   };
@@ -119,8 +129,7 @@ const EditUser = ({ match, history }) => {
                       </div>
                       <div className="user-block">
                         <div className="row">
-                       
-                           <div className="col-12 col-sm-3 mb-sm-2">
+                          <div className="col-12 col-sm-3 mb-sm-2">
                             {/* <div className="profile-img text-center">
                               <div className="attached">
                                 <img
@@ -138,12 +147,12 @@ const EditUser = ({ match, history }) => {
                                 <input type="file" id="upload" name="file" />
                               </div>
                             </div> */}
-                             <ImageSelector
-                                setImage={setimage}
-                                image={image}
-                                is_edit={true}
-                              />
-                          </div> 
+                            <ImageSelector
+                              setImage={setimage}
+                              image={image}
+                              is_edit={true}
+                            />
+                          </div>
                         </div>
                         <div className="row detail-row">
                           <div className="col-12 col-md-6  col-lg-6 col-xl-4 form-group">
@@ -157,7 +166,6 @@ const EditUser = ({ match, history }) => {
                               onChange={(e) => {
                                 setfirstName(e.target.value);
                               }}
-
                             />
                           </div>
                         </div>
@@ -173,8 +181,6 @@ const EditUser = ({ match, history }) => {
                               onChange={(e) => {
                                 setlastName(e.target.value);
                               }}
-
-                              
                             />
                           </div>
                         </div>
@@ -193,14 +199,19 @@ const EditUser = ({ match, history }) => {
                         </div>
                         <div className="row detail-row mt-1">
                           <div className="col-12 col-md-6 col-xl-5">
-                            <Link to='#'
-                             onClick={() => {
-                              updateProfileData()
-                            }}
-                              className="btn btn-primary btn-fixed-190"
-                            >
-                              Update
-                            </Link>
+                            {!loading ? (
+                              <Link
+                                to="#"
+                                onClick={() => {
+                                  updateProfileData();
+                                }}
+                                className="btn btn-primary btn-fixed-190"
+                              >
+                                Update
+                              </Link>
+                            ) : (
+                              <i className="fas fa-spinner fa-pulse"></i>
+                            )}
                           </div>
                         </div>
                       </div>

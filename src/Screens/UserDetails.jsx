@@ -4,10 +4,21 @@ import { baseURL, imageURL } from "../utils/api";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import SearchFilter from "../components/SearchFilter";
+import Calender from "../components/Calender";
+import ShowEntries from "../components/ShowEntries";
+import Pagination from "../components/Padgination";
 const UserDetails = ({ match }) => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [userdetails, setuserdetails] = useState("");
+  const [sort, setsort] = useState();
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(3);
+  const [searchString, setSearchString] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [userorderslogs, setuserorderslogs] = useState([]);
 
   useEffect(() => {
     handleGetFeedback();
@@ -24,9 +35,38 @@ const UserDetails = ({ match }) => {
       });
       console.log("res", res);
       setuserdetails(res?.data?.user);
-    
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    handleGetUserOrders();
+  }, [page, perPage, from, to, searchString, sort]);
+
+  const handleGetUserOrders = async () => {
+    try {
+      const res = await axios({
+        url: `${baseURL}/order/orderlogs/${match?.params?.id}`,
+        method: "GET",
+        params: {
+          page,
+          perPage,
+          searchString,
+          from,
+          to,
+          sort,
+          id: match?.params?.id
+        },
+        headers: {
+          Authorization: `Bearer ${adminInfo.token}`
+        }
+      });
+
+      console.log("res", res);
+      setuserorderslogs(res.data?.order);
+    } catch (err) {
+      console.log("err", err);
     }
   };
   return (
@@ -57,12 +97,12 @@ const UserDetails = ({ match }) => {
                           <div className="col-12 col-sm-3 mb-1 mb-sm-0">
                             <div className="profile-img">
                               <img
-                              src={
-                                userdetails?.userImage &&
-                                userdetails?.userImage !== null
-                                  ? `${imageURL}${userdetails?.userImage}`
-                                  : "images/avatar.jpg"
-                              }
+                                src={
+                                  userdetails?.userImage &&
+                                  userdetails?.userImage !== null
+                                    ? `${imageURL}${userdetails?.userImage}`
+                                    : "images/avatar.jpg"
+                                }
                                 className="img-fluid ml-0"
                                 alt=""
                               />
@@ -108,12 +148,11 @@ const UserDetails = ({ match }) => {
                           <div className="row align-items-end d-flex mb-1">
                             <div className="col-12 col-md-6 col-lg-6 col-xl-2 mt-2">
                               <label>Show entries </label>
-                              <select className="w-100 form-control form-control-sm">
-                                <option value={10}>10</option>
-                                <option value={25}>25</option>
-                                <option value={50}>50</option>
-                                <option value={100}>100</option>
-                              </select>
+                              <ShowEntries
+                                perPage={perPage}
+                                setPerPage={setPerPage}
+                                setPage={setPage}
+                              />
                             </div>
                             <div className="col-12 col-md-6 col-lg-6 col-xl-2 mt-2">
                               <label htmlFor className="d-block">
@@ -122,37 +161,29 @@ const UserDetails = ({ match }) => {
                               <select
                                 name
                                 className="w-100 form-control sort-select"
-                                id
+                                value={sort}
+                                onChange={(e) => {
+                                  setsort(e.target.value);
+                                }}
                               >
-                                <option value>Latest</option>
-                                <option value>Earlier</option>
+                                <option value={"asc"}>Latest</option>
+                                <option value={"des"}>Earlier</option>
                               </select>
                             </div>
-                            <div className="col-12 col-md-6 col-lg-6 col-xl-2 mt-2">
-                              <label htmlFor className="d-block">
-                                From
-                              </label>
-                              <input
-                                type="date"
-                                className="form-control form-control-sm"
-                              />
-                            </div>
-                            <div className="col-12 col-md-6 col-lg-6 col-xl-2 mt-2">
-                              <label htmlFor className="d-block">
-                                To
-                              </label>
-                              <input
-                                type="date"
-                                className="form-control form-control-sm"
-                              />
-                            </div>
+                            <Calender
+                              from={from}
+                              to={to}
+                              setFrom={setFrom}
+                              setTo={setTo}
+                            />
                             <div className="col-12 col-md-6 col-lg-6 col-xl-3 mt-2 offset-xl-1 offset-0">
                               <div className="search-filter w-100">
                                 <label>Search:</label>
-                                <input
-                                  type="search"
-                                  className="form-control form-control-sm"
-                                  placeholder="Search"
+                                <SearchFilter
+                                  searchString={searchString}
+                                  setSearchString={setSearchString}
+                                  setPage={setPage}
+                                  functionhandler={handleGetUserOrders}
                                 />
                               </div>
                             </div>
@@ -174,137 +205,55 @@ const UserDetails = ({ match }) => {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>I nprocess</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-details.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>Delivered</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-details.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className>01</td>
-                                        <td>$123</td>
-                                        <td>In Process</td>
-                                        <td>mm/dd/yyyy</td>
-                                        <td>
-                                          <div className="btn-group ml-1">
-                                            <button
-                                              type="button"
-                                              className="btn btn-drop-table btn-sm"
-                                              data-toggle="dropdown"
-                                            >
-                                              <i className="fa fa-ellipsis-v" />
-                                            </button>
-                                            <div className="dropdown-menu">
-                                              <a
-                                                className="dropdown-item"
-                                                href="orders-details.php"
-                                              >
-                                                <i className="fa fa-eye" />
-                                                View Detail
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </td>
-                                      </tr>
+                                      {userorderslogs?.docs?.length > 0 &&
+                                        userorderslogs?.docs?.map(
+                                          (orderr, index) => (
+                                            <tr>
+                                              <td className>{index + 1}</td>
+                                              <td>${orderr?.totalPrice}</td>
+                                              <td>{orderr?.status}</td>
+                                              <td>
+                                                {moment
+                                                  .utc(orderr?.createdAt)
+                                                  .format("LL")}
+                                              </td>
+                                              <td>
+                                                <div className="btn-group ml-1">
+                                                  <button
+                                                    type="button"
+                                                    className="btn btn-drop-table btn-sm"
+                                                    data-toggle="dropdown"
+                                                  >
+                                                    <i className="fa fa-ellipsis-v" />
+                                                  </button>
+                                                  <div className="dropdown-menu">
+                                                    <Link to={`/OrderDetails${orderr?._id}`}
+                                                      className="dropdown-item"
+                                                      href="orders-details.php"
+                                                    >
+                                                      <i className="fa fa-eye" />
+                                                      View Detail
+                                                    </Link>
+                                                  </div>
+                                                </div>
+                                              </td>
+                                            </tr>
+                                          )
+                                        )}
                                     </tbody>
                                   </table>
                                 </div>
                               </div>
-                              <div className="row">
-                                <div className="col-sm-12 col-md-5">
-                                  <div
-                                    className="dataTables_info"
-                                    id="DataTables_Table_0_info"
-                                    role="status"
-                                    aria-live="polite"
-                                  >
-                                    Showing 1 to 3 of 3 entries
-                                  </div>
-                                </div>
-                                <div className="col-sm-12 col-md-7">
-                                  <div
-                                    className="dataTables_paginate paging_simple_numbers"
-                                    id="DataTables_Table_0_paginate"
-                                  >
-                                    <ul className="pagination">
-                                      <li className="paginate_button page-item previous disabled">
-                                        <a href="#" className="page-link">
-                                          <i className="fa fa-chevron-left red" />
-                                        </a>
-                                      </li>
-                                      <li className="paginate_button page-item active">
-                                        <a href="#" className="page-link">
-                                          1
-                                        </a>
-                                      </li>
-                                      <li className="paginate_button page-item">
-                                        <a href="#" className="page-link">
-                                          2
-                                        </a>
-                                      </li>
-                                      <li className="paginate_button page-item">
-                                        <a href="#" className="page-link">
-                                          3
-                                        </a>
-                                      </li>
-                                      <li
-                                        className="paginate_button page-item next disabled"
-                                        i
-                                      >
-                                        <a href="#" className="page-link">
-                                          <i className="fa fa-chevron-right red" />
-                                        </a>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </div>
-                              </div>
+                              {userorderslogs?.docs?.length > 0 && (
+                                <Pagination
+                                  totalDocs={userorderslogs?.totalDocs}
+                                  totalPages={userorderslogs?.totalPages}
+                                  currentPage={userorderslogs?.page}
+                                  setPage={setPage}
+                                  hasNextPage={userorderslogs?.hasNextPage}
+                                  hasPrevPage={userorderslogs?.hasPrevPage}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>

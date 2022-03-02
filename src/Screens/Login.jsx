@@ -11,6 +11,7 @@ export default function Login({ history }) {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [showicon, setshowicon] = useState(true);
+  const [loading, setloading] = useState(false);
 
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
@@ -20,9 +21,15 @@ export default function Login({ history }) {
     console.log("emmmm", emailvalidation);
     console.log("addEmployeeHandler");
     if (emailvalidation == true) {
+      setloading(true);
+
       console.log("submitHandler");
       dispatch(adminLoginAction(email, password, history));
+      setloading(false);
+
     } else {
+      setloading(false);
+
       Toasty("error", `Please enter a valid email`);
     }
   };
@@ -108,6 +115,7 @@ export default function Login({ history }) {
                     </div>
                     <div className="row">
                       <div className="d-block col-12 text-center mt-4">
+                      {!loading ? (
                         <button
                           type="button"
                           onClick={() => {
@@ -121,7 +129,9 @@ export default function Login({ history }) {
                           className="btn btn-primary btn-login"
                         >
                           Login
-                        </button>
+                        </button> ) : (
+                              <i className="fas fa-spinner fa-pulse"></i>
+                            )}
                       </div>
                     </div>
                   </form>

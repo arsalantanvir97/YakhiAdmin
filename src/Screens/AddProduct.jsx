@@ -13,6 +13,8 @@ import InputNumber from "../components/InputNumber";
 import Swal from "sweetalert2";
 
 const AddProduct = (props) => {
+  const [loading, setloading] = useState(false);
+
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [productimage, setproductimage] = useState([]);
@@ -23,6 +25,8 @@ const AddProduct = (props) => {
   const [category, setcategory] = useState("");
   const [inputfields, setInputfields] = useState([]);
   const [price, setprice] = useState(0);
+  const [countInStock, setcountInStock] = useState(0);
+
   const [status, setstatus] = useState("");
   const [quantityrange, setquantityrange] = useState([]);
   const [data, setData] = useState({
@@ -85,13 +89,15 @@ const AddProduct = (props) => {
   const addProductHandler = async () => {
     const { project_images } = data;
     console.log("addProductHandler", productimage, category);
-
+    setloading(true);
     try {
       const formData = new FormData();
       formData.append("id", adminInfo?._id);
       formData.append("category", category);
       formData.append("name", name);
       formData.append("price", price);
+      formData.append("countInStock", countInStock);
+
       formData.append("status", status);
       formData.append("description", description);
       formData.append("quantityrange", JSON.stringify(quantityrange));
@@ -104,6 +110,8 @@ const AddProduct = (props) => {
           Authorization: `Bearer ${adminInfo.token}`
         }
       });
+      setloading(false);
+
       console.log("res", res);
       if (res?.status == 201) {
         console.log("blockkk");
@@ -120,6 +128,8 @@ const AddProduct = (props) => {
         console.log("blockkk3");
       }
     } catch (error) {
+      setloading(false);
+
       console.log("error", error?.response?.data);
       Swal.fire({
         icon: "error",
@@ -147,29 +157,33 @@ const AddProduct = (props) => {
                             <h1>Add Product</h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                            <Link
-                              onClick={() =>
-                                data?.project_images?.length > 0 &&
-                                category?.length > 0 &&
-                                name?.length > 0 &&
-                                price > 0 &&
-                                description?.length > 0
-                                  ? addProductHandler()
-                                  : Toasty(
-                                      "error",
-                                      `Please fill out all the required fields!`
-                                    )
-                              }
-                              to="#"
-                              className="btn btn-primary"
-                            >
-                              Publish
-                            </Link>
+                            {!loading ? (
+                              <Link
+                                onClick={() =>
+                                  data?.project_images?.length > 0 &&
+                                  category?.length > 0 &&
+                                  name?.length > 0 &&
+                                  price > 0 &&
+                                  description?.length > 0
+                                    ? addProductHandler()
+                                    : Toasty(
+                                        "error",
+                                        `Please fill out all the required fields!`
+                                      )
+                                }
+                                to="#"
+                                className="btn btn-primary"
+                              >
+                                Publish
+                              </Link>
+                            ) : (
+                              <i className="fas fa-spinner fa-pulse"></i>
+                            )}
                           </div>
                         </div>
                       </div>
                       <ImageSelectDropzone
-                      max={5}
+                        max={5}
                         setproductimage={setproductimage}
                         files={data?.project_images}
                         setFiles={(project_images) =>
@@ -334,6 +348,17 @@ const AddProduct = (props) => {
                                   <InputNumber
                                     value={price}
                                     onChange={setprice}
+                                    max={9}
+                                    className="form-control"
+                                  />
+                                </div>
+                              </div>
+                              <div className="form-group mb-2">
+                                <label>Count Instock</label>
+                                <div className="position-relative">
+                                  <InputNumber
+                                    value={countInStock}
+                                    onChange={setcountInStock}
                                     max={9}
                                     className="form-control"
                                   />

@@ -1,6 +1,42 @@
-import React from "react";
+import axios from "axios";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { baseURL } from "../utils/api";
 
 const Notification = () => {
+  const [notifications, setnotifications] = useState([]);
+  const dispatch = useDispatch();
+  const adminLogin = useSelector((state) => state.adminLogin);
+  const { adminInfo } = adminLogin;
+
+  useEffect(() => {
+    getAllNotification();
+  }, []);
+
+  const getAllNotification = async () => {
+    try {
+      // dispatch({
+      //   type: ADMIN_LOGIN_REQUEST,
+      // })
+
+      console.log("getallNotification");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${adminInfo.token}`
+        }
+      };
+
+      const res = await axios.get(
+        `${baseURL}/notification/notifications`,
+        config
+      );
+      console.log("res", res);
+      if (res?.status == 201) {
+        setnotifications(res?.data?.notification);
+      }
+    } catch (error) {}
+  };
   return (
     <div>
       <div className="app-content content dashboard">
@@ -21,6 +57,7 @@ const Notification = () => {
                       </div>
                       <div className="row">
                         <div className="col-12 col-md-12 col-lg-11">
+                        {notifications?.length>0 &&notifications?.map(not=>(
                           <div className="noti-inner-cards">
                             <div className="card">
                               <div className="noti-content">
@@ -33,23 +70,11 @@ const Notification = () => {
                                       />
                                       <div className="media-body">
                                         <p>
-                                          Lorem ipsum dolor sit amet, consetetur
-                                          sadipscing elitr, sed diam nonumy
-                                          eirmod tempor invidunt ut labore et
-                                          dolore magna aliquyam erat, sed diam
-                                          voluptua. At vero eos et accusam et
-                                          justo duo dolores et ea rebum. Stet
-                                          clita kasd gubergren, no sea takimata
-                                          sanctus est Lorem ipsum dolor sit
-                                          amet. Lorem ipsum dolor sit amet,
-                                          consetetur sadipscing elitr, sed diam
-                                          nonumy eirmod tempor invidunt ut
-                                          labore et dolore magna aliquyam erat,
-                                          sed diam voluptua.{" "}
+                                        {not?.body}{" "}
                                         </p>
                                         <div className="meta mt-2">
                                           <time className="time-meta" dateTime>
-                                            2 hrs ago
+                                          {moment(not?.createdAt).fromNow()}
                                           </time>
                                         </div>
                                       </div>
@@ -58,121 +83,7 @@ const Notification = () => {
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="noti-inner-cards">
-                            <div className="card">
-                              <div className="noti-content">
-                                <div className="row">
-                                  <div className="col-sm-12">
-                                    <div className="media">
-                                      <i
-                                        className="fa fa-bell"
-                                        aria-hidden="true"
-                                      />
-                                      <div className="media-body">
-                                        <p>
-                                          Lorem ipsum dolor sit amet, consetetur
-                                          sadipscing elitr, sed diam nonumy
-                                          eirmod tempor invidunt ut labore et
-                                          dolore magna aliquyam erat, sed diam
-                                          voluptua. At vero eos et accusam et
-                                          justo duo dolores et ea rebum. Stet
-                                          clita kasd gubergren, no sea takimata
-                                          sanctus est Lorem ipsum dolor sit
-                                          amet. Lorem ipsum dolor sit amet,
-                                          consetetur sadipscing elitr, sed diam
-                                          nonumy eirmod tempor invidunt ut
-                                          labore et dolore magna aliquyam erat,
-                                          sed diam voluptua.{" "}
-                                        </p>
-                                        <div className="meta mt-2">
-                                          <time className="time-meta" dateTime>
-                                            2 hrs ago
-                                          </time>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="noti-inner-cards">
-                            <div className="card">
-                              <div className="noti-content">
-                                <div className="row">
-                                  <div className="col-sm-12">
-                                    <div className="media">
-                                      <i
-                                        className="fa fa-bell"
-                                        aria-hidden="true"
-                                      />
-                                      <div className="media-body">
-                                        <p>
-                                          Lorem ipsum dolor sit amet, consetetur
-                                          sadipscing elitr, sed diam nonumy
-                                          eirmod tempor invidunt ut labore et
-                                          dolore magna aliquyam erat, sed diam
-                                          voluptua. At vero eos et accusam et
-                                          justo duo dolores et ea rebum. Stet
-                                          clita kasd gubergren, no sea takimata
-                                          sanctus est Lorem ipsum dolor sit
-                                          amet. Lorem ipsum dolor sit amet,
-                                          consetetur sadipscing elitr, sed diam
-                                          nonumy eirmod tempor invidunt ut
-                                          labore et dolore magna aliquyam erat,
-                                          sed diam voluptua.{" "}
-                                        </p>
-                                        <div className="meta mt-2">
-                                          <time className="time-meta" dateTime>
-                                            2 hrs ago
-                                          </time>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="noti-inner-cards">
-                            <div className="card">
-                              <div className="noti-content">
-                                <div className="row">
-                                  <div className="col-sm-12">
-                                    <div className="media">
-                                      <i
-                                        className="fa fa-bell"
-                                        aria-hidden="true"
-                                      />
-                                      <div className="media-body">
-                                        <p>
-                                          Lorem ipsum dolor sit amet, consetetur
-                                          sadipscing elitr, sed diam nonumy
-                                          eirmod tempor invidunt ut labore et
-                                          dolore magna aliquyam erat, sed diam
-                                          voluptua. At vero eos et accusam et
-                                          justo duo dolores et ea rebum. Stet
-                                          clita kasd gubergren, no sea takimata
-                                          sanctus est Lorem ipsum dolor sit
-                                          amet. Lorem ipsum dolor sit amet,
-                                          consetetur sadipscing elitr, sed diam
-                                          nonumy eirmod tempor invidunt ut
-                                          labore et dolore magna aliquyam erat,
-                                          sed diam voluptua.{" "}
-                                        </p>
-                                        <div className="meta mt-2">
-                                          <time className="time-meta" dateTime>
-                                            2 hrs ago
-                                          </time>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          </div>))}
                         </div>
                       </div>
                     </div>

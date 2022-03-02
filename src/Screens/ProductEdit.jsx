@@ -11,10 +11,13 @@ import Swal from "sweetalert2";
 const ProductEdit = ({ match, enable_dot, history }) => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
+  const [loading, setloading] = useState(false);
+
   const [allofcategory, setallofcategory] = useState([]);
   const [productdetails, setproductdetails] = useState();
   const [is_edit, setIsEdit] = useState(false);
   const [productimage, setproductimage] = useState([]);
+  const [countInStock, setcountInStock] = useState(0);
 
   const [name, setname] = useState("");
 
@@ -67,6 +70,9 @@ const ProductEdit = ({ match, enable_dot, history }) => {
       setname(res?.data?.product?.name);
       setdescription(res?.data?.product?.description);
       setprice(res?.data?.product?.price);
+      setcountInStock(res?.data?.product?.countInStock);
+
+      
       setstatus(res?.data?.product?.status);
 
       setquantityrange(res?.data?.product?.pricerange);
@@ -141,7 +147,7 @@ const ProductEdit = ({ match, enable_dot, history }) => {
   const updateCourseData = async () => {
     const { project_images } = data;
     console.log("addProductHandler", productimage);
-
+    setloading(true)
     try {
       const config = {
         headers: {
@@ -152,6 +158,9 @@ const ProductEdit = ({ match, enable_dot, history }) => {
       formData.append("id", match?.params?.id);
       formData.append("name", name);
       formData.append("price", price);
+      formData.append("countInStock", countInStock);
+
+      
       formData.append("status", status);
       formData.append("category", categoryy);
       formData.append("description", description);
@@ -167,6 +176,7 @@ const ProductEdit = ({ match, enable_dot, history }) => {
         body,
         config
       );
+      setloading(false)
       console.log("res", res);
       if (res?.status == 201) {
         console.log("blockkk");
@@ -183,6 +193,8 @@ const ProductEdit = ({ match, enable_dot, history }) => {
         console.log("blockkk3");
       }
     } catch (error) {
+      setloading(false)
+
       console.log("error", error?.response?.data);
       Swal.fire({
         icon: "error",
@@ -210,6 +222,7 @@ const ProductEdit = ({ match, enable_dot, history }) => {
                             <h1>Product {is_edit ? "Edit" : "Details"}</h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
+                          {!loading ? (
                             <Link
                               to="#"
                               onClick={() => {
@@ -222,7 +235,9 @@ const ProductEdit = ({ match, enable_dot, history }) => {
                               className="btn btn-primary"
                             >
                               {is_edit ? "Update" : "Edit"}
-                            </Link>
+                            </Link>) : (
+                              <i className="fas fa-spinner fa-pulse"></i>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -611,6 +626,23 @@ const ProductEdit = ({ match, enable_dot, history }) => {
                                     />
                                   ) : (
                                     <p>{price}</p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="form-group mb-2">
+                                <label style={{ paddingLeft: 0 }}>
+                                  Count Instock
+                                </label>
+                                <div className="position-relative">
+                                  {is_edit ? (
+                                    <InputNumber
+                                      value={countInStock}
+                                      onChange={setcountInStock}
+                                      max={12}
+                                      className="form-control"
+                                    />
+                                  ) : (
+                                    <p>{countInStock}</p>
                                   )}
                                 </div>
                               </div>

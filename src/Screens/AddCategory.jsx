@@ -8,6 +8,8 @@ import Toasty from "../utils/toast";
 import { useSelector } from "react-redux";
 
 const AddCategory = ({ history }) => {
+  const [loading, setloading] = useState(false);
+
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [image, setimage] = useState();
@@ -19,6 +21,7 @@ const AddCategory = ({ history }) => {
   const createCategoryHandler = async () => {
     console.log("createCategoryHandler");
     try {
+      setloading(true)
       const formData = new FormData();
       formData.append("user_image", image);
       formData.append("categorytitle", categorytitle);
@@ -31,6 +34,8 @@ const AddCategory = ({ history }) => {
           Authorization: `Bearer ${adminInfo.token}`,
         },
       });
+      setloading(false)
+
       console.log("res", res);
       if (res?.status == 201) {
         console.log("blockkk");
@@ -48,6 +53,8 @@ const AddCategory = ({ history }) => {
       }
     } catch (error) {
       console.log("error", error?.response?.data);
+      setloading(false)
+
       Swal.fire({
         icon: "error",
         title: "ERROR",
@@ -79,6 +86,7 @@ const AddCategory = ({ history }) => {
                             </h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
+                          {!loading ? (
                             <Link
                               to="#"
                               onClick={() =>
@@ -94,7 +102,9 @@ const AddCategory = ({ history }) => {
                               className="btn btn-primary"
                             >
                               Publish
-                            </Link>
+                            </Link>) : (
+                              <i className="fas fa-spinner fa-pulse"></i>
+                            )}
                           </div>
                         </div>
                       </div>

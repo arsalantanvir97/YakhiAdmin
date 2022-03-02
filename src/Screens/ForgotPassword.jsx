@@ -9,6 +9,8 @@ import { validateEmail } from "../utils/ValidateEmail";
 
 const ForgotPassword = ({ history }) => {
     const [email, setemail] = useState("");
+    const [loading, setloading] = useState(false);
+
     const submitHandler = async () => {
       const emailvalidation = validateEmail(email);
       console.log("emmmm", emailvalidation);
@@ -16,10 +18,12 @@ const ForgotPassword = ({ history }) => {
       if (emailvalidation == true) {
         const body = { email };
         console.log("TEST");
-  
+        setloading(true);
+
         try {
           const res = await api.post("/auth/adminRecoverPassword", body);
           console.log("res", res);
+          setloading(false);
           if (res?.status == 201) {
             Swal.fire({
               icon: "success",
@@ -29,11 +33,13 @@ const ForgotPassword = ({ history }) => {
               timer: 1500
             });
             history.push({
-              pathname: "/verificationcode",
-              state: { email }
+              pathname: `/verificationcode${email}`
             });
+           
           }
         } catch (error) {
+          setloading(false);
+
           console.log("IN HERE");
           console.log(error?.response?.data);
           Toasty("error", `🦄 Invalid Email!`);
@@ -79,6 +85,7 @@ const ForgotPassword = ({ history }) => {
                     </div>
                     <div className="row">
                       <div className="d-block col-12 text-center mt-1">
+                      {!loading ? (
                         <button
                           type="button"
                           className="btn btn-primary btn-login"
@@ -93,6 +100,9 @@ const ForgotPassword = ({ history }) => {
                         >
                           Continue
                         </button>
+                         ) : (
+                          <i className="fas fa-spinner fa-pulse"></i>
+                        )}
                       </div>
                     </div>
                     <div className="row">

@@ -15,30 +15,30 @@ const NewUser = ({ history }) => {
   const [confirmpassword, setconfirmpassword] = useState("");
   const [showicon, setshowicon] = useState(true);
   const [showicon2, setshowicon2] = useState(true);
+  const [loading, setloading] = useState(false);
 
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
+
   const submitHandler = async () => {
     const emailvalidation = validateEmail(email);
     console.log("emmmm", emailvalidation);
     console.log("addEmployeeHandler");
     if (emailvalidation == true) {
+      setloading(true);
       console.log("createCategoryHandler");
       try {
         console.log("await");
         const res = await axios.post(
           `${baseURL}/auth/registerUserbyAdmin`,
-          {firstName,
-            lastName,
-            email,
-            password,
-            confirmpassword},
+          { firstName, lastName, email, password, confirmpassword },
           {
             headers: {
               Authorization: `Bearer ${adminInfo.token}`
             }
           }
         );
+        setloading(false);
         console.log("res", res);
         if (res?.status == 201) {
           console.log("blockkk");
@@ -55,16 +55,18 @@ const NewUser = ({ history }) => {
           console.log("blockkk3");
         }
       } catch (error) {
+        setloading(false);
         console.log("error", error?.response?.data);
         Swal.fire({
           icon: "error",
           title: "ERROR",
-          text: "Internal Server Error",
+          text: error?.response?.data?.message,
           showConfirmButton: false,
           timer: 1500
         });
       }
     } else {
+      setloading(false);
       Toasty("error", `Please enter a valid email`);
     }
   };
@@ -200,24 +202,28 @@ const NewUser = ({ history }) => {
                         </div>
                         <div className="row detail-row mt-1">
                           <div className="col-12 col-md-6 col-xl-4">
-                            <Link
-                              to="#"
-                              className="btn btn-primary btn-fixed-190"
-                              onClick={() => {
-                                password?.length > 0 &&
-                                email?.length > 0 &&
-                                confirmpassword?.length > 0 &&
-                                firstName?.length > 0 &&
-                                lastName?.length > 0
-                                  ? submitHandler()
-                                  : Toasty(
-                                      "error",
-                                      `Please fill out all the required fields!`
-                                    );
-                              }}
-                            >
-                              Create
-                            </Link>
+                            {!loading ? (
+                              <Link
+                                to="#"
+                                className="btn btn-primary btn-fixed-190"
+                                onClick={() => {
+                                  password?.length > 0 &&
+                                  email?.length > 0 &&
+                                  confirmpassword?.length > 0 &&
+                                  firstName?.length > 0 &&
+                                  lastName?.length > 0
+                                    ? submitHandler()
+                                    : Toasty(
+                                        "error",
+                                        `Please fill out all the required fields!`
+                                      );
+                                }}
+                              >
+                                Create
+                              </Link>
+                            ) : (
+                              <i className="fas fa-spinner fa-pulse"></i>
+                            )}
                           </div>
                         </div>
                       </div>
