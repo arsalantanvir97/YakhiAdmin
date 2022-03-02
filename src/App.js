@@ -37,7 +37,7 @@ import PrivateRoute from "./components/PrivateRoute";
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/yakhi/admin">
       <Route path="/" component={Login} exact />
       <Route path="/forgotpassword" component={ForgotPassword} exact />
       <Route path="/verificationcode:email" component={VerificationCode} exact />
