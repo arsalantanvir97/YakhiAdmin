@@ -134,6 +134,18 @@ const Sidebar = (props) => {
                 </span>
               </Link>
             </li>
+            <li  className={
+                props?.match?.path == "/Appointments"
+                  ? "nav-item active "
+                  : "nav-item"
+              }>
+              <Link to="/Appointments">
+                <i className="fa fa-calendar" />
+                <span className="menu-title" data-i18n>
+                Appointments
+                </span>
+              </Link>
+            </li>
             <li className={
                 props?.match?.path == "/Feedback"
                   ? "nav-item active "

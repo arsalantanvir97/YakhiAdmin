@@ -32,8 +32,10 @@ import UserDetails from "./Screens/UserDetails";
 import Users from "./Screens/Users";
 import VerificationCode from "./Screens/VerificationCode";
 import ViewCategory from "./Screens/ViewCategory";
+import Appointments from "./Screens/Appointments";
 
 import PrivateRoute from "./components/PrivateRoute";
+import AppointmentDetails from "./Screens/AppointmentDetails";
 
 export default function App() {
   return (
@@ -54,6 +56,7 @@ export default function App() {
       <PrivateRoute exact path="/AddCategory" component={AddCategory} />
       <PrivateRoute exact path="/NewUser" component={NewUser} />
       <PrivateRoute exact path="/Notification" component={Notification} />
+      <PrivateRoute exact path="/Appointments" component={Appointments} />
 
 
       <PrivateRoute exact path="/EditCategory:id" component={EditCategory} />
@@ -66,6 +69,9 @@ export default function App() {
         component={FeedbackDetails}
       />
       <PrivateRoute exact path="/UserDetails:id" component={UserDetails} />
+      <PrivateRoute exact path="/AppointmentDetails:id" component={AppointmentDetails} />
+
+      
       <PrivateRoute exact path="/EditUser:id" component={EditUser} />
 
       <PrivateRoute exact path="/Products" component={Products} />

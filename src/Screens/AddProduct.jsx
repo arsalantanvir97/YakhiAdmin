@@ -19,16 +19,12 @@ const AddProduct = (props) => {
   const { adminInfo } = adminLogin;
   const [productimage, setproductimage] = useState([]);
   const [allofcategory, setallofcategory] = useState([]);
-
   const [name, setname] = useState("");
   const [description, setdescription] = useState("");
   const [category, setcategory] = useState("");
-  const [inputfields, setInputfields] = useState([]);
   const [price, setprice] = useState(0);
   const [countInStock, setcountInStock] = useState(0);
-
-  const [status, setstatus] = useState("");
-  const [quantityrange, setquantityrange] = useState([]);
+  const [visble, setvisble] = useState(true);
   const [data, setData] = useState({
     project_images: []
   });
@@ -45,46 +41,6 @@ const AddProduct = (props) => {
     console.log("res", res);
     setallofcategory(res?.data?.getAllCategories);
   };
-  const handleclickfields = () => {
-    setInputfields([
-      ...inputfields,
-      { rangestartingquantity: 0, rangestartingprice: 0 }
-    ]);
-  };
-  const handlechangeinput = (index, event) => {
-    const values = [...inputfields];
-    values[index][event.target.name] = Number(event.target.value);
-    setInputfields(values);
-    setquantityrange(values);
-  };
-  const inputfieldsremove = (index) => {
-    const values = [...inputfields];
-    values.splice(index, 1);
-    setInputfields(values);
-    setquantityrange(values);
-  };
-  useEffect(() => {
-    console.log("quantityrange", quantityrange);
-  }, [quantityrange]);
-  function formatInput(e) {
-    // Prevent characters that are not numbers ("e", ".", "+" & "-") ✨
-    let checkIfNum;
-    if (e.key !== undefined) {
-      // Check if it's a "e", ".", "+" or "-"
-      const filter = props.enable_dot
-        ? e.key === "e" || e.key === "+" || e.key === "-"
-        : e.key === "e" || e.key === "." || e.key === "+" || e.key === "-";
-      checkIfNum = filter;
-    } else if (e.keyCode !== undefined) {
-      // Check if it's a "e" (69), "." (190), "+" (187) or "-" (189)
-      checkIfNum =
-        e.keyCode === 69 ||
-        e.keyCode === 190 ||
-        e.keyCode === 187 ||
-        e.keyCode === 189;
-    }
-    return checkIfNum && e.preventDefault();
-  }
 
   const addProductHandler = async () => {
     const { project_images } = data;
@@ -98,9 +54,8 @@ const AddProduct = (props) => {
       formData.append("price", price);
       formData.append("countInStock", countInStock);
 
-      formData.append("status", status);
+      formData.append("visble", visble);
       formData.append("description", description);
-      formData.append("quantityrange", JSON.stringify(quantityrange));
       project_images.forEach((reciept) => formData.append("reciepts", reciept));
 
       const body = formData;
@@ -194,101 +149,7 @@ const AddProduct = (props) => {
                       <p className="primary-text pt-2 pl-2">
                         Please note that you can upload up to 5 images only
                       </p>
-                      {/* <div className="product-gallery">
-                    <div className="row">
-                      <div className="col-12 col-lg-6">
-                        <div className="product-preview text-center position-relative">
-                          <img src="images/product-preview.png" alt="" />
-                          <div className="d-inline-block align-bottom actions-buttons">
-                            <input type="file" id="upload" name="file" />
-                            <button type="button" className="btn delet" data-toggle="modal" data-target=".delete-review">
-                              <i className="fa fa-trash-alt" aria-hidden="true" />
-                            </button>
-                            <button type="button" className="btn upload">
-                              <label htmlFor="upload" className="d-block mb-0">
-                                <i className="fa fa-upload" />
-                              </label>
-                            </button>
-                          </div>
-                        </div>
-                        <p className="primary-text pt-2 pl-2">Please note that you can upload up to 5 images only</p>
-                      </div>
-                      <div className="col-12 col-lg-6 product-thumb-wrap">
-                        <div className="row">
-                          <div className="col-12 col-lg-6">
-                            <div className="preview-thumbs text-center">
-                              <img src="images/product-thumb-1.png" alt="" />
-                              <input type="checkbox" id="checkbox_one" name="question1" data-trigger="hidden_fields_one" className="trigger" />
-                              <div id="hidden_fields_one" className="align-bottom actions-buttons" style={{display: 'none'}}>
-                                <input type="file" id="upload" name="file" />
-                                <button type="button" className="btn delet" data-toggle="modal" data-target=".delete-review">
-                                  <i className="fa fa-trash-alt" aria-hidden="true" />
-                                </button>
-                                <button type="button" className="btn upload">
-                                  <label htmlFor="upload" className="d-block mb-0">
-                                    <i className="fa fa-upload" />
-                                  </label>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-12 col-lg-6">
-                            <div className="preview-thumbs text-center">
-                              <img src="images/product-thumb-1.png" alt="" />
-                              <input type="checkbox" id="checkbox_one" name="question1" data-trigger="hidden_fields_two" className="trigger" />
-                              <div id="hidden_fields_two" className="align-bottom actions-buttons" style={{display: 'none'}}>
-                                <input type="file" id="upload" name="file" />
-                                <button type="button" className="btn delet" data-toggle="modal" data-target=".delete-review">
-                                  <i className="fa fa-trash-alt" aria-hidden="true" />
-                                </button>
-                                <button type="button" className="btn upload">
-                                  <label htmlFor="upload" className="d-block mb-0">
-                                    <i className="fa fa-upload" />
-                                  </label>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row mb-0">
-                          <div className="col-12 col-lg-6">
-                            <div className="preview-thumbs text-center">
-                              <img src="images/product-thumb-1.png" alt="" />
-                              <input type="checkbox" id="checkbox_one" name="question1" data-trigger="hidden_fields_three" className="trigger" />
-                              <div id="hidden_fields_three" className="align-bottom actions-buttons" style={{display: 'none'}}>
-                                <input type="file" id="upload" name="file" />
-                                <button type="button" className="btn delet" data-toggle="modal" data-target=".delete-review">
-                                  <i className="fa fa-trash-alt" aria-hidden="true" />
-                                </button>
-                                <button type="button" className="btn upload">
-                                  <label htmlFor="upload" className="d-block mb-0">
-                                    <i className="fa fa-upload" />
-                                  </label>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-12 col-lg-6">
-                            <div className="preview-thumbs text-center">
-                              <img src="images/product-thumb-4.png" alt="" />
-                              <input type="checkbox" id="checkbox_one" name="question1" data-trigger="hidden_fields_four" className="trigger" />
-                              <div id="hidden_fields_four" className="align-bottom actions-buttons" style={{display: 'none'}}>
-                                <input type="file" id="upload" name="file" />
-                                <button type="button" className="btn delet" data-toggle="modal" data-target=".delete-review">
-                                  <i className="fa fa-trash-alt" aria-hidden="true" />
-                                </button>
-                                <button type="button" className="btn upload">
-                                  <label htmlFor="upload" className="d-block mb-0">
-                                    <i className="fa fa-upload" />
-                                  </label>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
+                 
                       <div className="product-form">
                         <div className="user-block">
                           <div className="row">
@@ -324,21 +185,46 @@ const AddProduct = (props) => {
                                     ))}
                                 </select>
                               </div>
-                              <div className="form-group mb-2">
-                                <label>Status</label>
-                                <select
-                                  id
-                                  className="form-control"
-                                  value={status}
-                                  onChange={(e) => {
-                                    setstatus(e.target.value);
-                                  }}
-                                >
-                                  {" "}
-                                  <option value="">Select</option>
-                                  <option value={true}>Active</option>
-                                  <option value={false}>Inctive</option>
-                                </select>
+                              <div className="row detail-row">
+                                <div className="col-12 col-md-6 col-xl-4">
+                                  <label>
+                                    Visible In Menu
+                                    <span className="text-danger">*</span>
+                                  </label>
+                                  <div className="d-block">
+                                    <div className="form-check form-check-inline radio">
+                                      <input
+                                        value={visble}
+                                        onClick={() => setvisble(true)}
+                                        id="radio-1"
+                                        name="radio"
+                                        type="radio"
+                                        defaultChecked
+                                      />
+                                      <label
+                                        htmlFor="radio-1"
+                                        className="radio-label"
+                                      >
+                                        Yes
+                                      </label>
+                                    </div>
+                                    <div className="radio form-check form-check-inline">
+                                      <input
+                                        value={visble}
+                                        onClick={() => setvisble(false)}
+                                        id="radio-2"
+                                        name="radio"
+                                        type="radio"
+                                      />
+                                      <label
+                                        htmlFor="radio-2"
+                                        className="radio-label"
+                                      >
+                                        No
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                             <div className="col-12 col-md-6">
@@ -381,69 +267,6 @@ const AddProduct = (props) => {
                               </div>
                             </div>
                           </div>
-                          <label>Price Quantity Range</label>
-                          <i
-                            onClick={handleclickfields}
-                            className="fas fa-plus plus-btn"
-                          />
-                          {/* <div className="row">
-                            <div className="col-12 col-md-6 form-group mb-2 price-quality-range">
-                              <label>Price Quantity Range</label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Add"
-                              />
-                              <i className="fas fa-plus plus-btn add-range" />
-                            </div>
-                          </div> */}
-                          {inputfields.map((inputfield, index) => (
-                            <div className="row">
-                              <div className="col-12 col-md-6 form-group mb-2">
-                                <div className="range-a col-12 form-group mb-2">
-                                  <div className="d-flex justify-content-between align-items-center mt-4">
-                                    <h4>Range {index + 1}</h4>
-                                    <div
-                                      onClick={() => inputfieldsremove(index)}
-                                      className="delete-range d-flex justify-content-center align-items-center"
-                                    >
-                                      <i className="fas fa-trash-alt" />
-                                    </div>
-                                  </div>
-                                  <div className="mt-2">
-                                    <label>Range Starting Quantity</label>
-                                    <select
-                                      id
-                                      className="form-control"
-                                      name="rangestartingquantity"
-                                      value={inputfield.rangestartingquantity}
-                                      onChange={(event) =>
-                                        handlechangeinput(index, event)
-                                      }
-                                    >
-                                      <option value={10}>10</option>
-                                      <option value={20}>20</option>
-                                      <option value={30}>30</option>
-                                    </select>
-                                  </div>
-                                  <div className="mt-2">
-                                    <label>Price</label>
-                                    <input
-                                      type="number"
-                                      onKeyDown={formatInput}
-                                      name="rangestartingprice"
-                                      value={inputfield.rangestartingprice}
-                                      onChange={(event) =>
-                                        handlechangeinput(index, event)
-                                      }
-                                      min={0}
-                                      className="form-control"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
                         </div>
                       </div>
                     </div>
