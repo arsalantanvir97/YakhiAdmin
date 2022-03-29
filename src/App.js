@@ -36,6 +36,9 @@ import Appointments from "./Screens/Appointments";
 
 import PrivateRoute from "./components/PrivateRoute";
 import AppointmentDetails from "./Screens/AppointmentDetails";
+import GeoGenetics from "./Screens/GeoGenetics";
+import AddGeoGenetics from "./Screens/AddGeoGenetics";
+import GeoGeneticEdit from "./Screens/GeoGeneticEdit";
 
 export default function App() {
   return (
@@ -53,6 +56,8 @@ export default function App() {
       <PrivateRoute exact path="/Taxes" component={Taxes} />
       <PrivateRoute exact path="/Feedback" component={Feedback} />
       <PrivateRoute exact path="/AddProduct" component={AddProduct} />
+      <PrivateRoute exact path="/AddGeoGenetics" component={AddGeoGenetics} />
+
       <PrivateRoute exact path="/AddCategory" component={AddCategory} />
       <PrivateRoute exact path="/NewUser" component={NewUser} />
       <PrivateRoute exact path="/Notification" component={Notification} />
@@ -61,6 +66,9 @@ export default function App() {
 
       <PrivateRoute exact path="/EditCategory:id" component={EditCategory} />
       <PrivateRoute exact path="/ProductEdit:id" component={ProductEdit} />
+      <PrivateRoute exact path="/GeoGeneticEdit:id" component={GeoGeneticEdit} />
+
+      
       <PrivateRoute exact path="/OrderDetails:id" component={OrderDetails} />
 
       <PrivateRoute
@@ -75,6 +83,8 @@ export default function App() {
       <PrivateRoute exact path="/EditUser:id" component={EditUser} />
 
       <PrivateRoute exact path="/Products" component={Products} />
+      <PrivateRoute exact path="/GeoGenetics" component={GeoGenetics} />
+
 
     </Router>
   );

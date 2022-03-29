@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import ImageSelectDropzone from "../components/ImageSelectDropzone";
 import { Link } from "react-router-dom";
 
@@ -11,48 +11,57 @@ import { useSelector } from "react-redux";
 import Toasty from "../utils/toast";
 import InputNumber from "../components/InputNumber";
 import Swal from "sweetalert2";
+import { Editor } from "@tinymce/tinymce-react";
 
-const AddProduct = (props) => {
+const AddGeoGenetics = (props) => {
   const [loading, setloading] = useState(false);
 
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [productimage, setproductimage] = useState([]);
-  const [allofcategory, setallofcategory] = useState([]);
+  const [geoGeneticscategory, setgeoGeneticscategory] = useState([]);
+
   const [name, setname] = useState("");
   const [description, setdescription] = useState("");
-  const [category, setcategory] = useState("");
   const [price, setprice] = useState(0);
   const [countInStock, setcountInStock] = useState(0);
   const [visible, setvisible] = useState(true);
   const [data, setData] = useState({
     project_images: []
   });
+  
+  const editorRef = useRef(null);
+
+ 
   useEffect(() => {
     gettingallCategoriesHandler();
   }, []);
 
   const gettingallCategoriesHandler = async () => {
-    const res = await axios.get(`${baseURL}/category/allOfCategories`, {
-      headers: {
-        Authorization: `Bearer ${adminInfo.token}`
+      try {
+        const res = await axios.get(`${baseURL}/category/getGeoGeneticsCategory`, {
+            headers: {
+              Authorization: `Bearer ${adminInfo.token}`
+            }
+          });
+          console.log("res", res);
+          setgeoGeneticscategory(res?.data?.getAllCategories);
+      } catch (error) {
+          console.log('error',error);
       }
-    });
-    console.log("res", res);
-    setallofcategory(res?.data?.getAllCategories);
+   
   };
-
   const addProductHandler = async () => {
     const { project_images } = data;
-    console.log("addProductHandler", productimage, category);
+    console.log("addProductHandler", productimage, );
     setloading(true);
     try {
       const formData = new FormData();
       formData.append("id", adminInfo?._id);
-      formData.append("category", category);
       formData.append("name", name);
       formData.append("price", price);
       formData.append("countInStock", countInStock);
+      formData.append("category", geoGeneticscategory?._id);
 
       formData.append("visible", visible);
       formData.append("description", description);
@@ -79,7 +88,7 @@ const AddProduct = (props) => {
         });
         console.log("blockkk2");
 
-        props?.history.push("/Products");
+        props?.history.push("/GeoGenetics");
         console.log("blockkk3");
       }
     } catch (error) {
@@ -95,6 +104,10 @@ const AddProduct = (props) => {
       });
     }
   };
+  const editorHandler=(value)=>{
+      console.log('value',value,typeof(value),value?.length)
+      setdescription(value)
+  }
   return (
     <div>
       <div className="app-content dashboard content">
@@ -109,14 +122,13 @@ const AddProduct = (props) => {
                       <div className="page-title mb-3">
                         <div className="row">
                           <div className="col-12 col-md-6 col-lg-6">
-                            <h1>Add Product</h1>
+                            <h1>Add Geo'Genetics Product</h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
                             {!loading ? (
                               <Link
                                 onClick={() =>
                                   data?.project_images?.length > 0 &&
-                                  category?.length > 0 &&
                                   name?.length > 0 &&
                                   price > 0 &&
                                   description?.length > 0
@@ -166,25 +178,7 @@ const AddProduct = (props) => {
                                   }}
                                 />
                               </div>
-                              <div className="form-group mb-2">
-                                <label>Category</label>
-                                <select
-                                  id
-                                  className="form-control"
-                                  value={category}
-                                  onChange={(e) => {
-                                    setcategory(e.target.value);
-                                  }}
-                                >
-                                  <option>select</option>
-                                  {allofcategory?.length > 0 &&
-                                    allofcategory?.map((allcat) => (
-                                      <option value={allcat?._id}>
-                                        {allcat?.categorytitle}
-                                      </option>
-                                    ))}
-                                </select>
-                              </div>
+                          
                               <div className="row detail-row">
                                 <div className="col-12 col-md-6 col-xl-4">
                                   <label>
@@ -224,6 +218,7 @@ const AddProduct = (props) => {
                                       </label>
                                     </div>
                                   </div>
+                         
                                 </div>
                               </div>
                             </div>
@@ -250,7 +245,7 @@ const AddProduct = (props) => {
                                   />
                                 </div>
                               </div>
-                              <div className="form-group mb-2">
+                              {/* <div className="form-group mb-2">
                                 <label>Description</label>
                                 <div className="position-relative">
                                   <textarea
@@ -264,8 +259,32 @@ const AddProduct = (props) => {
                                     }}
                                   />
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
+                            <div className="col-12 mt-2">
+                            <Editor
+                          onInit={(evt, editor) => (editorRef.current = editor)}
+                          init={{
+                            height: 500,
+                            menubar: true,
+                            plugins: [
+                              "advlist autolink lists link image charmap print preview anchor",
+                              "searchreplace visualblocks code fullscreen",
+                              "insertdatetime media table paste code help wordcount",
+                            ],
+                            toolbar:
+                              "undo redo | formatselect | " +
+                              "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                              "alignright alignjustify | bullist numlist outdent indent | " +
+                              "removeformat | help",
+                            content_style:
+                              "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                          }}
+                          value={description}
+                          onEditorChange={(value) =>
+                            editorHandler(value)
+                          }
+                        /></div>
                           </div>
                         </div>
                       </div>
@@ -281,4 +300,4 @@ const AddProduct = (props) => {
   );
 };
 
-export default AddProduct;
+export default AddGeoGenetics;

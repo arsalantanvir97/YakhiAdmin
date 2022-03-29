@@ -51,37 +51,6 @@ const Appointments = () => {
     }
   };
 
-  const handleChangeStatus = async (id, status) => {
-    console.log("id", id);
-    try {
-      const res = await axios({
-        url: `${baseURL}/user/toggle-active/${id}`,
-        method: "GET",
-
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      Swal.fire({
-        icon: "success",
-        title: "SUCCESS",
-        text: res.data.message,
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetConsultations();
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: err?.response?.data?.message
-          ? err?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
-  };
   return (
     <div>
       <div className="app-content dashboard content">
@@ -208,29 +177,6 @@ const Appointments = () => {
                                                     >
                                                       <i className="fa fa-eye" />
                                                       View Detail
-                                                    </Link>
-                                                    <Link
-                                                      to="#"
-                                                      className="dropdown-item"
-                                                      onClick={() =>
-                                                        handleChangeStatus(
-                                                          userr?._id,
-                                                          !userr?.status
-                                                        )
-                                                      }
-                                                      data-toggle="modal"
-                                                      data-target=".active-user"
-                                                    >
-                                                      <i
-                                                        className={
-                                                          !userr.status
-                                                            ? "fa fa-check-circle"
-                                                            : "fa fa-ban"
-                                                        }
-                                                      />
-                                                      {!userr.status
-                                                        ? "Active"
-                                                        : "Inactive"}
                                                     </Link>
                                                   </div>
                                                 </div>

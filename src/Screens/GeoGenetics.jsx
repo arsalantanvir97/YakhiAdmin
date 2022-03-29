@@ -8,52 +8,49 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
 import Swal from "sweetalert2";
-
-const Products = () => {
+let geoGeneticsid = "";
+const GeoGenetics = () => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [sort, setsort] = useState();
 
   const [products, setproducts] = useState([]);
+  const [geogeneticscategory, setgeogeneticscategory] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchString, setSearchString] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [status, setStatus] = useState("");
-  const [allofcategory, setallofcategory] = useState([]);
-  const [geogeneticscategory, setgeogeneticscategory] = useState([]);
-
   const [category, setcategory] = useState();
-
   const gettingallCategoriesHandler = async () => {
-    const res = await axios.get(`${baseURL}/category/allOfCategories`, {
+    const res = await axios.get(`${baseURL}/category/getGeoGeneticsCategory`, {
       headers: {
         Authorization: `Bearer ${adminInfo.token}`
       }
     });
     console.log("res", res);
-    setallofcategory(res?.data?.getAllCategories);
-    const ress = await axios.get(`${baseURL}/category/getGeoGeneticsCategory`, {
-      headers: {
-        Authorization: `Bearer ${adminInfo.token}`
-      }
-    });
-    console.log("res", res);
-    setgeogeneticscategory(ress?.data?.getAllCategories);
+    setgeogeneticscategory(res?.data?.getAllCategories);
+    geoGeneticsid = res?.data?.getAllCategories?._id;
   };
-  useEffect(() => {
-    gettingallCategoriesHandler();
-  }, []);
 
   useEffect(() => {
     handleGetProducts();
-  }, [page, perPage, from, to, status, searchString, sort, category]);
+  }, [page, perPage, from, to, status, searchString, sort]);
 
   const handleGetProducts = async () => {
+    if (!geoGeneticsid?.length > 0) {
+      await gettingallCategoriesHandler();
+    }
+
+    console.log(
+      "geogeneticscategory?._id",
+      geogeneticscategory?._id,
+      geoGeneticsid
+    );
     try {
       const res = await axios({
-        url: `${baseURL}/product/productlogsofAdmin`,
+        url: `${baseURL}/product/geoGeneticslogs`,
         method: "GET",
         params: {
           page,
@@ -61,10 +58,9 @@ const Products = () => {
           searchString,
           from,
           to,
+          id: geoGeneticsid,
           status,
-          sort,
-          category,
-          geogeneticscategory:geogeneticscategory?._id
+          sort
         },
         headers: {
           Authorization: `Bearer ${adminInfo.token}`
@@ -155,11 +151,12 @@ const Products = () => {
                       <div className="page-title">
                         <div className="row">
                           <div className="col-12 col-md-6 col-lg-6">
-                            <h1>Products</h1>
+                            <h1>Geo'Genetics</h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
                             <Link
-                              to="/AddProduct"
+                              to="/AddGeoGenetics"
+                              // href="add-product.php"
                               className="btn btn-primary"
                             >
                               Add Product
@@ -205,7 +202,7 @@ const Products = () => {
                                     <option value={"des"}>Earlier</option>
                                   </select>
                                 </div>
-                                <div className="col-xl-3 col-md-6 col-12 mt-2">
+                                {/* <div className="col-xl-3 col-md-6 col-12 mt-2">
                                   <label htmlFor className="d-block">
                                     Filter by Category
                                   </label>
@@ -226,7 +223,7 @@ const Products = () => {
                                         </option>
                                       ))}
                                   </select>
-                                </div>
+                                </div> */}
                                 <div className="col-xl-3 col-md-6 col-12 mt-2">
                                   <label htmlFor className="d-block">
                                     Filter by Status
@@ -319,7 +316,7 @@ const Products = () => {
                                                 <div className="dropdown-menu">
                                                   <Link
                                                     className="dropdown-item"
-                                                    to={`/ProductEdit${prod?._id}`}
+                                                    to={`/GeoGeneticEdit${prod?._id}`}
                                                   >
                                                     <i className="fa fa-eye" />
                                                     View Detail
@@ -350,9 +347,13 @@ const Products = () => {
                                                     data-toggle="modal"
                                                     data-target=".inactive-product"
                                                   >
-                                                      <i className= {!prod.status
-                                                      ? "fa fa-check-circle"
-                                                      : "fa fa-ban"}  />
+                                                    <i
+                                                      className={
+                                                        !prod.status
+                                                          ? "fa fa-check-circle"
+                                                          : "fa fa-ban"
+                                                      }
+                                                    />
                                                     {!prod.status
                                                       ? "Active"
                                                       : "Inactive"}
@@ -392,4 +393,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default GeoGenetics;

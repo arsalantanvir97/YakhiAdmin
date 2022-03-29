@@ -60,6 +60,11 @@ const Sidebar = (props) => {
                   </Link>
                 </li>
                 <li className>
+                  <Link className="menu-item" to="/GeoGenetics">
+                  Geo'Genetics
+                  </Link>
+                </li>
+                <li className>
                   <Link className="menu-item" to="/Categories">
                     Categories
                   </Link>

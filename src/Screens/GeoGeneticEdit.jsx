@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ImageSelectDropzone from "../components/ImageSelectDropzone";
@@ -7,10 +7,17 @@ import InputNumber from "../components/InputNumber";
 import ImageSlider from "../components/ImageSlider";
 import { baseURL, imageURL } from "../utils/api";
 import Swal from "sweetalert2";
+import { Parser } from "html-to-react";
+import { Editor } from "@tinymce/tinymce-react";
 
-const ProductEdit = ({ match, enable_dot, history }) => {
+const htmlToReactParser = new Parser();
+
+const GeoGeneticEdit = ({ match, enable_dot, history }) => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
+
+  const editorRef = useRef(null);
+
   const [loading, setloading] = useState(false);
 
   const [allofcategory, setallofcategory] = useState([]);
@@ -71,7 +78,6 @@ const ProductEdit = ({ match, enable_dot, history }) => {
       setprice(res?.data?.product?.price);
       setcountInStock(res?.data?.product?.countInStock);
 
-      
       setvisible(res?.data?.product?.visible);
 
       setcategory(res?.data?.product?.category);
@@ -124,7 +130,7 @@ const ProductEdit = ({ match, enable_dot, history }) => {
   const updateCourseData = async () => {
     const { project_images } = data;
     console.log("addProductHandler", productimage);
-    setloading(true)
+    setloading(true);
     try {
       const config = {
         headers: {
@@ -137,7 +143,6 @@ const ProductEdit = ({ match, enable_dot, history }) => {
       formData.append("price", price);
       formData.append("countInStock", countInStock);
 
-      
       formData.append("visible", visible);
       formData.append("category", categoryy);
       formData.append("description", description);
@@ -152,7 +157,7 @@ const ProductEdit = ({ match, enable_dot, history }) => {
         body,
         config
       );
-      setloading(false)
+      setloading(false);
       console.log("res", res);
       if (res?.status == 201) {
         console.log("blockkk");
@@ -165,11 +170,11 @@ const ProductEdit = ({ match, enable_dot, history }) => {
         });
         console.log("blockkk2");
 
-        history.push("/Products");
+        history.push("/GeoGenetics");
         console.log("blockkk3");
       }
     } catch (error) {
-      setloading(false)
+      setloading(false);
 
       console.log("error", error?.response?.data);
       Swal.fire({
@@ -180,6 +185,10 @@ const ProductEdit = ({ match, enable_dot, history }) => {
         timer: 1500
       });
     }
+  };
+  const editorHandler = (value) => {
+    console.log("value", value, typeof value, value?.length);
+    setdescription(value);
   };
   return (
     <div>
@@ -198,20 +207,21 @@ const ProductEdit = ({ match, enable_dot, history }) => {
                             <h1>Product {is_edit ? "Edit" : "Details"}</h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                          {!loading ? (
-                            <Link
-                              to="#"
-                              onClick={() => {
-                                if (!is_edit) {
-                                  setIsEdit(true);
-                                } else {
-                                  updateCourseData();
-                                }
-                              }}
-                              className="btn btn-primary"
-                            >
-                              {is_edit ? "Update" : "Edit"}
-                            </Link>) : (
+                            {!loading ? (
+                              <Link
+                                to="#"
+                                onClick={() => {
+                                  if (!is_edit) {
+                                    setIsEdit(true);
+                                  } else {
+                                    updateCourseData();
+                                  }
+                                }}
+                                className="btn btn-primary"
+                              >
+                                {is_edit ? "Update" : "Edit"}
+                              </Link>
+                            ) : (
                               <i className="fas fa-spinner fa-pulse"></i>
                             )}
                           </div>
@@ -543,63 +553,48 @@ const ProductEdit = ({ match, enable_dot, history }) => {
                                 <label style={{ paddingLeft: 0 }}>
                                   Category
                                 </label>
-                                {is_edit ? (
-                                  <select
-                                    name
-                                    id
-                                    className="all-input w-100 mb-0"
-                                    value={categoryy}
-                                    onChange={(e) => {
-                                      setcategoryy(e.target.value);
-                                    }}
-                                  >
-                                    {allofcategory?.length > 0 &&
-                                      allofcategory?.map((categ) => (
-                                        <option value={categ?._id}>
-                                          {categ?.categorytitle}
-                                        </option>
-                                      ))}
-                                  </select>
-                                ) : (
-                                  <p>{category?.categorytitle}</p>
-                                )}
+
+                                <p>{category?.categorytitle}</p>
                               </div>
                               <div className="form-group mb-2">
-                                <label style={{ paddingLeft: 0 }}>Visible In Menu</label>
+                                <label style={{ paddingLeft: 0 }}>
+                                  {" "}
+                                  Visible In Menu
+                                </label>
                                 {is_edit ? (
-                                     <div className="d-block">
-                                     <div className="form-check form-check-inline radio">
-                                       <input
-                                         value={visible}
-                                         onClick={() => setvisible(true)}
-                                         id="radio-1"
-                                         name="radio"
-                                         type="radio"
-                                         defaultChecked
-                                       />
-                                       <label
-                                         htmlFor="radio-1"
-                                         className="radio-label"
-                                       >
-                                         Yes
-                                       </label>
-                                     </div>
-                                     <div className="radio form-check form-check-inline">
-                                       <input
-                                         value={visible}
-                                         onClick={() => setvisible(false)}
-                                         id="radio-2"
-                                         name="radio"
-                                         type="radio"
-                                       />
-                                       <label
-                                         htmlFor="radio-2"
-                                         className="radio-label"
-                                       >
-                                         No
-                                       </label>
-                                     </div>
-                                   </div>
+                                  <div className="d-block">
+                                    <div className="form-check form-check-inline radio">
+                                      <input
+                                        value={visible}
+                                        onClick={() => setvisible(true)}
+                                        id="radio-1"
+                                        name="radio"
+                                        type="radio"
+                                        defaultChecked
+                                      />
+                                      <label
+                                        htmlFor="radio-1"
+                                        className="radio-label"
+                                      >
+                                        Yes
+                                      </label>
+                                    </div>
+                                    <div className="radio form-check form-check-inline">
+                                      <input
+                                        value={visible}
+                                        onClick={() => setvisible(false)}
+                                        id="radio-2"
+                                        name="radio"
+                                        type="radio"
+                                      />
+                                      <label
+                                        htmlFor="radio-2"
+                                        className="radio-label"
+                                      >
+                                        No
+                                      </label>
+                                    </div>
+                                  </div>
                                 ) : (
                                   <p>
                                     {" "}
@@ -651,22 +646,41 @@ const ProductEdit = ({ match, enable_dot, history }) => {
                                 </label>
                                 <div className="position-relative">
                                   {is_edit ? (
-                                    <textarea
-                                      className="form-control"
-                                      placeholder="Confirm New Password"
-                                      value={description}
-                                      onChange={(e) => {
-                                        setdescription(e.target.value);
+                                    <Editor
+                                      onInit={(evt, editor) =>
+                                        (editorRef.current = editor)
+                                      }
+                                      init={{
+                                        height: 500,
+                                        menubar: true,
+                                        plugins: [
+                                          "advlist autolink lists link image charmap print preview anchor",
+                                          "searchreplace visualblocks code fullscreen",
+                                          "insertdatetime media table paste code help wordcount"
+                                        ],
+                                        toolbar:
+                                          "undo redo | formatselect | " +
+                                          "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                                          "alignright alignjustify | bullist numlist outdent indent | " +
+                                          "removeformat | help",
+                                        content_style:
+                                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
                                       }}
+                                      value={description}
+                                      onEditorChange={(value) =>
+                                        editorHandler(value)
+                                      }
                                     />
                                   ) : (
-                                    <p>{description}</p>
+                                    <p>
+                                      {" "}
+                                      {htmlToReactParser.parse(description)}
+                                    </p>
                                   )}
                                 </div>
                               </div>
                             </div>
                           </div>
-                       
                         </div>
                       </div>
                     </div>
@@ -681,4 +695,4 @@ const ProductEdit = ({ match, enable_dot, history }) => {
   );
 };
 
-export default ProductEdit;
+export default GeoGeneticEdit;
