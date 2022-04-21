@@ -69,7 +69,7 @@ const Dashboard = () => {
         });
         setloading(false);
         setsearchedResult(res?.data?.abc);
-        setorders(res?.data?.order);
+        setorders(res?.data?.productbystate);
         console.log("resssssssss", res);
       } catch (error) {
         setloading(false);
@@ -300,7 +300,7 @@ const Dashboard = () => {
                             </div>
                           </div>
                           <p className="shipment-count">
-                            {orders?.length} Shipment Request
+                             Shipment Request
                           </p>
                           <ul className="pl-0">
                             {searchedResult?.length > 0 &&
@@ -355,7 +355,7 @@ const Dashboard = () => {
                               </div>
                             )}
                           </div>
-                          <VecttorMap />
+                          <VecttorMap orders={orders}/>
                         </div>
                       </div>
 
