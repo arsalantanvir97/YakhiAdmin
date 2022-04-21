@@ -15,16 +15,14 @@ const VecttorMap = ({ orders }) => {
         ord?.map((ord2) => {
           // console.log('prd2',ord2);
           if (ord2?.state == content2) {
-            productqty.push("<br>"+ ord2?.ord?.name + " " + ord2?.ord?.qty);
+            productqty.push("<br>" + ord2?.ord?.name + ": " + ord2?.ord?.qty);
           }
         });
       });
     console.log("productqty", productqty);
     let joinedproductqty = productqty.join();
-    let content = el.html()  + " " + joinedproductqty;
-
+    let content = el.html() + " " + joinedproductqty;
     console.log("content", content);
-
     return el.html(content);
   };
   return (

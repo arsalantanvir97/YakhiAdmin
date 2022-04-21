@@ -2377,6 +2377,7 @@ svg.radial-progress {
     width: 58px;
 }
 .region-info{
+    width:70%;
     display: flex;
     justify-content: space-between;
     align-items: center;

@@ -5,6 +5,7 @@ import { baseURL } from "../utils/api";
 import Graph from "../components/Graph";
 import moment from "moment";
 import VecttorMap from "../components/VecttorMap";
+import Toasty from "../utils/toast";
 const Dashboard = () => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
@@ -23,6 +24,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     getLatestOrdersHandler();
+    searchHandelr();
   }, []);
 
   const handleGetDashboarddata = async () => {
@@ -60,20 +62,18 @@ const Dashboard = () => {
   };
 
   const searchHandelr = async () => {
-    if (searchstring?.length > 0) {
-      try {
-        setloading(true);
+    try {
+      setloading(true);
 
-        const res = await axios.post(`${baseURL}/product/searchProductlogs`, {
-          searchString: searchstring
-        });
-        setloading(false);
-        setsearchedResult(res?.data?.abc);
-        setorders(res?.data?.productbystate);
-        console.log("resssssssss", res);
-      } catch (error) {
-        setloading(false);
-      }
+      const res = await axios.post(`${baseURL}/product/searchProductlogs`, {
+        searchString: searchstring ? searchstring : "tea"
+      });
+      setloading(false);
+      setsearchedResult(res?.data?.abc);
+      setorders(res?.data?.productbystate);
+      console.log("resssssssss", res);
+    } catch (error) {
+      setloading(false);
     }
     setloading(false);
   };
@@ -286,7 +286,10 @@ const Dashboard = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="row justify-content-between  mb-5">
+                      <div
+                        className="row justify-content-between  mb-5"
+                        style={{ minHeight: 400 }}
+                      >
                         <div className="col-xl-3 col-lg-7">
                           <div className="ss d-flex justify-content-start align-items-center">
                             <img
@@ -299,9 +302,7 @@ const Dashboard = () => {
                               <p className="mb-0">Last 14 Days</p>
                             </div>
                           </div>
-                          <p className="shipment-count">
-                             Shipment Request
-                          </p>
+                          <p className="shipment-count">Shipment Request</p>
                           <ul className="pl-0">
                             {searchedResult?.length > 0 &&
                               searchedResult?.map((search) => (
@@ -311,7 +312,7 @@ const Dashboard = () => {
                                     <h5 className="r-name">{search?._id}</h5>
                                     <p className="r-count">${search?.count}</p>
                                   </div>
-                                  <div className="progress">
+                                  {/* <div className="progress">
                                     <div
                                       className="progress-bar bg-red"
                                       role="progressbar"
@@ -320,7 +321,7 @@ const Dashboard = () => {
                                       aria-valuemin={0}
                                       aria-valuemax={100}
                                     />
-                                  </div>
+                                  </div> */}
                                 </li>
                               ))}
                           </ul>
@@ -344,7 +345,12 @@ const Dashboard = () => {
                                 style={{ height: 60, marginLeft: 10 }}
                                 className=" btn-primary "
                                 onClick={() => {
-                                  searchHandelr();
+                                  searchstring
+                                    ? searchHandelr()
+                                    : Toasty(
+                                        "error",
+                                        `Please fill out all the required fields!`
+                                      );
                                 }}
                               >
                                 Search
@@ -355,7 +361,7 @@ const Dashboard = () => {
                               </div>
                             )}
                           </div>
-                          <VecttorMap orders={orders}/>
+                          <VecttorMap orders={orders} />
                         </div>
                       </div>
 
