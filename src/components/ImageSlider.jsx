@@ -28,7 +28,7 @@ export default class ImageSlider extends Component {
             />
             {this.props.enable_delete && (
               <img
-                style={{}}
+               
                 onMouseEnter={this.props.handleMouseEnter} // Or onMouseOver
                 onMouseLeave={this.props.handleMouseLeave}
                 style={{

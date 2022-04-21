@@ -7,11 +7,12 @@ export default function ImageSelector({
   image,
   is_edit,
   className,
+  isdocument,
   custom_style
 }) {
   const [defaultImage, setDefaultImage] = useState();
   const imageRef = useRef();
-
+console.log('isdocument',isdocument);
   useEffect(() => {
     setDefaultImage(`${imageURL}${image}`);
     if (image && typeof image !== "string") {
@@ -53,8 +54,8 @@ export default function ImageSelector({
       ) : (
         <div
           style={{
-            height: 150,
-            width: 150,
+            height: 150 ,
+            width: isdocument ? '100%' : 150,
             border: "1px solid #E8E8E8",
             background: "#FCF9F9",
             borderRadius: 15,
@@ -73,7 +74,8 @@ export default function ImageSelector({
               marginTop: 28
             }}
           />
-          <p className="mt-1">Upload Image</p>
+          {!isdocument &&
+          <p className="mt-1">Upload Image</p>}
         </div>
       )}
 

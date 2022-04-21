@@ -384,3 +384,29 @@ $(function() {
 		$(".range-a").hide();
 	})
   });
+
+
+  function showPreview(event){
+	if(event.target.files.length > 0){
+	  var src = URL.createObjectURL(event.target.files[0]);
+	  var preview = document.getElementById("file-ip-1-preview");
+	  var editablePreview = document.getElementById("file-ip-2-preview");
+
+	  preview.src = src;
+	  editablePreview.src = src;
+	  preview.style.display = "block";
+	  editablePreview.style.display = "block";
+
+	}
+  }
+
+  function showEditablePreview(event){
+	if(event.target.files.length > 0){
+	  var editableSrc = URL.createObjectURL(event.target.files[0]);
+	  var editablePreview = document.getElementById("file-ip-2-preview");
+
+	  editablePreview.src = editableSrc;
+	  editablePreview.style.display = "block";
+
+	}
+  }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { baseURL } from "../utils/api";
+import { baseURL, imageURL } from "../utils/api";
 import Toasty from "../utils/toast";
 
 const OrderDetails = ({ match, history }) => {
@@ -42,7 +42,7 @@ const OrderDetails = ({ match, history }) => {
       };
       const res = await axios.post(
         `${baseURL}/order/updateOrderToDelivered/${orderdetails?._id}`,
-        {status},
+        { status },
         config
       );
       console.log("res", res);
@@ -198,11 +198,7 @@ const OrderDetails = ({ match, history }) => {
                                 <div className="row">
                                   <div className="col-12 mb-2">
                                     <h4>Customer Name</h4>
-                                    <p>
-                                      {orderdetails?.user?.firstName +
-                                        " " +
-                                        orderdetails?.user?.lastName}
-                                    </p>
+                                    <p>{orderdetails?.user?.firstName}</p>
                                   </div>
                                 </div>
                                 <div className="row">
@@ -211,6 +207,25 @@ const OrderDetails = ({ match, history }) => {
                                     <p> {orderdetails?.user?.email}</p>
                                   </div>
                                 </div>
+                                {orderdetails?.isGeoGenetics == true && (
+                                  <div className="row">
+                                    <div className="col-12">
+                                      <h4>Valid Government Issued ID</h4>
+                                      <button
+                                        type="button"
+                                        className="btn btn-primary btn-login"
+                                        onClick={() =>
+                                          window.open(
+                                            `${imageURL}${orderdetails?.governmentid}`,
+                                            "_blank"
+                                          )
+                                        }
+                                      >
+                                        View
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -282,12 +297,7 @@ const OrderDetails = ({ match, history }) => {
                                 <h4>Shipping Information</h4>
                               </div>
                               <div className="card-body">
-                                <div className="row">
-                                  <div className="col-12 mb-2">
-                                    <h4>Shipping Method</h4>
-                                    <p>Flat Rate - Flat Rate</p>
-                                  </div>
-                                </div>
+                                <div className="row"></div>
                                 <div className="row">
                                   <div className="col-12">
                                     <h4>Shipping Price</h4>

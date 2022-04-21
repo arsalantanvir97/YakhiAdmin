@@ -38,6 +38,7 @@ class InputNumber extends React.Component {
           name="numInput"
           value={this.props.value}
           onChange={this.handleChange}
+          min={0}
           onKeyDown={this.formatInput}
           className={this.props.className}
           type="number"

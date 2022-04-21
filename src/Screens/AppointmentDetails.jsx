@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { baseURL, imageURL } from "../utils/api";
-import moment from "moment";
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-const AppointmentDetails = ({ match }) => {
+import Swal from "sweetalert2";
+const AppointmentDetails = ({ match, history }) => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [appointment, setappointment] = useState("");
 
   useEffect(() => {
     handleGetAppointment();
-  }, []);
+  }, );
 
   const handleGetAppointment = async () => {
     try {
@@ -28,6 +27,31 @@ const AppointmentDetails = ({ match }) => {
       console.log(err);
     }
   };
+  const updateStatusHandler = async (status) => {
+    try {
+      const res = await axios.post(
+        `${baseURL}/consultationRoutes/updateStatus/${match?.params?.id}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${adminInfo.token}`
+          }
+        }
+      );
+      console.log("res", res);
+      Swal.fire({
+        icon: "success",
+        title: "",
+        text: "Appointment status updated successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
+      history?.push("/Appointments");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <div className="app-content dashboard content">
@@ -108,6 +132,39 @@ const AppointmentDetails = ({ match }) => {
                             >
                               View
                             </button>
+                          </div>
+                        </div>
+                        <div className="row detail-row">
+                          <div className="col-12 lablename">
+                            <label htmlFor>Appointment Status</label>
+                          </div>
+                          <div className="col-12 col-md-5">
+                            {appointment?.status == "Pending" ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary mr-1"
+                                  onClick={() => {
+                                    updateStatusHandler("Accepted");
+                                  }}
+                                >
+                                  Accept
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-primary ml-2"
+                                  onClick={() => {
+                                    updateStatusHandler("Rejected");
+                                  }}
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            ) : (
+                              <div className="col-12">
+                                {appointment?.status}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

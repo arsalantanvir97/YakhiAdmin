@@ -46,7 +46,7 @@ const EditCategory = ({ match, history }) => {
     }
   };
   const updateCategoryData = async () => {
-    setloading(true)
+    setloading(true);
     console.log("updateCategoryData", image);
 
     const formData = new FormData();
@@ -70,8 +70,7 @@ const EditCategory = ({ match, history }) => {
           Authorization: `Bearer ${adminInfo.token}`
         }
       });
-      setloading(false)
-
+      setloading(false);
 
       console.log("res", res);
       if (res?.status == 201) {
@@ -95,7 +94,7 @@ const EditCategory = ({ match, history }) => {
 
       // }
     } catch (error) {
-      setloading(false)
+      setloading(false);
 
       console.log("error", error);
       Swal.fire({
@@ -129,20 +128,21 @@ const EditCategory = ({ match, history }) => {
                             </h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                          {!loading ? (
-                            <Link
-                              onClick={() => {
-                                if (!is_edit) {
-                                  setIsEdit(true);
-                                } else {
-                                  updateCategoryData();
-                                }
-                              }}
-                              to="#"
-                              className="btn btn-primary"
-                            >
-                              {is_edit ? "Update" : "Edit"}
-                            </Link>) : (
+                            {!loading ? (
+                              <Link
+                                onClick={() => {
+                                  if (!is_edit) {
+                                    setIsEdit(true);
+                                  } else {
+                                    updateCategoryData();
+                                  }
+                                }}
+                                to="#"
+                                className="btn btn-primary"
+                              >
+                                {is_edit ? "Update" : "Edit"}
+                              </Link>
+                            ) : (
                               <i className="fas fa-spinner fa-pulse"></i>
                             )}
                           </div>
@@ -178,22 +178,25 @@ const EditCategory = ({ match, history }) => {
                               Visible In Menu
                               <span className="text-danger">*</span>
                             </label>
-                            <select
-                              id
-                              className="form-control"
-                              value={visible}
-                              onChange={(e) => {
-                                setvisible(e.target.value);
-                              }}
-                            >
-                              <option value>Select Visible In Menu</option>
-                              <option value={true} selected>
-                                Yes
-                              </option>
-                              <option value={false}>No</option>
-                            </select>
+                            {is_edit ? (
+                              <select
+                                id
+                                className="form-control"
+                                value={visible}
+                                onChange={(e) => {
+                                  setvisible(e.target.value);
+                                }}
+                              >
+                                <option >Select Visible In Menu</option>
+                                <option value={true} >
+                                  Yes
+                                </option>
+                                <option value={false}>No</option>
+                              </select>
+                            ) : (
+                              <p>{visible ? "Yes" : "No"} </p>
+                            )}{" "}
                           </div>
-                          
                         </div>
                         <div className="row detail-row mb-1">
                           <div className="col-12 col-md-5">
@@ -288,10 +291,6 @@ const EditCategory = ({ match, history }) => {
         </div>
       </div>
     </div>
-
-
-
-
   );
 };
 

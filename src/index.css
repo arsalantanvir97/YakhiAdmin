@@ -9,22 +9,24 @@ body {
   padding-right: 15px;
   cursor: pointer;
   float: right;
+  color:#000;
 }
 
 .pagination > li {
   display: inline-block;
   background-color: #fff;
-  
-}
+  }
 
 .pagination > li > a {
   float: left;
   padding: 8px 16px;
   text-decoration: none;
-  
+  color:#000;
+
 }
 
 .pagination > li > a:hover:not(.active) {
   background-color: #C50028;
+color: #fff;
   border-radius: 5px;
 }

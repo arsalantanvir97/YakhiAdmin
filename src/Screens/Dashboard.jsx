@@ -4,18 +4,23 @@ import { useSelector } from "react-redux";
 import { baseURL } from "../utils/api";
 import Graph from "../components/Graph";
 import moment from "moment";
-
+import VecttorMap from "../components/VecttorMap";
 const Dashboard = () => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
+  const [loading, setloading] = useState(false);
 
   const [dashboarddata, setdashboarddata] = useState();
   const [latestorders, setlatestorders] = useState([]);
   const [year, setyear] = useState("");
+  const [searchstring, setsearchstring] = useState("");
+  const [searchedResult, setsearchedResult] = useState([]);
+  const [orders, setorders] = useState([]);
 
   useEffect(() => {
     handleGetDashboarddata();
   }, [year]);
+
   useEffect(() => {
     getLatestOrdersHandler();
   }, []);
@@ -37,6 +42,7 @@ const Dashboard = () => {
       console.log(err);
     }
   };
+
   const getLatestOrdersHandler = async () => {
     try {
       const res = await axios({
@@ -52,6 +58,26 @@ const Dashboard = () => {
       console.log(err);
     }
   };
+
+  const searchHandelr = async () => {
+    if (searchstring?.length > 0) {
+      try {
+        setloading(true);
+
+        const res = await axios.post(`${baseURL}/product/searchProductlogs`, {
+          searchString: searchstring
+        });
+        setloading(false);
+        setsearchedResult(res?.data?.abc);
+        setorders(res?.data?.order);
+        console.log("resssssssss", res);
+      } catch (error) {
+        setloading(false);
+      }
+    }
+    setloading(false);
+  };
+
   return (
     <div>
       <div className="app-content content dashboard">
@@ -260,6 +286,79 @@ const Dashboard = () => {
                           </div>
                         </div>
                       </div>
+                      <div className="row justify-content-between  mb-5">
+                        <div className="col-xl-3 col-lg-7">
+                          <div className="ss d-flex justify-content-start align-items-center">
+                            <img
+                              src="images/sales-states-icon.png"
+                              alt=""
+                              className="img-fluid"
+                            />
+                            <div className="ss-count-box ml-1">
+                              <h6> sales States</h6>
+                              <p className="mb-0">Last 14 Days</p>
+                            </div>
+                          </div>
+                          <p className="shipment-count">
+                            {orders?.length} Shipment Request
+                          </p>
+                          <ul className="pl-0">
+                            {searchedResult?.length > 0 &&
+                              searchedResult?.map((search) => (
+                                <li className="mb-2">
+                                  {/* progress bar */}
+                                  <div className="region-info">
+                                    <h5 className="r-name">{search?._id}</h5>
+                                    <p className="r-count">${search?.count}</p>
+                                  </div>
+                                  <div className="progress">
+                                    <div
+                                      className="progress-bar bg-red"
+                                      role="progressbar"
+                                      style={{ width: "50%" }}
+                                      aria-valuenow={100}
+                                      aria-valuemin={0}
+                                      aria-valuemax={100}
+                                    />
+                                  </div>
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                        <div className="col-xl-8 col-12 text-right">
+                          <div style={{ display: "flex" }}>
+                            <input
+                              type="search"
+                              className="form-control form-control-sm ml-auto mb-3"
+                              id="productSearch"
+                              value={searchstring}
+                              onChange={(e) => {
+                                setsearchstring(e.target.value);
+                              }}
+                              style={{ height: 60 }}
+                              placeholder="Search Products"
+                            />
+                            {!loading ? (
+                              <button
+                                type="button"
+                                style={{ height: 60, marginLeft: 10 }}
+                                className=" btn-primary "
+                                onClick={() => {
+                                  searchHandelr();
+                                }}
+                              >
+                                Search
+                              </button>
+                            ) : (
+                              <div style={{ padding: "13px 40px" }}>
+                                <i className="fas fa-spinner fa-pulse"></i>
+                              </div>
+                            )}
+                          </div>
+                          <VecttorMap />
+                        </div>
+                      </div>
+
                       <div className="row">
                         <div className="col-12 col-md-12">
                           <div className>
@@ -276,14 +375,15 @@ const Dashboard = () => {
                                     }}
                                   >
                                     <option>Year</option>
-                                    <option value={"2016"}>2016</option>
-                                    <option value={"2017"}>2017</option>
-                                    <option value={"2018"}>2018</option>
-                                    <option value={"2019"}>2019</option>
+
                                     <option value={"2020"}>2020</option>
                                     <option value={"2021"}>2021</option>
                                     <option value={"2022"}>2022</option>
                                     <option value={"2023"}>2023</option>
+                                    <option value={"2024"}>2024</option>
+                                    <option value={"2025"}>2025</option>
+                                    <option value={"2026"}>2026</option>
+                                    <option value={"2027"}>2027</option>
                                   </select>
                                 </div>
                               </div>

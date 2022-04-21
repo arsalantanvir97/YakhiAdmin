@@ -21,7 +21,7 @@ const AddCategory = ({ history }) => {
   const createCategoryHandler = async () => {
     console.log("createCategoryHandler");
     try {
-      setloading(true)
+      setloading(true);
       const formData = new FormData();
       formData.append("user_image", image);
       formData.append("categorytitle", categorytitle);
@@ -31,10 +31,10 @@ const AddCategory = ({ history }) => {
       console.log("await");
       const res = await axios.post(`${baseURL}/category/createCategory`, body, {
         headers: {
-          Authorization: `Bearer ${adminInfo.token}`,
-        },
+          Authorization: `Bearer ${adminInfo.token}`
+        }
       });
-      setloading(false)
+      setloading(false);
 
       console.log("res", res);
       if (res?.status == 201) {
@@ -44,7 +44,7 @@ const AddCategory = ({ history }) => {
           title: "",
           text: "Category Created Successfully",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 1500
         });
         console.log("blockkk2");
 
@@ -53,14 +53,14 @@ const AddCategory = ({ history }) => {
       }
     } catch (error) {
       console.log("error", error?.response?.data);
-      setloading(false)
+      setloading(false);
 
       Swal.fire({
         icon: "error",
         title: "ERROR",
         text: "Internal Server Error",
         showConfirmButton: false,
-        timer: 1500,
+        timer: 1500
       });
     }
   };
@@ -86,23 +86,24 @@ const AddCategory = ({ history }) => {
                             </h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                          {!loading ? (
-                            <Link
-                              to="#"
-                              onClick={() =>
-                                categorytitle?.length > 0 &&
-                                image?.name?.length > 0 &&
-                                description?.length > 0
-                                  ? createCategoryHandler()
-                                  : Toasty(
-                                      "error",
-                                      `Please fill out all the required fields!`
-                                    )
-                              }
-                              className="btn btn-primary"
-                            >
-                              Publish
-                            </Link>) : (
+                            {!loading ? (
+                              <Link
+                                to="#"
+                                onClick={() =>
+                                  categorytitle?.length > 0 &&
+                                  image?.name?.length > 0 &&
+                                  description?.length > 0
+                                    ? createCategoryHandler()
+                                    : Toasty(
+                                        "error",
+                                        `Please fill out all the required fields!`
+                                      )
+                                }
+                                className="btn btn-primary"
+                              >
+                                Publish
+                              </Link>
+                            ) : (
                               <i className="fas fa-spinner fa-pulse"></i>
                             )}
                           </div>

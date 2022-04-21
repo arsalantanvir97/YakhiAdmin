@@ -162,7 +162,6 @@ const Feedback = () => {
                                     type="search"
                                     className="form-control form-control-sm"
                                     placeholder="Search"
-                                    placeholder="Search"
                                     value={searchString}
                                     onChange={(e) => {
                                       setSearchString(e.target.value);

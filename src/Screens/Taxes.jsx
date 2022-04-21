@@ -218,7 +218,7 @@ const Taxes = () => {
                                       <option value={"des"}>Earlier</option>
                                     </select>
                                   </div>
-                                  <div className="col-12 col-md-6 col-lg-6 col-xl-3 mt-2">
+                                  {/* <div className="col-12 col-md-6 col-lg-6 col-xl-3 mt-2">
                                     <label htmlFor className="d-block">
                                       Filter by Status
                                     </label>
@@ -230,7 +230,7 @@ const Taxes = () => {
                                       <option value>Filter</option>
                                       <option value>user</option>
                                     </select>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                               <div className="col-xl-3">
