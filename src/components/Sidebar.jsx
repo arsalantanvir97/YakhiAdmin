@@ -463,6 +463,22 @@ const Sidebar = (props) => {
                 </span>
               </Link>
             </li>
+            <li
+              className={
+                props?.match?.path == "/Instructions"
+                  ? "nav-item active "
+                  : "nav-item"
+              }
+            >
+              <Link to="/Instructions">
+                <i className="fas fa-video">
+                 
+                </i>
+                <span className="menu-title" data-i18n>
+                Instructions{" "}
+                </span>
+              </Link>
+            </li>
           </ul>
           <div
             className="ps-scrollbar-x-rail"

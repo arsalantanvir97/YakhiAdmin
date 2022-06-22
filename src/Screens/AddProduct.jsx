@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ImageSelectDropzone from "../components/ImageSelectDropzone";
 import { Link } from "react-router-dom";
 
@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import Toasty from "../utils/toast";
 import InputNumber from "../components/InputNumber";
 import Swal from "sweetalert2";
+import { Editor } from "@tinymce/tinymce-react";
 
 const AddProduct = (props) => {
   const [loading, setloading] = useState(false);
@@ -28,6 +29,10 @@ const AddProduct = (props) => {
   const [data, setData] = useState({
     project_images: []
   });
+
+  const editorRef = useRef(null);
+
+
   useEffect(() => {
     gettingallCategoriesHandler();
   }, []);
@@ -94,6 +99,10 @@ const AddProduct = (props) => {
         timer: 1500
       });
     }
+  };
+  const editorHandler = (value) => {
+    console.log("value", value, typeof value, value?.length);
+    setdescription(value);
   };
   return (
     <div>
@@ -250,21 +259,32 @@ const AddProduct = (props) => {
                                   />
                                 </div>
                               </div>
-                              <div className="form-group mb-2">
-                                <label>Description</label>
-                                <div className="position-relative">
-                                  <textarea
-                                    className="form-control"
-                                    Please
-                                    fill
-                                    placeholder="Confirm New Password"
-                                    value={description}
-                                    onChange={(e) => {
-                                      setdescription(e.target.value);
-                                    }}
-                                  />
-                                </div>
-                              </div>
+                           
+                            </div>
+                            <div className="col-12 mt-2">
+                              <Editor
+                                onInit={(evt, editor) =>
+                                  (editorRef.current = editor)
+                                }
+                                init={{
+                                  height: 500,
+                                  menubar: true,
+                                  plugins: [
+                                    "advlist autolink lists link image charmap print preview anchor",
+                                    "searchreplace visualblocks code fullscreen",
+                                    "insertdatetime media table paste code help wordcount"
+                                  ],
+                                  toolbar:
+                                    "undo redo | formatselect | " +
+                                    "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                                    "alignright alignjustify | bullist numlist outdent indent | " +
+                                    "removeformat | help",
+                                  content_style:
+                                    "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+                                }}
+                                value={description}
+                                onEditorChange={(value) => editorHandler(value)}
+                              />
                             </div>
                           </div>
                         </div>

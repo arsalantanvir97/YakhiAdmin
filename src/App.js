@@ -44,6 +44,8 @@ import Shipments from "./Screens/Shipments";
 import Documents from "./Screens/Documents";
 import Subemployees from "./Screens/Subemployees";
 import ShipmentDetails from "./Screens/ShipmentDetails";
+import Instructions from "./Screens/Instructions";
+
 
 export default function App() {
   return (
@@ -105,6 +107,8 @@ export default function App() {
       <PrivateRoute exact path="/EditUser:id" component={EditUser} />
       <PrivateRoute exact path="/Products" component={Products} />
       <PrivateRoute exact path="/GeoGenetics" component={GeoGenetics} />
+      <PrivateRoute exact path="/Instructions" component={Instructions} />
+
     </Router>
   );
 }

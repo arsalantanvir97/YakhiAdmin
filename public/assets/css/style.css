@@ -49,7 +49,9 @@ button:hover,a:hover{background: #B9770C;}*/
 @import url("jquery.exzoom.css");*/
 .body{font-family:"righteous", sans-serif;}
 input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button {-webkit-appearance:none;}input[type=number] {-moz-appearance:textfield;}
-
+.ssssh:hover{
+    cursor: pointer;
+}
 .text-purple{ color:#AC57EC; }
 .text-yellow{ color:#FFB300; }
 .text-green{ color:#51CC1D}

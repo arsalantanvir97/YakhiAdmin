@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ImageSelectDropzone from "../components/ImageSelectDropzone";
 import { Link } from "react-router-dom";
 
@@ -29,31 +29,32 @@ const AddGeoGenetics = (props) => {
   const [data, setData] = useState({
     project_images: []
   });
-  
+
   const editorRef = useRef(null);
 
- 
   useEffect(() => {
     gettingallCategoriesHandler();
   }, []);
 
   const gettingallCategoriesHandler = async () => {
-      try {
-        const res = await axios.get(`${baseURL}/category/getGeoGeneticsCategory`, {
-            headers: {
-              Authorization: `Bearer ${adminInfo.token}`
-            }
-          });
-          console.log("res", res);
-          setgeoGeneticscategory(res?.data?.getAllCategories);
-      } catch (error) {
-          console.log('error',error);
-      }
-   
+    try {
+      const res = await axios.get(
+        `${baseURL}/category/getGeoGeneticsCategory`,
+        {
+          headers: {
+            Authorization: `Bearer ${adminInfo.token}`
+          }
+        }
+      );
+      console.log("res", res);
+      setgeoGeneticscategory(res?.data?.getAllCategories);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
   const addProductHandler = async () => {
     const { project_images } = data;
-    console.log("addProductHandler", productimage, );
+    console.log("addProductHandler", productimage);
     setloading(true);
     try {
       const formData = new FormData();
@@ -104,10 +105,10 @@ const AddGeoGenetics = (props) => {
       });
     }
   };
-  const editorHandler=(value)=>{
-      console.log('value',value,typeof(value),value?.length)
-      setdescription(value)
-  }
+  const editorHandler = (value) => {
+    console.log("value", value, typeof value, value?.length);
+    setdescription(value);
+  };
   return (
     <div>
       <div className="app-content dashboard content">
@@ -161,7 +162,6 @@ const AddGeoGenetics = (props) => {
                       <p className="primary-text pt-2 pl-2">
                         Please note that you can upload up to 5 images only
                       </p>
-                 
                       <div className="product-form">
                         <div className="user-block">
                           <div className="row">
@@ -178,7 +178,7 @@ const AddGeoGenetics = (props) => {
                                   }}
                                 />
                               </div>
-                          
+
                               <div className="row detail-row">
                                 <div className="col-12 col-md-6 col-xl-4">
                                   <label>
@@ -218,7 +218,6 @@ const AddGeoGenetics = (props) => {
                                       </label>
                                     </div>
                                   </div>
-                         
                                 </div>
                               </div>
                             </div>
@@ -262,29 +261,30 @@ const AddGeoGenetics = (props) => {
                               </div> */}
                             </div>
                             <div className="col-12 mt-2">
-                            <Editor
-                          onInit={(evt, editor) => (editorRef.current = editor)}
-                          init={{
-                            height: 500,
-                            menubar: true,
-                            plugins: [
-                              "advlist autolink lists link image charmap print preview anchor",
-                              "searchreplace visualblocks code fullscreen",
-                              "insertdatetime media table paste code help wordcount",
-                            ],
-                            toolbar:
-                              "undo redo | formatselect | " +
-                              "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
-                              "alignright alignjustify | bullist numlist outdent indent | " +
-                              "removeformat | help",
-                            content_style:
-                              "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                          }}
-                          value={description}
-                          onEditorChange={(value) =>
-                            editorHandler(value)
-                          }
-                        /></div>
+                              <Editor
+                                onInit={(evt, editor) =>
+                                  (editorRef.current = editor)
+                                }
+                                init={{
+                                  height: 500,
+                                  menubar: true,
+                                  plugins: [
+                                    "advlist autolink lists link image charmap print preview anchor",
+                                    "searchreplace visualblocks code fullscreen",
+                                    "insertdatetime media table paste code help wordcount"
+                                  ],
+                                  toolbar:
+                                    "undo redo | formatselect | " +
+                                    "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                                    "alignright alignjustify | bullist numlist outdent indent | " +
+                                    "removeformat | help",
+                                  content_style:
+                                    "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+                                }}
+                                value={description}
+                                onEditorChange={(value) => editorHandler(value)}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
