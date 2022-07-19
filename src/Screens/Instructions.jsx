@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { baseURL, imageURL } from "../utils/api";
 import axios from "axios";
 import moment from "moment";
@@ -13,6 +13,7 @@ import ShowEntries from "../components/ShowEntries";
 import SearchFilter from "../components/SearchFilter";
 import { closeModals } from "../utils/closeModals";
 import ImageSelector from "../components/ImageSelector";
+import { Editor } from "@tinymce/tinymce-react";
 
 const Instructions = () => {
   const adminLogin = useSelector((state) => state.adminLogin);
@@ -23,6 +24,10 @@ const Instructions = () => {
   const [editvideotitle, seteditvideotitle] = useState();
   const [editdescription, seteditdescription] = useState();
   const [videoview, setvideoview] = useState("");
+  const [instructiontext, setinstructiontext] = useState(() => {
+    "";
+  });
+  const editorRef = useRef(null);
 
   const [is_edit, setIsEdit] = useState(true);
   const [state, setstate] = useState("");
@@ -59,6 +64,7 @@ const Instructions = () => {
         }
       });
       setinstructions(res?.data?.instruction);
+      setinstructiontext(res?.data?.editinstruction?.text);
       console.log("res", res);
     } catch (err) {
       console.log("err", err);
@@ -163,6 +169,44 @@ const Instructions = () => {
     console.log("videoview", videoview);
   }, [videoview]);
 
+  const editInstructionText = async function () {
+    try {
+      const res = await axios.post(
+        `${baseURL}/instruction/editinstructiontext`,
+        { text: instructiontext },
+        {
+          headers: {
+            Authorization: `Bearer ${adminInfo.token}`
+          }
+        }
+      );
+
+      console.log("res", res);
+
+      Swal.fire({
+        icon: "success",
+        title: "",
+        text: "Text Updated Successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "ERROR",
+        text: error?.response?.data?.message
+          ? error?.response?.data?.message
+          : "Internal Server Error",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  };
+
+  const editorHandler = (value) => {
+    console.log("value", value, typeof value, value?.length);
+    setinstructiontext(value);
+  };
   return (
     <>
       <div>
@@ -183,11 +227,19 @@ const Instructions = () => {
                             <div className="col-12 col-sm-6 col-lg-6 text-right">
                               <a
                                 href="#"
-                                className="btn btn-primary"
+                                className="btn btn-primary mr-2"
                                 data-toggle="modal"
                                 data-target="#addDocument"
                               >
                                 Add New
+                              </a>
+                              <a
+                                href="#"
+                                className="btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#editText"
+                              >
+                                Edit Text
                               </a>
                             </div>
                           </div>
@@ -468,6 +520,80 @@ const Instructions = () => {
             </div>
           </div>
         </div>
+        <div
+          className="modal fade delete-product p-0"
+          id="editText"
+          tabIndex
+          role
+          aria-labelledby
+          aria-hidden="true"
+          data-backdrop="static"
+        >
+          <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel" />
+                <button
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-10 mx-auto text-center">
+                    <h3>Edit Text</h3>
+                    <div className="col-12 mt-2">
+                      <Editor
+                        onInit={(evt, editor) => (editorRef.current = editor)}
+                        init={{
+                          height: 500,
+                          menubar: true,
+                          plugins: [
+                            "advlist autolink lists link image charmap print preview anchor",
+                            "searchreplace visualblocks code fullscreen",
+                            "insertdatetime media table paste code help wordcount"
+                          ],
+                          toolbar:
+                            "undo redo | formatselect | " +
+                            "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                            "alignright alignjustify | bullist numlist outdent indent | " +
+                            "removeformat | help",
+                          content_style:
+                            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+                        }}
+                        value={instructiontext}
+                        onEditorChange={(value) => editorHandler(value)}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-primary mr-1 mt-1 px-0"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                      onClick={() =>
+                        instructiontext?.length > 0
+                          ? editInstructionText()
+                          : Toasty(
+                              "error",
+                              `Please fill out all the required fields!`
+                            )
+                      }
+                    >
+                      Add
+                    </button>
+
+                    {/* <button type="submit" class="btn btn-secondary ml-1" data-dismiss="modal" aria-label="Close">No</button> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* View Document Popup */}
         <div
           className="modal fade delete-product p-0"
@@ -492,7 +618,7 @@ const Instructions = () => {
                     setvideotitle("");
                     setdescription("");
                     setinsutructionid("");
-                    setvideoview('')
+                    setvideoview("");
                   }}
                 >
                   <span aria-hidden="true">×</span>

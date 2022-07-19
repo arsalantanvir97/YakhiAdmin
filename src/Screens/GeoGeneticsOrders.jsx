@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { baseURL } from "../utils/api";
 import axios from "axios";
 import moment from "moment";
@@ -11,6 +11,9 @@ import Swal from "sweetalert2";
 import ShowEntries from "../components/ShowEntries";
 import Calender from "../components/Calender";
 import SearchFilter from "../components/SearchFilter";
+import Toasty from "../utils/toast";
+import { Editor } from "@tinymce/tinymce-react";
+
 const GeoGeneticsOrders = () => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
@@ -23,6 +26,10 @@ const GeoGeneticsOrders = () => {
   const [to, setTo] = useState("");
   const [status, setStatus] = useState("");
   const [orders, setorders] = useState([]);
+  const [geogenticstext, setgeogenticstext] = useState(() => {
+    "";
+  });
+  const editorRef = useRef(null);
 
   useEffect(() => {
     handleGetOrders();
@@ -46,7 +53,7 @@ const GeoGeneticsOrders = () => {
           Authorization: `Bearer ${adminInfo.token}`
         }
       });
-
+      setgeogenticstext(res?.data?.geogenetictext?.text);
       console.log("res", res);
       setorders(res.data?.order);
     } catch (err) {
@@ -54,8 +61,47 @@ const GeoGeneticsOrders = () => {
     }
   };
 
+  const editGeoGeneticsText = async function () {
+    try {
+      const res = await axios.post(
+        `${baseURL}/order/editgeogeneticstext`,
+        { text: geogenticstext },
+        {
+          headers: {
+            Authorization: `Bearer ${adminInfo.token}`
+          }
+        }
+      );
+
+      console.log("res", res);
+
+      Swal.fire({
+        icon: "success",
+        title: "",
+        text: "Text Updated Successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "ERROR",
+        text: error?.response?.data?.message
+          ? error?.response?.data?.message
+          : "Internal Server Error",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  };
+
+  const editorHandler = (value) => {
+    console.log("value", value, typeof value, value?.length);
+    setgeogenticstext(value);
+  };
+
   return (
-    <div>
+    <>
       <div className="app-content dashboard content">
         <div className="content-wrapper">
           <div className="content-body">
@@ -67,8 +113,18 @@ const GeoGeneticsOrders = () => {
                     <div className="card-body p-md-2 p-lg-3 p-xl-4">
                       <div className="page-title">
                         <div className="row">
-                          <div className="col-12 col-md-12 col-lg-12">
+                          <div className="col-12 col-md-6 col-lg-6">
                             <h1>Geo'Genetics Orders</h1>
+                          </div>
+                          <div className="col-12 col-sm-6 col-lg-6 text-right">
+                            <a
+                              href="#"
+                              className="btn btn-primary"
+                              data-toggle="modal"
+                              data-target="#editText"
+                            >
+                              Edit Text
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -208,7 +264,75 @@ const GeoGeneticsOrders = () => {
           </div>
         </div>
       </div>
-    </div>
+      <div
+        className="modal fade delete-product p-0"
+        id="editText"
+        tabIndex
+        role
+        aria-labelledby
+        aria-hidden="true"
+        data-backdrop="static"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel" />
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="row">
+                <div className="col-12 mt-2">
+                  <Editor
+                    onInit={(evt, editor) => (editorRef.current = editor)}
+                    init={{
+                      height: 500,
+                      menubar: true,
+                      plugins: [
+                        "advlist autolink lists link image charmap print preview anchor",
+                        "searchreplace visualblocks code fullscreen",
+                        "insertdatetime media table paste code help wordcount"
+                      ],
+                      toolbar:
+                        "undo redo | formatselect | " +
+                        "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                        "alignright alignjustify | bullist numlist outdent indent | " +
+                        "removeformat | help",
+                      content_style:
+                        "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+                    }}
+                    value={geogenticstext}
+                    onEditorChange={(value) => editorHandler(value)}
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-primary mr-1 mt-1 px-0"
+                data-dismiss="modal"
+                aria-label="Close"
+                onClick={() =>
+                  geogenticstext?.length > 0
+                    ? editGeoGeneticsText()
+                    : Toasty(
+                        "error",
+                        `Please fill out all the required fields!`
+                      )
+                }
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
