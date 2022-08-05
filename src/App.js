@@ -45,7 +45,8 @@ import Documents from "./Screens/Documents";
 import Subemployees from "./Screens/Subemployees";
 import ShipmentDetails from "./Screens/ShipmentDetails";
 import Instructions from "./Screens/Instructions";
-
+import PromoCode from "./Screens/PromoCode";
+import AddPromoCode from "./Screens/AddPromoCode";
 
 export default function App() {
   return (
@@ -85,6 +86,8 @@ export default function App() {
       <PrivateRoute exact path="/NewUser" component={NewUser} />
       <PrivateRoute exact path="/Notification" component={Notification} />
       <PrivateRoute exact path="/Appointments" component={Appointments} />
+      <PrivateRoute exact path="/PromoCode" component={PromoCode} />
+
       <PrivateRoute exact path="/EditCategory:id" component={EditCategory} />
       <PrivateRoute exact path="/ProductEdit:id" component={ProductEdit} />
       <PrivateRoute
@@ -106,9 +109,9 @@ export default function App() {
       />
       <PrivateRoute exact path="/EditUser:id" component={EditUser} />
       <PrivateRoute exact path="/Products" component={Products} />
+      <PrivateRoute exact path="/AddPromoCode" component={AddPromoCode} />
       <PrivateRoute exact path="/GeoGenetics" component={GeoGenetics} />
       <PrivateRoute exact path="/Instructions" component={Instructions} />
-
     </Router>
   );
 }

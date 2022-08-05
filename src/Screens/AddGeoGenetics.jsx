@@ -3,9 +3,7 @@ import ImageSelectDropzone from "../components/ImageSelectDropzone";
 import { Link } from "react-router-dom";
 
 import axios from "axios";
-
 import { baseURL } from "../utils/api";
-
 import { useSelector } from "react-redux";
 
 import Toasty from "../utils/toast";
@@ -22,6 +20,8 @@ const AddGeoGenetics = (props) => {
   const [geoGeneticscategory, setgeoGeneticscategory] = useState([]);
 
   const [name, setname] = useState("");
+  const [type, settype] = useState("");
+
   const [description, setdescription] = useState("");
   const [price, setprice] = useState(0);
   const [countInStock, setcountInStock] = useState(0);
@@ -63,6 +63,7 @@ const AddGeoGenetics = (props) => {
       formData.append("price", price);
       formData.append("countInStock", countInStock);
       formData.append("category", geoGeneticscategory?._id);
+      formData.append("type", type);
 
       formData.append("visible", visible);
       formData.append("description", description);
@@ -131,6 +132,7 @@ const AddGeoGenetics = (props) => {
                                 onClick={() =>
                                   data?.project_images?.length > 0 &&
                                   name?.length > 0 &&
+                                  type?.length > 0 &&
                                   price > 0 &&
                                   description?.length > 0
                                     ? addProductHandler()
@@ -244,6 +246,26 @@ const AddGeoGenetics = (props) => {
                                   />
                                 </div>
                               </div>
+                              <div className="col-12 ">
+                                <div className="form-group mb-2">
+                                  <label>Type</label>
+                                  <select
+                                    id
+                                    className="form-control"
+                                    value={type}
+                                    onChange={(e) => {
+                                      settype(e.target.value);
+                                    }}
+                                  >
+                                    <option>select</option>
+                                    <option value={"PACKAGES"}>PACKAGES</option>
+                                    <option value={"PROTOCOLS"}>
+                                      PROTOCOLS
+                                    </option>
+                                  </select>
+                                </div>
+                              </div>
+
                               {/* <div className="form-group mb-2">
                                 <label>Description</label>
                                 <div className="position-relative">

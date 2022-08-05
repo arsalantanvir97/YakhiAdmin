@@ -216,6 +216,20 @@ const Sidebar = (props) => {
             </li>
             <li
               className={
+                props?.match?.path == "/PromoCode"
+                  ? "nav-item active "
+                  : "nav-item"
+              }
+            >
+              <Link to="/PromoCode">
+                <i className="fas fa-code" />
+                <span className="menu-title" data-i18n>
+                  Promo Code{" "}
+                </span>
+              </Link>
+            </li>
+            <li
+              className={
                 props?.match?.path == "/Feedback"
                   ? "nav-item active "
                   : "nav-item"
@@ -471,11 +485,9 @@ const Sidebar = (props) => {
               }
             >
               <Link to="/Instructions">
-                <i className="fas fa-video">
-                 
-                </i>
+                <i className="fas fa-video"></i>
                 <span className="menu-title" data-i18n>
-                Instructions{" "}
+                  Instructions{" "}
                 </span>
               </Link>
             </li>

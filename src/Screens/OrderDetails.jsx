@@ -13,9 +13,10 @@ const OrderDetails = ({ match, history }) => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [orderdetails, setorderdetails] = useState("");
-  const [status, setstatus] = useState('InProcess');
+  const [status, setstatus] = useState("InProcess");
   const [hideDownload, sethideDownload] = useState(false);
   const inputRef = useRef(null);
+  const inputRef2 = useRef(null);
 
   useEffect(() => {
     handleGetFeedback();
@@ -75,9 +76,9 @@ const OrderDetails = ({ match, history }) => {
       });
     }
   };
-  const printDocument = async () => {
+  const printDocument = async (data) => {
     await sethideDownload(true);
-    html2canvas(inputRef.current).then((canvas) => {
+    html2canvas(data.current).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "l", // landscape
@@ -88,7 +89,7 @@ const OrderDetails = ({ match, history }) => {
       var width = pdf.internal.pageSize.getWidth();
       var height = pdf.internal.pageSize.getHeight();
       console.log("width", width, height);
-      pdf.addImage(imgData, "PNG", 10, 10, width, height);
+      pdf.addImage(imgData, "PNG", 0, 0, width, height);
       pdf.save("invoice.pdf");
     });
     sethideDownload(false);
@@ -102,9 +103,9 @@ const OrderDetails = ({ match, history }) => {
             <section id="configuration" className="order-detail">
               <div className="row">
                 <div className="col-12">
-                  <div id="divToPrint" ref={inputRef}>
+                  <div >
                     <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4">
+                      <div className="card-body p-md-2 p-lg-3 p-xl-4" id="divToPrint" ref={inputRef}>
                         <div className="page-title mb-2">
                           <div className="row">
                             <div className="col-12 col-md-6 col-lg-6">
@@ -137,6 +138,21 @@ const OrderDetails = ({ match, history }) => {
                                 <div className="card-body">
                                   <div className="row">
                                     <div className="col-12 mb-2">
+                                      <div id="divToPrint" ref={inputRef2}>
+                                        <h4>Order ID</h4>
+                                        <p> {orderdetails?._id}</p>
+                                      </div>
+                                      <div className="col-md-12 col-12 align-self-end text-right">
+                                        <Link
+                                          to="#"
+                                          onClick={() => {
+                                            printDocument(inputRef2);
+                                          }}
+                                          className="btn btn-primary"
+                                        >
+                                          Print Label
+                                        </Link>
+                                      </div>
                                       <h4>Order Date</h4>
                                       <p>
                                         {" "}
@@ -146,12 +162,14 @@ const OrderDetails = ({ match, history }) => {
                                       </p>
                                     </div>
                                   </div>
+
                                   <div className="row">
                                     <div className="col-12">
                                       <h4>Order Status</h4>
                                       {orderdetails?.isPaid == true && (
                                         <>
-                                           {orderdetails?.isDelivered == 'Pending' && (
+                                          {orderdetails?.isDelivered ==
+                                            "Pending" && (
                                             <>
                                               <div className="d-block mt-1">
                                                 <div className="form-check form-check-inline radio">
@@ -161,9 +179,9 @@ const OrderDetails = ({ match, history }) => {
                                                     type="radio"
                                                     defaultChecked
                                                     value={status}
-                                                  onChange={() => {
-                                                    setstatus('InProcess');
-                                                  }}
+                                                    onChange={() => {
+                                                      setstatus("InProcess");
+                                                    }}
                                                   />
                                                   <label
                                                     htmlFor="radio-1"
@@ -180,7 +198,7 @@ const OrderDetails = ({ match, history }) => {
                                                     type="radio"
                                                     value={status}
                                                     onChange={() => {
-                                                      setstatus('Delivered');
+                                                      setstatus("Delivered");
                                                     }}
                                                   />
                                                   <label
@@ -292,7 +310,9 @@ const OrderDetails = ({ match, history }) => {
                               <div className="col-md-6 col-12 align-self-end text-right">
                                 <Link
                                   to="#"
-                                  onClick={printDocument}
+                                  onClick={() => {
+                                    printDocument(inputRef);
+                                  }}
                                   className="btn btn-primary"
                                 >
                                   Print Invoice

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { baseURL } from "../utils/api";
 import axios from "axios";
 import moment from "moment";
@@ -11,10 +11,14 @@ import Swal from "sweetalert2";
 import ShowEntries from "../components/ShowEntries";
 import Calender from "../components/Calender";
 import SearchFilter from "../components/SearchFilter";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+
 const Orders = () => {
   const adminLogin = useSelector((state) => state.adminLogin);
   const { adminInfo } = adminLogin;
   const [sort, setsort] = useState();
+  const [hideDownload, sethideDownload] = useState(false);
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -23,6 +27,7 @@ const Orders = () => {
   const [to, setTo] = useState("");
   const [status, setStatus] = useState("");
   const [orders, setorders] = useState([]);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     handleGetOrders();
@@ -54,6 +59,24 @@ const Orders = () => {
     }
   };
 
+  const printDocument = async () => {
+    await sethideDownload(true);
+
+    html2canvas(inputRef.current).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "landscape"
+      });
+      const imgProps = pdf.getImageProperties(imgData);
+      var width = pdf.internal.pageSize.getWidth();
+      var height = pdf.internal.pageSize.getHeight();
+
+      pdf.addImage(imgData, "PNG", 0, 0, width, height);
+      pdf.save("invoice.pdf");
+    });
+    sethideDownload(false);
+  };
+
   return (
     <div>
       <div className="app-content dashboard content">
@@ -80,6 +103,7 @@ const Orders = () => {
                                 <div className="col-xl-3 col-md-6 col-12 mt-2">
                                   <label>Show entries </label>
                                   <ShowEntries
+                                    printDocument={printDocument}
                                     perPage={perPage}
                                     setPerPage={setPerPage}
                                     setPage={setPage}
@@ -131,15 +155,22 @@ const Orders = () => {
                             <div className="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
                               <div className="row">
                                 <div className="col-sm-12">
-                                  <table className="table table-borderless dataTable">
+                                  <table
+                                    id="divToPrint"
+                                    ref={inputRef}
+                                    className="table table-borderless dataTable"
+                                  >
                                     <thead>
                                       <tr>
                                         <th className="sorting_asc">S. No.</th>
+                                        <th className="sorting">Order ID</th>
                                         <th className="sorting">Total</th>
                                         <th className="sorting">Billed to</th>
                                         <th className="sorting">Status</th>
                                         <th className="sorting">Date</th>
-                                        <th className="sorting">ACTION</th>
+                                        {!hideDownload && (
+                                          <th className="sorting">ACTION</th>
+                                        )}
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -147,6 +178,8 @@ const Orders = () => {
                                         orders?.docs?.map((orderr, index) => (
                                           <tr>
                                             <td className>{index + 1}</td>
+                                            <td>${orderr?._id}</td>
+
                                             <td>${orderr?.totalPrice}</td>
                                             <td>
                                               {
@@ -161,24 +194,26 @@ const Orders = () => {
                                                 .format("LL")}
                                             </td>
                                             <td>
-                                              <div className="btn-group ml-1">
-                                                <button
-                                                  type="button"
-                                                  className="btn btn-drop-table btn-sm"
-                                                  data-toggle="dropdown"
-                                                >
-                                                  <i className="fa fa-ellipsis-v" />
-                                                </button>
-                                                <div className="dropdown-menu">
-                                                  <Link
-                                                    to={`/OrderDetails${orderr?._id}`}
-                                                    className="dropdown-item"
+                                              {!hideDownload && (
+                                                <div className="btn-group ml-1">
+                                                  <button
+                                                    type="button"
+                                                    className="btn btn-drop-table btn-sm"
+                                                    data-toggle="dropdown"
                                                   >
-                                                    <i className="fa fa-eye" />
-                                                    View Detail
-                                                  </Link>
+                                                    <i className="fa fa-ellipsis-v" />
+                                                  </button>
+                                                  <div className="dropdown-menu">
+                                                    <Link
+                                                      to={`/OrderDetails${orderr?._id}`}
+                                                      className="dropdown-item"
+                                                    >
+                                                      <i className="fa fa-eye" />
+                                                      View Detail
+                                                    </Link>
+                                                  </div>
                                                 </div>
-                                              </div>
+                                              )}
                                             </td>
                                           </tr>
                                         ))}

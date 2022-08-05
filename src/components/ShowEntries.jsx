@@ -1,6 +1,6 @@
 import React from "react";
 
-const ShowEntries = ({ perPage, setPerPage, setPage }) => {
+const ShowEntries = ({ perPage, setPerPage, setPage, printDocument }) => {
   return (
     <div>
       {" "}
@@ -9,6 +9,7 @@ const ShowEntries = ({ perPage, setPerPage, setPage }) => {
         value={perPage}
         onChange={(e) => {
           setPerPage(e.target.value);
+          printDocument();
           setPage(1);
         }}
       >
