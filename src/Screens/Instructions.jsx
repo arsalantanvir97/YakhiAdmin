@@ -27,6 +27,10 @@ const Instructions = () => {
   const [instructiontext, setinstructiontext] = useState(() => {
     "";
   });
+  const [eattolivetext, seteattolivetext] = useState(() => {
+    "";
+  });
+
   const editorRef = useRef(null);
 
   const [is_edit, setIsEdit] = useState(true);
@@ -203,9 +207,48 @@ const Instructions = () => {
     }
   };
 
+  const editEattoliveText = async function () {
+    try {
+      const res = await axios.post(
+        `${baseURL}/instruction/editinstructiontext`,
+        { text: eattolivetext },
+        {
+          headers: {
+            Authorization: `Bearer ${adminInfo.token}`
+          }
+        }
+      );
+
+      console.log("res", res);
+
+      Swal.fire({
+        icon: "success",
+        title: "",
+        text: "Text Updated Successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "ERROR",
+        text: error?.response?.data?.message
+          ? error?.response?.data?.message
+          : "Internal Server Error",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  };
+  
+
   const editorHandler = (value) => {
     console.log("value", value, typeof value, value?.length);
     setinstructiontext(value);
+  };
+  const editorHandler2 = (value) => {
+    console.log("value", value, typeof value, value?.length);
+    seteattolivetext(value);
   };
   return (
     <>
@@ -240,6 +283,14 @@ const Instructions = () => {
                                 data-target="#editText"
                               >
                                 Edit Text
+                              </a>
+                              <a
+                                href="#"
+                                className="btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#eattolive"
+                              >
+                                Eat to Live 
                               </a>
                             </div>
                           </div>
@@ -594,6 +645,79 @@ const Instructions = () => {
           </div>
         </div>
 
+  <div
+          className="modal fade delete-product p-0"
+          id="eattolive"
+          tabIndex
+          role
+          aria-labelledby
+          aria-hidden="true"
+          data-backdrop="static"
+        >
+          <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel" />
+                <button
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-10 mx-auto text-center">
+                    <h3>Edit Text</h3>
+                    <div className="col-12 mt-2">
+                      <Editor
+                        onInit={(evt, editor) => (editorRef.current = editor)}
+                        init={{
+                          height: 500,
+                          menubar: true,
+                          plugins: [
+                            "advlist autolink lists link image charmap print preview anchor",
+                            "searchreplace visualblocks code fullscreen",
+                            "insertdatetime media table paste code help wordcount"
+                          ],
+                          toolbar:
+                            "undo redo | formatselect | " +
+                            "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                            "alignright alignjustify | bullist numlist outdent indent | " +
+                            "removeformat | help",
+                          content_style:
+                            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+                        }}
+                        value={eattolivetext}
+                        onEditorChange={(value) => editorHandler2(value)}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-primary mr-1 mt-1 px-0"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                      onClick={() =>
+                        eattolivetext?.length > 0
+                          ? editEattoliveText()
+                          : Toasty(
+                              "error",
+                              `Please fill out all the required fields!`
+                            )
+                      }
+                    >
+                      Add
+                    </button>
+
+                    {/* <button type="submit" class="btn btn-secondary ml-1" data-dismiss="modal" aria-label="Close">No</button> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         {/* View Document Popup */}
         <div
           className="modal fade delete-product p-0"

@@ -472,7 +472,7 @@ Left Menu (Dark Theme)
 .main-menu.menu-light .navigation > li:hover > a > i path,
 .main-menu.menu-light .navigation > li.active > a >i path { fill: #C31F20; }
 
-.main-menu.menu-light .navigation li a {color: #160000;font-size:14px;font-weight:500; line-height: 18px;padding: 20px 0px 20px 10px;text-transform: capitalize; border-top-right-radius: 50px; border-bottom-right-radius: 50px; position: relative; text-transform: uppercase;}
+.main-menu.menu-light .navigation li a {color: #160000;font-size:14px;font-weight:500; line-height: 18px;padding: 10px 0px 10px 10px;text-transform: capitalize; border-top-right-radius: 50px; border-bottom-right-radius: 50px; position: relative; text-transform: uppercase;}
 .main-menu.menu-light .navigation > li > a i {position: relative;top: 0px;}
 .main-menu.menu-light .navigation > li {padding: 0;border-left: 0px; padding-right: 20px; margin-bottom: 10px;}
 .main-menu.menu-light .navigation > li > ul {background: transparent; padding: 10px 0;}

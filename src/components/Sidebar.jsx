@@ -27,7 +27,7 @@ const Sidebar = (props) => {
               }
               style={{}}
             >
-              <Link to="/Dashboard">
+              <Link to="/Dashboard" target="_self">
                 <i className="fa fa-chart-area" />
                 <span className="menu-title" data-i18n>
                   Dashboard
@@ -55,17 +55,17 @@ const Sidebar = (props) => {
               </Link>
               <ul className="menu-content" style={{}}>
                 <li className>
-                  <Link className="menu-item" to="/Products">
+                  <Link className="menu-item" to="/Products" target="_self">
                     Catalog
                   </Link>
                 </li>
                 <li className>
-                  <Link className="menu-item" to="/GeoGenetics">
+                  <Link className="menu-item" to="/GeoGenetics" target="_self">
                     Geo'Genetics
                   </Link>
                 </li>
                 <li className>
-                  <Link className="menu-item" to="/Categories">
+                  <Link className="menu-item" to="/Categories" target="_self">
                     Categories
                   </Link>
                 </li>
@@ -78,7 +78,7 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/Orders">
+              <Link to="/Orders" target="_self">
                 <i className="fa">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +136,7 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/GeoGeneticsOrders">
+              <Link to="/GeoGeneticsOrders" target="_self">
                 <i className="fa">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +193,7 @@ const Sidebar = (props) => {
                 props?.match?.path == "/Users" ? "nav-item active " : "nav-item"
               }
             >
-              <Link to="/Users">
+              <Link to="/Users" target="_self">
                 <i className="fa fa-user" />
                 <span className="menu-title" data-i18n>
                   Users
@@ -207,7 +207,7 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/Appointments">
+              <Link to="/Appointments" target="_self">
                 <i className="fa fa-calendar" />
                 <span className="menu-title" data-i18n>
                   Appointments
@@ -221,7 +221,7 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/PromoCode">
+              <Link to="/PromoCode" target="_self">
                 <i className="fas fa-code" />
                 <span className="menu-title" data-i18n>
                   Promo Code{" "}
@@ -235,7 +235,7 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/Feedback">
+              <Link to="/Feedback" target="_self">
                 <i className="fa">
                   <svg
                     id="feedback_1_"
@@ -270,7 +270,7 @@ const Sidebar = (props) => {
                 props?.match?.path == "/Taxes" ? "nav-item active " : "nav-item"
               }
             >
-              <Link to="/Taxes">
+              <Link to="/Taxes" target="_self">
                 <i className="fa">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -329,7 +329,7 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/Documents">
+              <Link to="/Documents" target="_self">
                 <i className="fa">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -370,7 +370,7 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/Shipments">
+              <Link to="/Shipments" target="_self">
                 <i className="fa">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -484,10 +484,24 @@ const Sidebar = (props) => {
                   : "nav-item"
               }
             >
-              <Link to="/Instructions">
+              <Link to="/Instructions" target="_self">
                 <i className="fas fa-video"></i>
                 <span className="menu-title" data-i18n>
                   Instructions{" "}
+                </span>
+              </Link>
+            </li>
+            <li
+              className={
+                props?.match?.path == "/Faqs"
+                  ? "nav-item active "
+                  : "nav-item"
+              }
+            >
+              <Link to="/Faqs" target="_self">
+                <i className="fas fa-question-circle"></i>
+                <span className="menu-title" data-i18n>
+                Faqs{" "}
                 </span>
               </Link>
             </li>

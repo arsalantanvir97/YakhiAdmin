@@ -115,8 +115,8 @@ const ShipmentDetails = ({ match, history }) => {
                                               </span>
                                             </td>
                                             <td>
-                                              <span className= {ord?.isDelivered==false? "status__pending": "status__paid"}>
-                                                {ord?.isDelivered==true? 'Delivered' : 'Not Delivered'}
+                                              <span className= {ord?.isDelivered=='Pending'? "status__pending": "status__paid"}>
+                                                {ord?.isDelivered=='Delivered'? 'Delivered' : 'Not Delivered'}
                                               </span>
                                             </td>
                                           </tr>

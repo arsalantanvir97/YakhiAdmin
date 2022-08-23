@@ -7,10 +7,12 @@ const ShowEntries = ({ perPage, setPerPage, setPage, printDocument }) => {
       <select
         className="w-100 form-control form-control-sm"
         value={perPage}
-        onChange={(e) => {
-          setPerPage(e.target.value);
-          printDocument();
-          setPage(1);
+        onChange={async (e) => {
+          await setPerPage(e.target.value);
+          await setPage(1);
+          setTimeout(() => {
+            printDocument()
+          }, 2000);
         }}
       >
         <option value={10}>10</option>
