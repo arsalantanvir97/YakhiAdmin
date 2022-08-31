@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { baseURL } from "../utils/api";
+import { baseURL, imageURL } from "../utils/api";
 import axios from "axios";
 import moment from "moment";
 import DatePicker from "react-datepicker";
@@ -21,11 +21,13 @@ const Faqs = () => {
   const [searchString, setSearchString] = useState("");
   const [question, setquestion] = useState("");
   const [answer, setanswer] = useState("");
-
+  const [faqqs, setfaqqs] = useState("");
+  const [ad_video, setad_video] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [sort, setsort] = useState();
   const [faqid, setfaqid] = useState();
+
   const [status, setStatus] = useState("");
   useEffect(() => {
     handleGetFAQS();
@@ -50,12 +52,16 @@ const Faqs = () => {
         }
       });
 
-      console.log("res", res);
+      console.log("resfaqss", res?.data?.faqss);
+      setfaqqs(res?.data?.faqss?.videouri);
       setfaqs(res.data?.faqs);
     } catch (err) {
       console.log("err", err);
     }
   };
+  useEffect(() => {
+    console.log("faqqs", faqqs);
+  }, [faqqs]);
 
   const addFaqHandler = async () => {
     try {
@@ -91,7 +97,10 @@ const Faqs = () => {
     setquestion("");
     setanswer("");
   };
-
+  const filedocsHandler = (e) => {
+    console.log("eeee", e?.target?.files[0]);
+    setad_video(e?.target?.files[0]);
+  };
   const editTaxHandler = async () => {
     try {
       const res = await axios.post(
@@ -158,6 +167,44 @@ const Faqs = () => {
   //       });
   //     }
   //   };
+  const uploadVideoHandler = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append("ad_video", ad_video);
+
+      const body = formData;
+      console.log("await");
+      const res = await axios.post(`${baseURL}/faq/faqvideo`, body, {
+        headers: {
+          Authorization: `Bearer ${adminInfo.token}`
+        }
+      });
+
+      console.log("res", res);
+
+      await Swal.fire({
+        icon: "success",
+        title: "",
+        text: "Video Uploaded Successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
+      window.location.reload();
+    } catch (error) {
+      console.log("error", error, error?.response?.data);
+      Swal.fire({
+        icon: "error",
+        title: "ERROR",
+        text: error?.response?.data?.message
+          ? error?.response?.data?.message
+          : "Internal Server Error",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+    setad_video();
+  };
   return (
     <>
       <div>
@@ -183,6 +230,14 @@ const Faqs = () => {
                                 className="btn btn-primary"
                               >
                                 Add New
+                              </a>
+                              <a
+                                href="#_"
+                                data-toggle="modal"
+                                data-target=".editDocument"
+                                className="btn btn-primary"
+                              >
+                                Upload Video
                               </a>
                             </div>
                           </div>
@@ -516,6 +571,93 @@ const Faqs = () => {
                   </div>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="modal fade editDocument p-0"
+        id="addDocument"
+        tabIndex
+        role
+        aria-labelledby
+        aria-hidden="true"
+        data-backdrop="static"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel" />
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="row">
+                <div className="col-10 mx-auto text-center">
+                  <h3>FAQ Video</h3>
+                  <h4>Video</h4>
+                  {faqqs && (
+                    <video width="320" height="240" controls>
+                      <source src={`${imageURL}${faqqs}`} type="video/ogg" />
+                    </video>
+                  )}
+                  <form action id="addNewDoc">
+                    <div className="form-group mb-3">
+                      <label
+                        htmlFor
+                        className="col-10 mx-auto text-center mt-2"
+                      >
+                        Upload Video
+                      </label>
+                      <input
+                        type="file"
+                        name
+                        id="govt-id"
+                        accept="video/mp4,video/x-m4v,video/*"
+                        onChange={filedocsHandler}
+                        className="form-control"
+                      />
+                      <label htmlFor="govt-id" className="d-block id-upload">
+                        {ad_video?.name ? (
+                          <i
+                            className="fas fa-file-upload fa-2x ssssh mt-2"
+                            style={{ color: "#C52008" }}
+                          />
+                        ) : (
+                          <i
+                            className="fas fa-upload fa-2x ssssh mt-2"
+                            style={{ color: "#C52008" }}
+                          />
+                        )}
+                      </label>
+                    </div>
+                  </form>
+                  <button
+                    type="button"
+                    className="btn btn-primary mr-1 mt-1 px-0"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                    onClick={() =>
+                      ad_video?.name?.length > 0
+                        ? uploadVideoHandler()
+                        : Toasty(
+                            "error",
+                            `Please fill out all the required fields!`
+                          )
+                    }
+                  >
+                    Add
+                  </button>
+                  {/* <button type="submit" class="btn btn-secondary ml-1" data-dismiss="modal" aria-label="Close">No</button> */}
+                </div>
+              </div>
             </div>
           </div>
         </div>

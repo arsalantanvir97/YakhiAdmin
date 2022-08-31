@@ -502,7 +502,7 @@ body.vertical-layout.vertical-menu.menu-expanded .main-menu .navigation > li.act
 /*body.vertical-layout.vertical-menu.menu-expanded .main-menu .navigation li > a:after,*/
 body.vertical-layout.vertical-menu.menu-expanded .main-menu .navigation li.has-sub > a:not(.mm-next):after,
 .vertical-overlay-menu .main-menu .navigation li.has-sub > a:not(.mm-next):after,
-.vertical-overlay-menu.menu-hide .main-menu .navigation li.has-sub > a:not(.mm-next):after {font-family: "Font Awesome 5 Free";font-weight: 900;content: "\f105";display: inline-block;position: absolute;right: 11px;top: 19px;width: 20px;transform: rotate(0deg);font-size: 18px;transition: -webkit-transform 0.2s ease-in-out;height: 20px; transition: all 0.3s ease-out;}
+.vertical-overlay-menu.menu-hide .main-menu .navigation li.has-sub > a:not(.mm-next):after {font-family: "Font Awesome 5 Free";font-weight: 900;content: "\f105";display: inline-block;position: absolute;right: 11px;top: 30%;width: 20px;transform: rotate(0deg);font-size: 18px;transition: -webkit-transform 0.2s ease-in-out;height: 20px; transition: all 0.3s ease-out;}
 
 body.vertical-layout.vertical-menu.menu-expanded .main-menu .navigation li.open > a:not(.mm-next):after,
 .vertical-overlay-menu .main-menu .navigation li.open > a:not(.mm-next):after,
@@ -1187,7 +1187,7 @@ span.badge.badge-pill.badge-default.badge-danger.badge-default.badge-up {backgro
 
 
 .header-navbar .avatar {width: 45px;}
-.dropdown-toggle::after {content: '' !important;font-family: 'Font Awesome 5 Free' !important;font-weight: 400;background: url(../../images/arrow-select.png) no-repeat;width: 20px;height: 20px;top: 12px;left: 5px;}
+.dropdown-toggle::after {content: '' !important;font-family: 'Font Awesome 5 Free' !important;font-weight: 400;background: url(../../images/arrow-select.png) no-repeat;width: 20px;height: 20px;top: 0;left: 5px;}
 
 .header-navbar .navbar-container ul.nav li a.dropdown-user-link { padding:7px 10px; }
 .header-navbar .navbar-container ul.nav li a.menu-toggle i{ font-size: 2rem;}

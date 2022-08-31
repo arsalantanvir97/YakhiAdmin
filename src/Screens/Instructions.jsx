@@ -267,10 +267,10 @@ const Instructions = () => {
                             <div className="col-12 col-md-6 col-lg-6">
                               <h1>Instructions</h1>
                             </div>
-                            <div className="col-12 col-sm-6 col-lg-6 text-right">
+                            <div className="col-12 col-sm-6 col-lg-6 text-md-right">
                               <a
                                 href="#"
-                                className="btn btn-primary mr-2"
+                                className="btn btn-primary mr-2 mb-2"
                                 data-toggle="modal"
                                 data-target="#addDocument"
                               >
@@ -278,7 +278,7 @@ const Instructions = () => {
                               </a>
                               <a
                                 href="#"
-                                className="btn btn-primary"
+                                className="btn btn-primary mr-2 mb-2"
                                 data-toggle="modal"
                                 data-target="#editText"
                               >
@@ -286,7 +286,7 @@ const Instructions = () => {
                               </a>
                               <a
                                 href="#"
-                                className="btn btn-primary"
+                                className="btn btn-primary mr-2"
                                 data-toggle="modal"
                                 data-target="#eattolive"
                               >

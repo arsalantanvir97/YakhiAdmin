@@ -59,7 +59,6 @@ const Orders = () => {
     }
   };
 
-
   const printDocument = async () => {
     await sethideDownload(true);
 
@@ -91,8 +90,13 @@ const Orders = () => {
                     <div className="card-body p-md-2 p-lg-3 p-xl-4">
                       <div className="page-title">
                         <div className="row">
-                          <div className="col-12 col-md-12 col-lg-12">
+                          <div className="col-12 col-md-6 col-lg-6">
                             <h1>Orders</h1>
+                          </div>
+                          <div className="col-12 col-sm-6 col-lg-6 text-right">
+                            <Link to="#" onClick={printDocument} className="btn btn-primary">
+                              Print
+                            </Link>
                           </div>
                         </div>
                       </div>
