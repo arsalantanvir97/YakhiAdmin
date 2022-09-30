@@ -216,6 +216,20 @@ const Sidebar = (props) => {
             </li>
             <li
               className={
+                props?.match?.path == "/Events"
+                  ? "nav-item active "
+                  : "nav-item"
+              }
+            >
+              <Link to="/Events" target="_self">
+                <i className="fa fa-calendar" />
+                <span className="menu-title" data-i18n>
+                  Events
+                </span>
+              </Link>
+            </li>
+            <li
+              className={
                 props?.match?.path == "/PromoCode"
                   ? "nav-item active "
                   : "nav-item"

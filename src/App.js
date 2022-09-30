@@ -2,6 +2,9 @@ import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
 import Loader from "./components/Loader";
+import AddEvent from "./Screens/AddEvent";
+import EditEventt from "./Screens/EditEventt";
+import Events from "./Screens/Events";
 
 const AddCategory = lazy(() => import("./Screens/AddCategory"));
 const AddProduct = lazy(() => import("./Screens/AddProduct"));
@@ -54,6 +57,10 @@ export default function App() {
     <Suspense fallback={<Loader />}>
       <Router basename="/yakhi/admin">
         <Route path="/" component={Login} exact />
+        <PrivateRoute path="/Events" component={Events} exact />
+        <PrivateRoute path="/EditEventt" component={EditEventt} exact />
+        <PrivateRoute path="/AddEvent" component={AddEvent} exact />
+
         <Route path="/forgotpassword" component={ForgotPassword} exact />
         <Route
           path="/verificationcode:email"
