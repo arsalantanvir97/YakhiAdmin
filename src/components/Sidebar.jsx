@@ -5,10 +5,12 @@ const Sidebar = (props) => {
   const [openusersidebar, setopenusersidebar] = useState(false);
 
   return (
-    <div>
+    <div >
       <div
         className="main-menu menu-fixed menu-light menu-accordion"
         data-scroll-to-active="true"
+        style={{overflow:'auto',maxHeight:'100vh'
+      }}
       >
         <div
           className="main-menu-content ps-container ps-theme-dark"

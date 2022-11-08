@@ -159,6 +159,37 @@ const Documents = () => {
     console.log("eeee", e?.target?.files[0]);
     setdoc_schedule(e?.target?.files[0]);
   };
+  const deleteDocumentHandler = async (id) => {
+    console.log("id", id);
+    try {
+      const res = await axios({
+        url: `${baseURL}/document/deleteDocument/${id}`,
+        method: "GET",
+
+        headers: {
+          Authorization: `Bearer ${adminInfo.token}`
+        }
+      });
+      Swal.fire({
+        icon: "success",
+        title: "",
+        text: "Document Deleted Successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
+      handleGetDocuments();
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "ERROR",
+        text: err?.response?.data?.message
+          ? err?.response?.data?.message
+          : "Internal Server Error",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  };
 
   return (
     <>
@@ -302,6 +333,18 @@ const Documents = () => {
                                                       <i className="fa fa-eye" />
                                                       View Detail
                                                     </a>
+                                                    <Link
+                                                    to="#"
+                                                    onClick={() => {
+                                                      deleteDocumentHandler(
+                                                        doc?._id
+                                                      );
+                                                    }}
+                                                    className="dropdown-item"
+                                                  >
+                                                    <i className="fa fa-trash-alt" />
+                                                    Remove
+                                                  </Link>
                                                     <a
                                                       className="dropdown-item"
                                                       href="#"
