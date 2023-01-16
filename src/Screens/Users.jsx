@@ -98,11 +98,11 @@ const Users = () => {
                           <div className="col-12 col-md-6 col-lg-6">
                             <h1>Users</h1>
                           </div>
-                          <div className="col-12 col-sm-6 col-lg-6 text-right">
+                          {/* <div className="col-12 col-sm-6 col-lg-6 text-right">
                             <Link to="/NewUser" className="btn btn-primary">
                               New User
                             </Link>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                       <div className="dataTables_wrapper">
@@ -168,8 +168,7 @@ const Users = () => {
                                     <thead>
                                       <tr>
                                         <th className>S. No.</th>
-                                        <th className>First Name</th>
-                                        <th className>Last Name</th>
+                                        <th className>Name</th>
                                         <th className>Email</th>
                                         <th className>Status</th>
                                         <th className>Registration Date</th>
@@ -182,7 +181,6 @@ const Users = () => {
                                           <tr>
                                             <td className>{index + 1}</td>
                                             <td>{userr?.firstName}</td>
-                                            <td>{userr?.lastName}</td>
                                             <td>{userr?.email}</td>
                                             <td>
                                               {" "}

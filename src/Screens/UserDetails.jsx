@@ -119,22 +119,32 @@ const UserDetails = ({ match }) => {
                         </div>
                         <div className="row detail-row d-flex align-items-center">
                           <div className="col-12 lablename">
-                            <label htmlFor>First Name</label>
+                            <label htmlFor>Name</label>
                           </div>
                           <div className="col-12">{userdetails?.firstName}</div>
                         </div>
-                        <div className="row detail-row d-flex align-items-center">
-                          <div className="col-12 lablename">
-                            <label htmlFor>Last Name</label>
-                          </div>
-                          <div className="col-12">{userdetails?.lastName}</div>
-                        </div>
+                    
                         <div className="row detail-row d-flex align-items-center">
                           <div className="col-12 lablename">
                             <label htmlFor>Email</label>
                           </div>
                           <div className="col-12">{userdetails?.email}</div>
                         </div>
+                        {userdetails?.signature &&
+                        <div className="row detail-row d-flex align-items-center">
+                          <div className="col-12 lablename">
+                            <label htmlFor>Membership Signature</label>
+                          </div>
+                          <div className="col-12"> <img
+                                                    src={
+                                                      userdetails?.signature && userdetails?.signature !== null
+                                                        ? `${imageURL}${userdetails?.signature}`
+                                                        : "images/img-1.png"
+                                                    }
+                                                    alt=""
+                                                    className="img-fluid"
+                                                  /></div>
+                        </div>}
                       </div>
                       <div className="dataTables_wrapper">
                         <div className="page-title mb-2">

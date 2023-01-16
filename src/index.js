@@ -6,11 +6,17 @@ import "./index.css";
 import App from "./App";
 import "react-datepicker/dist/react-datepicker.css";
 import { ToastContainer } from "react-toastify";
+import HttpsRedirect from 'react-https-redirect';
+
 
 ReactDOM.render(
   <Provider store={store}>
+      <HttpsRedirect>
+
     <ToastContainer />
     <App />
+    </HttpsRedirect>
+
   </Provider>,
   document.getElementById("root")
 );

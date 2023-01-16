@@ -55,10 +55,10 @@ const Faqs = lazy(() => import("./Screens/Faqs"));
 export default function App() {
   return (
     <Suspense fallback={<Loader />}>
-      <Router basename="/yakhi/admin">
+      <Router basename="/admin">
         <Route path="/" component={Login} exact />
         <PrivateRoute path="/Events" component={Events} exact />
-        <PrivateRoute path="/EditEventt" component={EditEventt} exact />
+        <PrivateRoute path="/EditEventt/:id" component={EditEventt} exact />
         <PrivateRoute path="/AddEvent" component={AddEvent} exact />
 
         <Route path="/forgotpassword" component={ForgotPassword} exact />
