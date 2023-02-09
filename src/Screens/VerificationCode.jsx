@@ -3,15 +3,12 @@ import api from "../utils/api";
 import Toasty from "../utils/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import InputNumber from "../components/InputNumber";
 const VerificationCode = ({ match, history }) => {
   const [loading, setloading] = useState(false);
   const [code, setcode] = useState(0);
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
   const onSubmitHandler = async () => {
     try {
       console.log("body", code, match?.params?.email);

@@ -25,7 +25,6 @@ const OrderDetails = lazy(() => import("./Screens/OrderDetails"));
 const Orders = lazy(() => import("./Screens/Orders"));
 const OrdersDelivered = lazy(() => import("./Screens/OrdersDelivered"));
 const OrdersInvoice = lazy(() => import("./Screens/OrdersInvoice"));
-const ProductAdd = lazy(() => import("./Screens/ProductAdd"));
 const ProductEdit = lazy(() => import("./Screens/ProductEdit"));
 const Products = lazy(() => import("./Screens/Products"));
 const ProductView = lazy(() => import("./Screens/ProductView"));
@@ -38,7 +37,7 @@ const VerificationCode = lazy(() => import("./Screens/VerificationCode"));
 const ViewCategory = lazy(() => import("./Screens/ViewCategory"));
 const Appointments = lazy(() => import("./Screens/Appointments"));
 const AppointmentDetails = lazy(() => import("./Screens/AppointmentDetails"));
-const GeoGenetics = lazy(() => import("./Screens/Users"));
+const GeoGenetics = lazy(() => import("./Screens/GeoGenetics"));
 const Users = lazy(() => import("./Screens/Users"));
 const AddGeoGenetics = lazy(() => import("./Screens/AddGeoGenetics"));
 const GeoGeneticEdit = lazy(() => import("./Screens/GeoGeneticEdit"));
@@ -96,26 +95,26 @@ export default function App() {
         <PrivateRoute exact path="/Notification" component={Notification} />
         <PrivateRoute exact path="/Appointments" component={Appointments} />
         <PrivateRoute exact path="/PromoCode" component={PromoCode} />
-        <PrivateRoute exact path="/EditCategory:id" component={EditCategory} />
-        <PrivateRoute exact path="/ProductEdit:id" component={ProductEdit} />
+        <PrivateRoute exact path="/EditCategory/:id" component={EditCategory} />
+        <PrivateRoute exact path="/ProductEdit/:id" component={ProductEdit} />
         <PrivateRoute
           exact
-          path="/GeoGeneticEdit:id"
+          path="/GeoGeneticEdit/:id"
           component={GeoGeneticEdit}
         />
-        <PrivateRoute exact path="/OrderDetails:id" component={OrderDetails} />
+        <PrivateRoute exact path="/OrderDetails/:id" component={OrderDetails} />
         <PrivateRoute
           exact
           path="/FeedbackDetails:id"
           component={FeedbackDetails}
         />
-        <PrivateRoute exact path="/UserDetails:id" component={UserDetails} />
+        <PrivateRoute exact path="/UserDetails/:id" component={UserDetails} />
         <PrivateRoute
           exact
-          path="/AppointmentDetails:id"
+          path="/AppointmentDetails/:id"
           component={AppointmentDetails}
         />
-        <PrivateRoute exact path="/EditUser:id" component={EditUser} />
+        <PrivateRoute exact path="/EditUser/:id" component={EditUser} />
         <PrivateRoute exact path="/Products" component={Products} />
         <PrivateRoute exact path="/AddPromoCode" component={AddPromoCode} />
         <PrivateRoute exact path="/GeoGenetics" component={GeoGenetics} />

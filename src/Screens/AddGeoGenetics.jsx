@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import ImageSelectDropzone from "../components/ImageSelectDropzone";
 import { Link } from "react-router-dom";
 
-import axios from "axios";
-import { baseURL } from "../utils/api";
-import { useSelector } from "react-redux";
-
 import Toasty from "../utils/toast";
 import InputNumber from "../components/InputNumber";
-import Swal from "sweetalert2";
 import { Editor } from "@tinymce/tinymce-react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getGeoGeneticsCategories } from "./Api/Categories";
+import { createProduct } from "./Api/Products";
+import SwalAlert from "../components/SwalAlert";
+import { useRecoilValue } from "recoil";
+import { adminInfo } from "../Recoil";
 
 const AddGeoGenetics = (props) => {
-  const [loading, setloading] = useState(false);
+  const usequeryClient = new useQueryClient();
+  const adminData = useRecoilValue(adminInfo);
 
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
   const [productimage, setproductimage] = useState([]);
-  const [geoGeneticscategory, setgeoGeneticscategory] = useState([]);
+  // const [geoGeneticscategory, setgeoGeneticscategory] = useState([]);
 
   const [name, setname] = useState("");
   const [type, settype] = useState("");
@@ -32,33 +32,25 @@ const AddGeoGenetics = (props) => {
 
   const editorRef = useRef(null);
 
-  useEffect(() => {
-    gettingallCategoriesHandler();
-  }, []);
+  const { isLoading: catloading, data: geoGeneticscategory } = useQuery(["geogenticscategory"], () =>
+  getGeoGeneticsCategories()
+  );
+  const { mutate, isLoading ,status} = useMutation((data) => createProduct(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success','SUCCESS','Product Created Successfully');
+      usequeryClient.invalidateQueries(['products',])
+      usequeryClient.invalidateQueries(['geogeneticsproducts'])
 
-  const gettingallCategoriesHandler = async () => {
-    try {
-      const res = await axios.get(
-        `${baseURL}/category/getGeoGeneticsCategory`,
-        {
-          headers: {
-            Authorization: `Bearer ${adminInfo.token}`
-          }
-        }
-      );
-      console.log("res", res);
-      setgeoGeneticscategory(res?.data?.getAllCategories);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
+      props?.history.push("/GeoGenetics");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
   const addProductHandler = async () => {
     const { project_images } = data;
     console.log("addProductHandler", productimage);
-    setloading(true);
-    try {
       const formData = new FormData();
-      formData.append("id", adminInfo?._id);
+      formData.append("id", adminData?._id);
       formData.append("name", name);
       formData.append("price", price);
       formData.append("countInStock", countInStock);
@@ -70,41 +62,11 @@ const AddGeoGenetics = (props) => {
       project_images.forEach((reciept) => formData.append("reciepts", reciept));
 
       const body = formData;
-      console.log("await");
-      const res = await axios.post(`${baseURL}/product/createProduct`, body, {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      setloading(false);
+      mutate(body)
+     
 
-      console.log("res", res);
-      if (res?.status == 201) {
-        console.log("blockkk");
-        Swal.fire({
-          icon: "success",
-          title: "",
-          text: "Product Created Successfully",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log("blockkk2");
-
-        props?.history.push("/GeoGenetics");
-        console.log("blockkk3");
-      }
-    } catch (error) {
-      setloading(false);
-
-      console.log("error", error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+   
+     
   };
   const editorHandler = (value) => {
     console.log("value", value, typeof value, value?.length);
@@ -127,7 +89,7 @@ const AddGeoGenetics = (props) => {
                             <h1>Add Geo'Genetics Product</h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                            {!loading ? (
+                            {!isLoading ? (
                               <Link
                                 onClick={() =>
                                   data?.project_images?.length > 0 &&

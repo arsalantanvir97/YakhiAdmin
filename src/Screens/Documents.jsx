@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { baseURL, imageURL } from "../utils/api";
-import axios from "axios";
 import moment from "moment";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
-import Swal from "sweetalert2";
 import Toasty from "../utils/toast";
-import InputNumber from "../components/InputNumber";
 import ShowEntries from "../components/ShowEntries";
 import SearchFilter from "../components/SearchFilter";
-import { closeModals } from "../utils/closeModals";
 import ImageSelector from "../components/ImageSelector";
+import { addDocument, deleteDocument, editDocument, getDocuments } from "./Api/Documents";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import SwalAlert from "../components/SwalAlert";
+import Loader from "../components/Loader";
 
-const Documents = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+const Documents = ({ history }) => {
+  const usequeryClient = new useQueryClient();
+
   const [doc_schedule, setdoc_schedule] = useState("");
   const [pdfdocx, setpdfdocx] = useState("");
   const [pdfnamee, setpdfnamee] = useState("");
@@ -28,7 +27,7 @@ const Documents = () => {
   const [is_edit, setIsEdit] = useState(true);
   const [state, setstate] = useState("");
   const [percent, setpercent] = useState(0);
-  const [documents, setdocuments] = useState([]);
+  // const [documents, setdocuments] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchString, setSearchString] = useState("");
@@ -39,116 +38,83 @@ const Documents = () => {
   const [pdfname, setpdfname] = useState("");
 
   const [status, setStatus] = useState("");
-  useEffect(() => {
-    handleGetDocuments();
-  }, [page, perPage, from, to, status, searchString, sort]);
+  const { isFetching, isLoading, data: documents, status: prodstatus, refetch } = useQuery({
+    queryKey: ["documents", page,
+      perPage,
+      searchString,
+      from,
+      to,
+      status,
+      sort],
+    queryFn: () => getDocuments(page,
+      perPage,
+      searchString,
+      from,
+      to,
+      status,
+      sort),
+    keepPreviousData: true
 
-  const handleGetDocuments = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/document/documentlogs`,
-        method: "GET",
-        params: {
-          page,
-          perPage,
-          searchString,
-          from,
-          to,
-          status,
-          sort
-        },
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
+  });
 
-      console.log("res", res);
-      setdocuments(res.data?.document);
-    } catch (err) {
-      console.log("err", err);
+  const { mutate: addDocuments, isLoading: addTaxLoading } = useMutation((data) => addDocument(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'Document Created Successfully');
+      usequeryClient.invalidateQueries(['documents'])
+
+      history.push("/Documents");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+  const { mutate: editDocuments, isLoading: editTaxLoading } = useMutation((data) => editDocument(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'Document Updated Successfully');
+      usequeryClient.invalidateQueries(['documents',])
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+  const deleteDocumentHandler = useMutation(
+    {
+      mutationFn: (data) => deleteDocument(data),
+
+      onSuccess: (res) => {
+        SwalAlert('success', 'SUCCESS', 'Document Deleted Successfully');
+
+        usequeryClient.invalidateQueries(['documents'])
+      },
+      onError: (err) => Error(err?.response?.data?.message),
     }
-  };
+  );
+
+
 
   const addDocumentHandler = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("user_image", image);
-      formData.append("doc_schedule", doc_schedule);
-      formData.append("pdfname", pdfname);
-      const body = formData;
-      console.log("await");
-      const res = await axios.post(`${baseURL}/document/createDocument`, body, {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
+    const formData = new FormData();
+    formData.append("user_image", image);
+    formData.append("doc_schedule", doc_schedule);
+    formData.append("pdfname", pdfname);
+    const body = formData;
+    addDocuments(body)
 
-      console.log("res", res);
 
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Document Created Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetDocuments();
-    } catch (error) {
-      console.log("error", error, error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: error?.response?.data?.message
-          ? error?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
     setdoc_schedule("");
     setimage("");
     setpdfname("");
   };
-  useEffect(() => {
-    console.log("editpdfdocx", editpdfdocx);
-  }, [editpdfdocx]);
 
   const editDocumentHandler = async () => {
-    console.log("editpdfdocx", editpdfdocx);
-    try {
-      const formData = new FormData();
+    const formData = new FormData();
 
-      formData.append("user_image", editpdfimage);
-      formData.append("documentid", documentid);
-      formData.append("doc_schedule", doc_schedule);
-      formData.append("pdfname", editpdfnamee);
-      const body = formData;
-      console.log("await");
-      const res = await axios.post(`${baseURL}/document/editDocument`, body, {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Document Updated Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetDocuments();
-    } catch (error) {
-      console.log("error", error, error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: error?.response?.data?.message
-          ? error?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    formData.append("user_image", editpdfimage);
+    formData.append("documentid", documentid);
+    formData.append("doc_schedule", doc_schedule);
+    formData.append("pdfname", editpdfnamee);
+    const body = formData;
+    editDocuments(body)
+
+
 
     setdoc_schedule("");
     seteditpdfnamee("");
@@ -159,70 +125,41 @@ const Documents = () => {
     console.log("eeee", e?.target?.files[0]);
     setdoc_schedule(e?.target?.files[0]);
   };
-  const deleteDocumentHandler = async (id) => {
-    console.log("id", id);
-    try {
-      const res = await axios({
-        url: `${baseURL}/document/deleteDocument/${id}`,
-        method: "GET",
 
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Document Deleted Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetDocuments();
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: err?.response?.data?.message
-          ? err?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
-  };
 
   return (
     <>
       <div>
-        <div className="app-content dashboard content">
-          <div className="content-wrapper">
-            <div className="content-body">
-              {/* Basic form layout section start */}
-              <section id="configuration" className="user-page">
-                <div className="row">
-                  <div className="col-12">
-                    <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                        <div className="page-title">
-                          <div className="row">
-                            <div className="col-12 col-md-6 col-lg-6">
-                              <h1>Documents</h1>
-                            </div>
-                            <div className="col-12 col-sm-6 col-lg-6 text-right">
-                              <a
-                                href="#"
-                                className="btn btn-primary"
-                                data-toggle="modal"
-                                data-target="#addDocument"
-                              >
-                                Add New
-                              </a>
+        {isLoading ? <Loader /> :
+          <div className="app-content dashboard content">
+            <div className="content-wrapper">
+              <div className="content-body">
+                {/* Basic form layout section start */}
+                <section id="configuration" className="user-page">
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="card rounded">
+                        <div className="card-body p-md-2 p-lg-3 p-xl-4">
+                          <div className="page-title">
+                            <div className="row">
+                              <div className="col-12 col-md-6 col-lg-6">
+                                <h1>Documents</h1>
+                              </div>
+                              <div className="col-12 col-sm-6 col-lg-6 text-right">
+                                <a
+                                  href="#"
+                                  className="btn btn-primary"
+                                  data-toggle="modal"
+                                  data-target="#addDocument"
+                                >
+                                  Add New
+                                </a>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="dataTables_wrapper">
-                          <div className="user-listing-top">
-                           
+                          <div className="dataTables_wrapper">
+                            <div className="user-listing-top">
+
                               <div className="row align-items-end d-flex mb-1">
                                 <div className="col-xl-9">
                                   <div className="row align-items-center justify-content-start">
@@ -250,7 +187,7 @@ const Documents = () => {
                                         <option value={"des"}>Earlier</option>
                                       </select>
                                     </div>
-                                 
+
                                   </div>
                                 </div>
                                 <div className="col-xl-3">
@@ -262,132 +199,132 @@ const Documents = () => {
                                           searchString={searchString}
                                           setSearchString={setSearchString}
                                           setPage={setPage}
-                                          functionhandler={handleGetDocuments}
                                         />
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            
-                          </div>
-                          <div className="row row-table">
-                            <div className="main-tabble table-responsive">
-                              <div className="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                                <div className="row">
-                                  <div className="col-sm-12">
-                                    <table className="table table-borderless  dataTable">
-                                      <thead>
-                                        {documents?.docs?.length > 0 && (
-                                          <tr>
-                                            <th className="sorting_asc">ID</th>
-                                            <th className="sorting">
-                                              Document Name
-                                            </th>
-                                            <th className="sorting">
-                                              Uploaded Date
-                                            </th>
-                                            <th className="sorting">Actions</th>
-                                          </tr>
-                                        )}
-                                      </thead>
-                                      <tbody>
-                                        {documents?.docs?.length > 0 ? (
-                                          documents?.docs?.map((doc, index) => (
+
+                            </div>
+                            <div className="row row-table">
+                              <div className="main-tabble table-responsive">
+                                <div className="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                                  <div className="row">
+                                    <div className="col-sm-12">
+                                      <table className="table table-borderless  dataTable">
+                                        <thead>
+                                          {documents?.docs?.length > 0 && (
                                             <tr>
-                                              <td className>{index + 1}</td>
-                                              <td>{doc?.pdfname}</td>
-                                              <td>
-                                                {" "}
-                                                {moment(doc?.createdAt).format(
-                                                  "LL"
-                                                )}
-                                              </td>
-                                              <td>
-                                                <div className="btn-group ml-1">
-                                                  <button
-                                                    type="button"
-                                                    className="btn btn-drop-table btn-sm"
-                                                    data-toggle="dropdown"
-                                                  >
-                                                    <i className="fa fa-ellipsis-v" />
-                                                  </button>
-                                                  <div className="dropdown-menu">
-                                                    <a
-                                                      className="dropdown-item"
-                                                      href="#"
-                                                      data-toggle="modal"
-                                                      data-target="#viewDocument"
-                                                      onClick={() => {
-                                                        setpdfnamee(
-                                                          doc?.pdfname
-                                                        );
-                                                        setpdfdocx(
-                                                          doc?.pdfdocs
-                                                        );
-                                                        setpdfimage(
-                                                          doc?.pdfimage
-                                                        );
-                                                      }}
-                                                    >
-                                                      <i className="fa fa-eye" />
-                                                      View Detail
-                                                    </a>
-                                                    <Link
-                                                    to="#"
-                                                    onClick={() => {
-                                                      deleteDocumentHandler(
-                                                        doc?._id
-                                                      );
-                                                    }}
-                                                    className="dropdown-item"
-                                                  >
-                                                    <i className="fa fa-trash-alt" />
-                                                    Remove
-                                                  </Link>
-                                                    <a
-                                                      className="dropdown-item"
-                                                      href="#"
-                                                      data-toggle="modal"
-                                                      data-target="#editDocument"
-                                                      onClick={() => {
-                                                        setdoc_schedule(
-                                                          doc?.pdfdocs
-                                                        );
-                                                        seteditpdfnamee(
-                                                          doc?.pdfname
-                                                        );
-                                                        seteditpdfimage(
-                                                          doc?.pdfimage
-                                                        );
-                                                        setdocumentid(doc?._id);
-                                                      }}
-                                                    >
-                                                      <i className="far fa-edit" />
-                                                      Edit
-                                                    </a>
-                                                  </div>
-                                                </div>
-                                              </td>
+                                              <th className="sorting_asc">ID</th>
+                                              <th className="sorting">
+                                                Document Name
+                                              </th>
+                                              <th className="sorting">
+                                                Uploaded Date
+                                              </th>
+                                              <th className="sorting">Actions</th>
                                             </tr>
-                                          ))
-                                        ) : (
-                                          <p>No Document</p>
-                                        )}
-                                      </tbody>
-                                    </table>
+                                          )}
+                                        </thead>
+                                        <tbody>
+                                          {documents?.docs?.length > 0 ? (
+                                            documents?.docs?.map((doc, index) => (
+                                              <tr>
+                                                <td className>{index + 1}</td>
+                                                <td>{doc?.pdfname}</td>
+                                                <td>
+                                                  {" "}
+                                                  {moment(doc?.createdAt).format(
+                                                    "LL"
+                                                  )}
+                                                </td>
+                                                <td>
+                                                  <div className="btn-group ml-1">
+                                                    <button
+                                                      type="button"
+                                                      className="btn btn-drop-table btn-sm"
+                                                      data-toggle="dropdown"
+                                                    >
+                                                      <i className="fa fa-ellipsis-v" />
+                                                    </button>
+                                                    <div className="dropdown-menu">
+                                                      <a
+                                                        className="dropdown-item"
+                                                        href="#"
+                                                        data-toggle="modal"
+                                                        data-target="#viewDocument"
+                                                        onClick={() => {
+                                                          setpdfnamee(
+                                                            doc?.pdfname
+                                                          );
+                                                          setpdfdocx(
+                                                            doc?.pdfdocs
+                                                          );
+                                                          setpdfimage(
+                                                            doc?.pdfimage
+                                                          );
+                                                        }}
+                                                      >
+                                                        <i className="fa fa-eye" />
+                                                        View Detail
+                                                      </a>
+                                                      <Link
+                                                        to="#"
+                                                        onClick={() => {
+                                                          deleteDocumentHandler.mutate(
+                                                            doc?._id
+                                                          );
+                                                        }}
+                                                        className="dropdown-item"
+                                                      >
+                                                        <i className="fa fa-trash-alt" />
+                                                        Remove
+                                                      </Link>
+                                                      <a
+                                                        className="dropdown-item"
+                                                        href="#"
+                                                        data-toggle="modal"
+                                                        data-target="#editDocument"
+                                                        onClick={() => {
+                                                          setdoc_schedule(
+                                                            doc?.pdfdocs
+                                                          );
+                                                          seteditpdfnamee(
+                                                            doc?.pdfname
+                                                          );
+                                                          seteditpdfimage(
+                                                            doc?.pdfimage
+                                                          );
+                                                          setdocumentid(doc?._id);
+                                                        }}
+                                                      >
+                                                        <i className="far fa-edit" />
+                                                        Edit
+                                                      </a>
+                                                    </div>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            ))
+                                          ) : (
+                                            <p>No Document</p>
+                                          )}
+                                        </tbody>
+                                      </table>
+                                    </div>
                                   </div>
+                                  {documents?.docs?.length > 0 && (
+                                    <Pagination
+                                      totalDocs={documents?.totalDocs}
+                                      totalPages={documents?.totalPages}
+                                      currentPage={documents?.page}
+                                      setPage={setPage}
+                                      hasNextPage={documents?.hasNextPage}
+                                      hasPrevPage={documents?.hasPrevPage}
+                                    />
+                                  )}
                                 </div>
-                                {documents?.docs?.length > 0 && (
-                                  <Pagination
-                                    totalDocs={documents?.totalDocs}
-                                    totalPages={documents?.totalPages}
-                                    currentPage={documents?.page}
-                                    setPage={setPage}
-                                    hasNextPage={documents?.hasNextPage}
-                                    hasPrevPage={documents?.hasPrevPage}
-                                  />
-                                )}
                               </div>
                             </div>
                           </div>
@@ -395,11 +332,10 @@ const Documents = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              </section>
+                </section>
+              </div>
             </div>
-          </div>
-        </div>
+          </div>}
         {/* Add Document Popup */}
         <div
           className="modal fade delete-product p-0"
@@ -488,13 +424,13 @@ const Documents = () => {
                       aria-label="Close"
                       onClick={() =>
                         pdfname?.length > 0 &&
-                        image?.name?.length > 0 &&
-                        doc_schedule?.name?.length > 0
+                          image?.name?.length > 0 &&
+                          doc_schedule?.name?.length > 0
                           ? addDocumentHandler()
                           : Toasty(
-                              "error",
-                              `Please fill out all the required fields!`
-                            )
+                            "error",
+                            `Please fill out all the required fields!`
+                          )
                       }
                     >
                       Add
@@ -655,9 +591,9 @@ const Documents = () => {
                         editpdfnamee?.length > 0
                           ? editDocumentHandler()
                           : Toasty(
-                              "error",
-                              `Please fill out all the required fields!`
-                            )
+                            "error",
+                            `Please fill out all the required fields!`
+                          )
                       }
                     >
                       Update

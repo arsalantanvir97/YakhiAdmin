@@ -1,22 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import { baseURL } from "../utils/api";
-import axios from "axios";
 import moment from "moment";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
-import Swal from "sweetalert2";
 import ShowEntries from "../components/ShowEntries";
 import Calender from "../components/Calender";
 import SearchFilter from "../components/SearchFilter";
 import Toasty from "../utils/toast";
 import { Editor } from "@tinymce/tinymce-react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { editGeoGeneticsText, getGeogeneticsOrders } from "./Api/Orders";
+import Loader from "../components/Loader";
 
 const GeoGeneticsOrders = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+  const usequeryClient = new useQueryClient();
   const [sort, setsort] = useState();
 
   const [page, setPage] = useState(1);
@@ -31,69 +28,95 @@ const GeoGeneticsOrders = () => {
   });
   const editorRef = useRef(null);
 
+  const { isFetching, isLoading,data, status: prodstatus, refetch } = useQuery({
+    queryKey: ["geogeneticsorder", page, perPage, from, to, status, searchString, sort, 
+    ],
+    queryFn: () => getGeogeneticsOrders(page, perPage, from, to, status, searchString, sort, 
+    ),
+      // onSuccess: (data) => {
+      //   setgeogenticstext(data?.geogenetictext?.text);
+      //   console.log("data", data);
+      //   setorders(data?.order);
+      // }
+
+  });
   useEffect(() => {
-    handleGetOrders();
-  }, [page, perPage, from, to, status, searchString, sort]);
+    setgeogenticstext(data?.geogenetictext?.text);
+    //   console.log("data", data);
+      setorders(data?.order);
+  }, [data])
 
-  const handleGetOrders = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/order/geoGeneticslogs`,
-        method: "GET",
-        params: {
-          page,
-          perPage,
-          searchString,
-          from,
-          to,
-          status,
-          sort
-        },
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      setgeogenticstext(res?.data?.geogenetictext?.text);
-      console.log("res", res);
-      setorders(res.data?.order);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+  const { mutate, isLoading:updateStatusLoading } = useMutation((data) => editGeoGeneticsText(data), {
+    retry: false,
+    onSuccess: (res) => {
+      // SwalAlert('success','SUCCESS','Order Updated Successfully');
 
-  const editGeoGeneticsText = async function () {
-    try {
-      const res = await axios.post(
-        `${baseURL}/order/editgeogeneticstext`,
-        { text: geogenticstext },
-        {
-          headers: {
-            Authorization: `Bearer ${adminInfo.token}`
-          }
-        }
-      );
+      usequeryClient.invalidateQueries(['geogeneticsorder'])
+    //  history.push("/");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
 
-      console.log("res", res);
 
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Text Updated Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: error?.response?.data?.message
-          ? error?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
-  };
+  // const handleGetOrders = async () => {
+  //   try {
+  //     const res = await axios({
+  //       url: `${baseURL}/order/geoGeneticslogs`,
+  //       method: "GET",
+  //       params: {
+  //         page,
+  //         perPage,
+  //         searchString,
+  //         from,
+  //         to,
+  //         status,
+  //         sort
+  //       },
+  //       headers: {
+  //         Authorization: `Bearer ${adminInfo.token}`
+  //       }
+  //     });
+  //     setgeogenticstext(res?.data?.geogenetictext?.text);
+  //     console.log("res", res);
+  //     setorders(res.data?.order);
+  //   } catch (err) {
+  //     console.log("err", err);
+  //   }
+  // };
+
+  // const editGeoGeneticsText = async function () {
+  //   try {
+  //     const res = await axios.post(
+  //       `${baseURL}/order/editgeogeneticstext`,
+  //       { text: geogenticstext },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${adminInfo.token}`
+  //         }
+  //       }
+  //     );
+
+  //     console.log("res", res);
+
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "",
+  //       text: "Text Updated Successfully",
+  //       showConfirmButton: false,
+  //       timer: 1500
+  //     });
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "ERROR",
+  //       text: error?.response?.data?.message
+  //         ? error?.response?.data?.message
+  //         : "Internal Server Error",
+  //       showConfirmButton: false,
+  //       timer: 1500
+  //     });
+  //   }
+  // };
 
   const editorHandler = (value) => {
     console.log("value", value, typeof value, value?.length);
@@ -102,6 +125,7 @@ const GeoGeneticsOrders = () => {
 
   return (
     <>
+    {isLoading? <Loader/>:
       <div className="app-content dashboard content">
         <div className="content-wrapper">
           <div className="content-body">
@@ -174,7 +198,6 @@ const GeoGeneticsOrders = () => {
                                       searchString={searchString}
                                       setSearchString={setSearchString}
                                       setPage={setPage}
-                                      functionhandler={handleGetOrders}
                                     />
                                   </div>
                                 </div>
@@ -227,7 +250,7 @@ const GeoGeneticsOrders = () => {
                                                 </button>
                                                 <div className="dropdown-menu">
                                                   <Link
-                                                    to={`/OrderDetails${orderr?._id}`}
+                                                    to={`/OrderDetails/${orderr?._id}`}
                                                     className="dropdown-item"
                                                   >
                                                     <i className="fa fa-eye" />
@@ -263,7 +286,7 @@ const GeoGeneticsOrders = () => {
             </section>
           </div>
         </div>
-      </div>
+      </div>}
       <div
         className="modal fade delete-product p-0"
         id="editText"
@@ -319,7 +342,7 @@ const GeoGeneticsOrders = () => {
                 aria-label="Close"
                 onClick={() =>
                   geogenticstext?.length > 0
-                    ? editGeoGeneticsText()
+                    ? mutate(geogenticstext)
                     : Toasty(
                         "error",
                         `Please fill out all the required fields!`

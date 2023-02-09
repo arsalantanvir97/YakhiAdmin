@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { baseURL } from "../utils/api";
-import axios from "axios";
 import moment from "moment";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
-import Swal from "sweetalert2";
 import Toasty from "../utils/toast";
 import InputNumber from "../components/InputNumber";
 import ShowEntries from "../components/ShowEntries";
 import SearchFilter from "../components/SearchFilter";
 import { closeModals } from "../utils/closeModals";
-const Taxes = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+import { addTax, deleteTax, editTax, getTaxes } from "./Api/Auth/Taxes";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import SwalAlert from "../components/SwalAlert";
+import Loader from "../components/Loader";
+const Taxes = ({history}) => {
+  const usequeryClient = new useQueryClient();
+
   const [state, setstate] = useState("");
   const [percent, setpercent] = useState(0);
-  const [taxes, settaxes] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchString, setSearchString] = useState("");
@@ -26,143 +24,65 @@ const Taxes = () => {
   const [sort, setsort] = useState();
   const [taxid, settaxid] = useState();
   const [status, setStatus] = useState("");
-  useEffect(() => {
-    handleGetTaxes();
-  }, [page, perPage, from, to, status, searchString, sort]);
 
-  const handleGetTaxes = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/tax/taxlogs`,
-        method: "GET",
-        params: {
-          page,
-          perPage,
-          searchString,
-          from,
-          to,
-          status,
-          sort
-        },
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
+  const { isFetching, isLoading, data: taxes, status: prodstatus, refetch } = useQuery({
+    queryKey: ["taxes", page, perPage, from, to, status, searchString, sort],
+    queryFn: () => getTaxes(page, perPage, from, to, status, searchString, sort),
+    keepPreviousData: true
 
-      console.log("res", res);
-      settaxes(res.data?.tax);
-    } catch (err) {
-      console.log("err", err);
+  });
+
+  const { mutate: addTaxes, isLoading: addTaxLoading } = useMutation((data) => addTax(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'Tax Added Successfully');
+      usequeryClient.invalidateQueries(['taxes'])
+
+      history.push("/Taxes");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+  const { mutate: editTaxes, isLoading: editTaxLoading } = useMutation((data) => editTax(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'Tax Edited Successfully');
+      usequeryClient.invalidateQueries(['taxes',])
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+  const deleteTaxHandler = useMutation(
+    {
+      mutationFn: (data) => deleteTax(data),
+
+      onSuccess: (res) => {
+        SwalAlert('success', 'SUCCESS', 'Tax Deleted Successfully');
+
+        usequeryClient.invalidateQueries(['taxes'])
+      },
+      onError: (err) => Error(err?.response?.data?.message),
     }
-  };
+  );
+
 
   const addTaxHandler = async () => {
-    try {
-      const res = await axios.post(
-        `${baseURL}/tax/createTax`,
-        { percent: Number(percent), state },
-        {
-          headers: {
-            Authorization: `Bearer ${adminInfo.token}`
-          }
-        }
-      );
-      Swal.fire({
-        icon: "success",
-        title: "SUCCESS",
-        text: "Tax Set Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetTaxes();
-    } catch (error) {
-      console.log("error", error, error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: error?.response?.data?.message
-          ? error?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    const body = { percent: Number(percent), state }
+    addTaxes(body)
     setpercent(0);
     setstate("");
   };
-  useEffect(() => {
-    console.log("state", state, percent);
-  }, [state]);
 
   const editTaxHandler = async () => {
-    try {
-      const res = await axios.post(
-        `${baseURL}/tax/editTax`,
-        { percent: Number(percent), state, taxid },
-        {
-          headers: {
-            Authorization: `Bearer ${adminInfo.token}`
-          }
-        }
-      );
-      Swal.fire({
-        icon: "success",
-        title: "SUCCESS",
-        text: "Tax Updated Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetTaxes();
-    } catch (error) {
-      console.log("error", error, error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: error?.response?.data?.message
-          ? error?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    const body = { percent: Number(percent), state, taxid }
+    editTaxes(body)
     setpercent(0);
     setstate("");
     closeModals();
-  };
-  const deleteTaxHandler = async (id) => {
-    console.log("id", id);
-    try {
-      const res = await axios({
-        url: `${baseURL}/tax/deleteTax/${id}`,
-        method: "GET",
-
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Tax  Deleted Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetTaxes();
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: err?.response?.data?.message
-          ? err?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
-  };
+  }
+ 
   return (
     <>
       <div>
+        {isLoading?<Loader/>:
         <div className="app-content dashboard content">
           <div className="content-wrapper">
             <div className="content-body">
@@ -242,7 +162,6 @@ const Taxes = () => {
                                         searchString={searchString}
                                         setSearchString={setSearchString}
                                         setPage={setPage}
-                                        functionhandler={handleGetTaxes}
                                       />
                                     </div>
                                   </div>
@@ -295,7 +214,7 @@ const Taxes = () => {
                                                       to="#"
                                                       className="dropdown-item"
                                                       onClick={() => {
-                                                        deleteTaxHandler(
+                                                        deleteTaxHandler.mutate(
                                                           taxx?._id
                                                         );
                                                       }}
@@ -349,7 +268,7 @@ const Taxes = () => {
               </section>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
       <div
         className="modal fade tax-modal add-tax p-0"
@@ -465,9 +384,9 @@ const Taxes = () => {
                         percent?.length > 0 && state?.length > 0
                           ? addTaxHandler()
                           : Toasty(
-                              "error",
-                              `Please fill out all the required fields!`
-                            )
+                            "error",
+                            `Please fill out all the required fields!`
+                          )
                       }
                     >
                       Add
@@ -535,9 +454,9 @@ const Taxes = () => {
                         percent?.length > 0 && state?.length > 0
                           ? editTaxHandler()
                           : Toasty(
-                              "error",
-                              `Please fill out all the required fields!`
-                            )
+                            "error",
+                            `Please fill out all the required fields!`
+                          )
                       }
                     >
                       Update

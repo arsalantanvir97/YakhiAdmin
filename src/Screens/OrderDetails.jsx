@@ -1,81 +1,80 @@
 import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { baseURL, imageURL } from "../utils/api";
 import Toasty from "../utils/toast";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getOrderDetails, updateOrderStatusHandler } from "./Api/Orders";
+import SwalAlert from "../components/SwalAlert";
 
 const OrderDetails = ({ match, history }) => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
-  const [orderdetails, setorderdetails] = useState("");
+  const usequeryClient = new useQueryClient();
+
+  // const [orderdetails, setorderdetails] = useState("");
   const [status, setstatus] = useState("InProcess");
   const [hideDownload, sethideDownload] = useState(false);
   const inputRef = useRef(null);
   const inputRef2 = useRef(null);
 
-  useEffect(() => {
-    handleGetFeedback();
-  }, []);
+  const { isLoading: orderloading, data: orderdetails } = useQuery(["order", match.params.id], () =>
+  getOrderDetails(match.params.id)
+  );
 
-  const handleGetFeedback = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/order/getOrderById/${match?.params?.id}`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      console.log("res", res);
-      setorderdetails(res?.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  const updateOrderStatusHandler = async () => {
-    console.log("createCategoryHandler");
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      };
-      const res = await axios.post(
-        `${baseURL}/order/updateOrderToDelivered/${orderdetails?._id}`,
-        { status },
-        config
-      );
-      console.log("res", res);
-      if (res?.status == 200) {
-        console.log("blockkk");
-        Swal.fire({
-          icon: "success",
-          title: "",
-          text: "Order Updated Successfully",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log("blockkk2");
+  const { mutate, isLoading:updateStatusLoading } = useMutation((data) => updateOrderStatusHandler(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success','SUCCESS','Order Updated Successfully');
 
-        history.push("/Orders");
-        console.log("blockkk3");
-      }
-    } catch (error) {
-      console.log("error", error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
-  };
+      usequeryClient.invalidateQueries(['orders'])
+      usequeryClient.invalidateQueries(['order',match.params.id])
+     history.push("/Orders");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+  // const updateOrderStatusHandler = async () => {
+  //   console.log("createCategoryHandler");
+  //   try {
+  //     const config = {
+  //       headers: {
+  //         Authorization: `Bearer ${adminInfo.token}`
+  //       }
+  //     };
+  //     const res = await axios.post(
+  //       `${baseURL}/order/updateOrderToDelivered/${orderdetails?._id}`,
+  //       { status },
+  //       config
+  //     );
+  //     console.log("res", res);
+  //     if (res?.status == 200) {
+  //       console.log("blockkk");
+  //       Swal.fire({
+  //         icon: "success",
+  //         title: "",
+  //         text: "Order Updated Successfully",
+  //         showConfirmButton: false,
+  //         timer: 1500
+  //       });
+  //       console.log("blockkk2");
+
+  //       history.push("/Orders");
+  //       console.log("blockkk3");
+  //     }
+  //   } catch (error) {
+  //     console.log("error", error?.response?.data);
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "ERROR",
+  //       text: "Internal Server Error",
+  //       showConfirmButton: false,
+  //       timer: 1500
+  //     });
+  //   }
+  // };
+
   const printDocument = async (data) => {
     await sethideDownload(true);
     html2canvas(data.current).then((canvas) => {
@@ -166,10 +165,7 @@ const OrderDetails = ({ match, history }) => {
                                   <div className="row">
                                     <div className="col-12">
                                       <h4>Order Status</h4>
-                                      {orderdetails?.isPaid == true && (
-                                        <>
-                                          {orderdetails?.isDelivered ==
-                                            "Pending" && (
+                                      {orderdetails?.isPaid == true && orderdetails?.isDelivered =="Pending"?
                                             <>
                                               <div className="d-block mt-1">
                                                 <div className="form-check form-check-inline radio">
@@ -211,9 +207,9 @@ const OrderDetails = ({ match, history }) => {
                                               </div>
                                               <Link
                                                 to="#"
-                                                onClick={
-                                                  updateOrderStatusHandler
-                                                }
+                                                onClick={()=>{
+                                                  mutate({id:match.params.id,status})
+                                                }}
                                                 className="btn btn-primary mt-2"
                                                 data-toggle="modal"
                                                 data-target=".order-update"
@@ -221,9 +217,8 @@ const OrderDetails = ({ match, history }) => {
                                                 Update Status
                                               </Link>{" "}
                                             </>
-                                          )}
-                                        </>
-                                      )}
+                                       
+                                      :null}
                                       <p>
                                         {orderdetails?.isPaid == false
                                           ? "Not paid"

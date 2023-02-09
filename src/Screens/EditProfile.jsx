@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import ImageSelector from "../components/ImageSelector";
-import { updateAdminInfoAction } from "../actions/adminActions";
-import Toasty from "../utils/toast";
-import { validateEmail } from "../utils/ValidateEmail";
+import { useRecoilState } from "recoil";
+import { adminInfo } from "../Recoil";
+import { useMutation } from "react-query";
+import { editAdminProfile } from "./Api/Auth";
 
 const EditProfile = () => {
   const [loading, setloading] = useState(false);
@@ -15,27 +15,31 @@ const EditProfile = () => {
 
   const [image, setimage] = useState();
   const [is_edit, setIsEdit] = useState(false);
-  const dispatch = useDispatch();
+  const [adminData, setadminData] = useRecoilState(adminInfo);
 
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
 
   useEffect(() => {
-    if (adminInfo) {
-      setfirstName(adminInfo?.firstName);
-      setlastName(adminInfo?.lastName);
-      setimage(adminInfo?.userImage);
-      setemail(adminInfo?.email);
+    if (adminData) {
+      setfirstName(adminData?.firstName);
+      setlastName(adminData?.lastName);
+      setimage(adminData?.userImage);
+      setemail(adminData?.email);
     }
-  }, [adminInfo]);
+  }, [adminData]);
+
+  const { mutate, isLoading ,status} = useMutation((data) => editAdminProfile(data), {
+    retry: false,
+    onSuccess: (res) => {
+      setadminData(res?.data);
+
+      // localStorage.setItem("TokenAdminTodaysPainter", res.data.token);
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+
 
   const updateProfileData = async () => {
-    const emailvalidation = validateEmail(email);
-    console.log("emmmm", emailvalidation);
-    console.log("addEmployeeHandler");
-    if (emailvalidation == true) {
-      if (firstName?.length > 0 && lastName?.length > 0 && email.length > 0) {
-        setloading(true);
+  
         const formData = new FormData();
         formData.append("user_image", image);
         formData.append("firstName", firstName);
@@ -43,18 +47,10 @@ const EditProfile = () => {
         formData.append("email", email);
 
         const body = formData;
-        await dispatch(updateAdminInfoAction(body));
-        setloading(false);
-
+        mutate(body)
+      
         setIsEdit(false);
-      } else {
-        setloading(false);
-        Toasty("error", `Please fill out all the required fields`);
-      }
-    } else {
-      setloading(false);
-      Toasty("error", `Please enter a valid email`);
-    }
+    
   };
   return (
     <div className="app-content content dashboard">
@@ -79,6 +75,8 @@ const EditProfile = () => {
                       </div>
                     </div>
                     <div className="user-block">
+                      {/* <h1>{status && status}</h1> */}
+                      {/* <h1>{isLoading && isLoading}</h1> */}
                       <div className="row justify-content-center">
                         <div className="col-12 col-lg-10 col-md-8 col-xl-5 light-primary-bg text-center">
                           <div className="d-flex justify-content-center mb-3">
@@ -161,6 +159,7 @@ const EditProfile = () => {
                             <div className="col-12">
                               {!loading ? (
                                 <Link
+                                
                                   to="#"
                                   onClick={() => {
                                     if (!is_edit) {

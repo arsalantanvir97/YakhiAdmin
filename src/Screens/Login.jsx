@@ -1,44 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { adminLoginAction } from "../actions/adminActions";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Toasty from "../utils/toast";
-import { validateEmail } from "../utils/ValidateEmail";
+import { useMutation } from "react-query";
+
+import { useRecoilState } from "recoil";
+import { login } from "./Api/Auth";
+import { adminInfo } from "../Recoil";
+
 export default function Login({ history }) {
-  const dispatch = useDispatch();
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [showicon, setshowicon] = useState(true);
   const [loading, setloading] = useState(false);
+  const [adminData, setadminData] = useRecoilState(adminInfo);
 
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
-
-  const submitHandler = () => {
-    const emailvalidation = validateEmail(email);
-    console.log("emmmm", emailvalidation);
-    console.log("addEmployeeHandler");
-    if (emailvalidation == true) {
-      setloading(true);
-
-      console.log("submitHandler");
-      dispatch(adminLoginAction(email, password, history));
-      setloading(false);
-
-    } else {
-      setloading(false);
-
-      Toasty("error", `Please enter a valid email`);
-    }
-  };
-
-  useEffect(() => {
-    if (adminInfo) {
+  const { mutate, isLoading, status } = useMutation((data) => login(data), {
+    retry: false,
+    onSuccess: (res) => {
+      console.log('ressssss', res)
+      setadminData(res?.data);
+      localStorage.setItem(
+        "token",
+        JSON.stringify(res?.data.token)
+      );
       history.replace("/Dashboard");
-    }
-  }, [adminInfo]);
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
 
   return (
     <div>
@@ -115,7 +104,7 @@ export default function Login({ history }) {
                     </div>
                     <div className="row">
                       <div className="d-block col-12 text-center mt-4">
-                      {!loading ? (
+                        {/* {!loading ? (
                         <button
                           type="button"
                           onClick={() => {
@@ -131,7 +120,16 @@ export default function Login({ history }) {
                           Login
                         </button> ) : (
                               <i className="fas fa-spinner fa-pulse"></i>
-                            )}
+                            )} */}
+
+                        {isLoading ? <i className="fas fa-spinner fa-pulse"></i> : <button
+                          disabled={isLoading}
+                          type="button"
+                          onClick={() => mutate({ email, password })}
+                          className="btn btn-primary btn-login"
+                        >
+                          Login
+                        </button>}
                       </div>
                     </div>
                   </form>

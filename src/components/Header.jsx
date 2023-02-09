@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../actions/adminActions";
+import { Link, useHistory } from "react-router-dom";
 import { baseURL, imageURL } from "../utils/api";
 import moment from "moment";
-import { markReadAllNotif } from "../actions/notifAction";
-import axios from "axios";
+import { adminInfo } from "../Recoil";
+import { useRecoilState } from "recoil";
+import { closeModals } from "../utils/closeModals";
 
 export default function Header(props) {
-  const [notifications, setnotifications] = useState([]);
-  const dispatch = useDispatch();
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
-  const Notif = useSelector((state) => state.Notif);
-  const { notifcationdata } = Notif;
-  const logOutHandler = async () => {
-    dispatch(logout());
-  };
-  
+  const history = useHistory()
+  const [adminData, setadminData] = useRecoilState(adminInfo);
+  const logOutHandler = () => {
+    setadminData(null)
+    closeModals()
+    localStorage.removeItem("token");
+    history.replace("/");
+  }
   return (
     <>
       <div>
@@ -63,15 +60,15 @@ export default function Header(props) {
                   <li className="dropdown dropdown-notification nav-item">
                     <Link to='/Notification'
                       className="nav-link nav-link-label"
-                   
+
                       data-toggle="dropdown"
                       aria-expanded="true"
                     >
                       <i className="fa fa-bell" />{" "}
-                      
+
                     </Link>
                     {/* <ul className="dropdown-menu dropdown-menu-media dropdown-menu-right"> */}
-                      {/* <li className="dropdown-menu-header">
+                    {/* <li className="dropdown-menu-header">
                         <h6 className="dropdown-header m-0 d-flex justify-content-between align-items-center">
                           {" "}
                           <span className="grey darken-2">
@@ -85,7 +82,7 @@ export default function Header(props) {
                           </a>{" "}
                         </h6>
                       </li> */}
-                      {/* <li
+                    {/* <li
                         className="scrollable-container media-list ps-container ps-theme-dark"
                         data-ps-id="d5fef0e9-91e2-3ba9-4f25-864856e1fad0"
                       >
@@ -295,16 +292,16 @@ export default function Header(props) {
                         {" "}
                         <img
                           src={
-                            adminInfo?.userImage &&
-                            adminInfo?.userImage !== null
-                              ? `${imageURL}${adminInfo?.userImage}`
+                            adminData?.userImage &&
+                              adminData?.userImage !== null
+                              ? `${imageURL}${adminData?.userImage}`
                               : "images/avatar.jpg"
                           }
                           alt="avatar"
                         />{" "}
                       </span>
                       <span className="user-name">
-                        {adminInfo?.firstName + " " + adminInfo?.lastName}
+                        {adminData?.firstName + " " + adminData?.lastName}
                       </span>
                     </a>
                     <div className="dropdown-menu dropdown-menu-right">

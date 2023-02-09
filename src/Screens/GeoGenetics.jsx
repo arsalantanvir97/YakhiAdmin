@@ -3,19 +3,22 @@ import { baseURL } from "../utils/api";
 import axios from "axios";
 import moment from "moment";
 import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
 import Swal from "sweetalert2";
-let geoGeneticsid = "";
+import { getGeoGeneticsCategories } from "./Api/Categories";
+import { changeStatus, deleteProduct, getGeogenticsProducts } from "./Api/Products";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import SwalAlert from "../components/SwalAlert";
+import Loader from "../components/Loader";
+// let geoGeneticsid = "";
 const GeoGenetics = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
-  const [sort, setsort] = useState();
+  const usequeryClient = new useQueryClient();
 
-  const [products, setproducts] = useState([]);
-  const [geogeneticscategory, setgeogeneticscategory] = useState([]);
+  const [sort, setsort] = useState();
+  // const [products, setproducts] = useState([]);
+  // const [geogeneticscategory, setgeogeneticscategory] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchString, setSearchString] = useState("");
@@ -23,122 +26,165 @@ const GeoGenetics = () => {
   const [to, setTo] = useState("");
   const [status, setStatus] = useState("");
   const [category, setcategory] = useState();
-  const gettingallCategoriesHandler = async () => {
-    const res = await axios.get(`${baseURL}/category/getGeoGeneticsCategory`, {
-      headers: {
-        Authorization: `Bearer ${adminInfo.token}`
-      }
-    });
-    console.log("res", res);
-    setgeogeneticscategory(res?.data?.getAllCategories);
-    geoGeneticsid = res?.data?.getAllCategories?._id;
-  };
 
-  useEffect(() => {
-    handleGetProducts();
-  }, [page, perPage, from, to, status, searchString, sort]);
+  const { isLoading: catloading, data: geogeneticscategory } = useQuery(["geogenticscategory"], () =>
+  getGeoGeneticsCategories()
+  );
+  const { isFetching, isLoading, data:products, status: prodstatus, refetch } = useQuery({
+    enabled: geogeneticscategory?._id?.length > 0,
+    queryKey: ["geogeneticsproducts", page, perPage, from, to, status, searchString, sort, geogeneticscategory?._id
+    ],
+    queryFn: () => getGeogenticsProducts(page, perPage, from, to, status, searchString, sort, geogeneticscategory?._id
+    ),
+    keepPreviousData: true
 
-  const handleGetProducts = async () => {
-    if (!geoGeneticsid?.length > 0) {
-      await gettingallCategoriesHandler();
+  });
+
+
+  // const gettingallCategoriesHandler = async () => {
+  //   const res = await axios.get(`${baseURL}/category/getGeoGeneticsCategory`, {
+  //     headers: {
+  //       Authorization: `Bearer ${adminInfo.token}`
+  //     }
+  //   });
+
+  //   console.log("res", res);
+  //   setgeogeneticscategory(res?.data?.getAllCategories);
+  //   geoGeneticsid = res?.data?.getAllCategories?._id;
+  // };
+
+  // useEffect(() => {
+  //   handleGetProducts();
+  // }, [page, perPage, from, to, status, searchString, sort]);
+
+  // const handleGetProducts = async () => {
+  //   if (!geogeneticscategory?._id?.length > 0) {
+  //     await gettingallCategoriesHandler();
+  //   }
+
+  //   console.log(
+  //     "geogeneticscategory?._id",
+  //     geogeneticscategory?._id,
+  //     geogeneticscategory?._id
+  //   );
+  //   try {
+  //     const res = await axios({
+  //       url: `${baseURL}/product/geoGeneticslogs`,
+  //       method: "GET",
+  //       params: {
+  //         page,
+  //         perPage,
+  //         searchString,
+  //         from,
+  //         to,
+  //         id: geogeneticscategory?._id,
+  //         status,
+  //         sort
+  //       },
+  //       headers: {
+  //         Authorization: `Bearer ${adminInfo.token}`
+  //       }
+  //     });
+
+  //     console.log("res", res);
+  //     setproducts(res.data?.product);
+  //   } catch (err) {
+  //     console.log("err", err);
+  //   }
+  // };
+
+  const handleChangeStatus = useMutation(
+    {
+      mutationFn: (data) => changeStatus(data),
+
+      onSuccess: (res) => {
+        SwalAlert('success', 'SUCCESS', res?.data?.message);
+
+        usequeryClient.invalidateQueries(['geogeneticsproducts'])
+      },
+      onError: (err) => Error(err?.response?.data?.message),
     }
+  );
+  const deleteProductHandler = useMutation(
+    {
+      mutationFn: (data) => deleteProduct(data),
 
-    console.log(
-      "geogeneticscategory?._id",
-      geogeneticscategory?._id,
-      geoGeneticsid
-    );
-    try {
-      const res = await axios({
-        url: `${baseURL}/product/geoGeneticslogs`,
-        method: "GET",
-        params: {
-          page,
-          perPage,
-          searchString,
-          from,
-          to,
-          id: geoGeneticsid,
-          status,
-          sort
-        },
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
+      onSuccess: (res) => {
+        SwalAlert('success', 'SUCCESS', 'Product Deleted Successfully');
 
-      console.log("res", res);
-      setproducts(res.data?.product);
-    } catch (err) {
-      console.log("err", err);
+        usequeryClient.invalidateQueries(['geogeneticsproducts'])
+      },
+      onError: (err) => Error(err?.response?.data?.message),
     }
-  };
+  );
 
-  const handleChangeStatus = async (id, status) => {
-    console.log("id", id);
-    try {
-      const res = await axios({
-        url: `${baseURL}/product/toggle-active/${id}`,
-        method: "GET",
 
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      Swal.fire({
-        icon: "success",
-        title: "SUCCESS",
-        text: res.data.message,
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetProducts();
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: err?.response?.data?.message
-          ? err?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
-  };
-  const deleteProductHandler = async (id) => {
-    console.log("id", id);
-    try {
-      const res = await axios({
-        url: `${baseURL}/product/deleteProduct/${id}`,
-        method: "GET",
+  // const handleChangeStatus = async (id, status) => {
+  //   console.log("id", id);
+  //   try {
+  //     const res = await axios({
+  //       url: `${baseURL}/product/toggle-active/${id}`,
+  //       method: "GET",
 
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Product Deleted Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetProducts();
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: err?.response?.data?.message
-          ? err?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
-  };
+  //       headers: {
+  //         Authorization: `Bearer ${adminInfo.token}`
+  //       }
+  //     });
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "SUCCESS",
+  //       text: res.data.message,
+  //       showConfirmButton: false,
+  //       timer: 1500
+  //     });
+  //     handleGetProducts();
+  //   } catch (err) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "ERROR",
+  //       text: err?.response?.data?.message
+  //         ? err?.response?.data?.message
+  //         : "Internal Server Error",
+  //       showConfirmButton: false,
+  //       timer: 1500
+  //     });
+  //   }
+  // };
+  // const deleteProductHandler = async (id) => {
+  //   console.log("id", id);
+  //   try {
+  //     const res = await axios({
+  //       url: `${baseURL}/product/deleteProduct/${id}`,
+  //       method: "GET",
+
+  //       headers: {
+  //         Authorization: `Bearer ${adminInfo.token}`
+  //       }
+  //     });
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "",
+  //       text: "Product Deleted Successfully",
+  //       showConfirmButton: false,
+  //       timer: 1500
+  //     });
+  //     handleGetProducts();
+  //   } catch (err) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "ERROR",
+  //       text: err?.response?.data?.message
+  //         ? err?.response?.data?.message
+  //         : "Internal Server Error",
+  //       showConfirmButton: false,
+  //       timer: 1500
+  //     });
+  //   }
+  // };
 
   return (
     <div>
+      {isLoading?<Loader/>:
       <div className="app-content dashboard content">
         <div className="content-wrapper">
           <div className="content-body">
@@ -260,11 +306,11 @@ const GeoGenetics = () => {
                                         setSearchString(e.target.value);
                                         setPage(1);
                                       }}
-                                      onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                          handleGetProducts();
-                                        }
-                                      }}
+                                      // onKeyDown={(e) => {
+                                      //   if (e.key === "Enter") {
+                                      //     handleGetProducts();
+                                      //   }
+                                      // }}
                                     />
                                   </div>
                                 </div>
@@ -316,7 +362,7 @@ const GeoGenetics = () => {
                                                 <div className="dropdown-menu">
                                                   <Link
                                                     className="dropdown-item"
-                                                    to={`/GeoGeneticEdit${prod?._id}`}
+                                                    to={`/GeoGeneticEdit/${prod?._id}`}
                                                   >
                                                     <i className="fa fa-eye" />
                                                     View Detail
@@ -325,7 +371,7 @@ const GeoGenetics = () => {
                                                   <Link
                                                     to="#"
                                                     onClick={() => {
-                                                      deleteProductHandler(
+                                                      deleteProductHandler.mutate(
                                                         prod?._id
                                                       );
                                                     }}
@@ -337,10 +383,9 @@ const GeoGenetics = () => {
                                                     Remove
                                                   </Link>
                                                   <Link
-                                                    onClick={() =>
-                                                      handleChangeStatus(
+                                                     onClick={() =>
+                                                      handleChangeStatus.mutate(
                                                         prod?._id,
-                                                        !prod?.status
                                                       )
                                                     }
                                                     className="dropdown-item"
@@ -388,7 +433,7 @@ const GeoGenetics = () => {
             </section>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

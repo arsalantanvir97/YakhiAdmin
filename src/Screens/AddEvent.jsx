@@ -1,19 +1,19 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import ImageSelector from "../components/ImageSelector";
 import { baseURL } from "../utils/api";
 import Swal from "sweetalert2";
 import Toasty from "../utils/toast";
 import { useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
 import FileSelector from "../components/FileSelector";
+import { useMutation, useQueryClient } from "react-query";
+import SwalAlert from "../components/SwalAlert";
+import { createAEvent } from "./Api/Events";
 
 const AddEvent = ({ history }) => {
-  const [loading, setloading] = useState(false);
 
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+  const usequeryClient = new useQueryClient();
+
   const [image, setimage] = useState();
   const [is_edit, setIsEdit] = useState(true);
   const [title, settitle] = useState('');
@@ -21,55 +21,31 @@ const AddEvent = ({ history }) => {
   const [date, setdate] = useState('');
   const [filetype, setfiletype] = useState('');
 
+  const { mutate, isLoading, status } = useMutation((data) => createAEvent(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'Event Created Successfully');
+      usequeryClient.invalidateQueries(['events'])
+
+      history.push("/Events");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+ 
   const createEventHandler = async () => {
-    console.log("createEventHandler");
-    try {
-      setloading(true);
-      const formData = new FormData();
-      formData.append("user_image", image);
-      formData.append("title", title);
-      formData.append("desc", desc);
-      formData.append("date", date);
-      formData.append("filetype", filetype);
-      const body = formData;
-      console.log("await");
-      const res = await axios.post(`${baseURL}/event/createevents`, body, {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      setloading(false);
-
-      console.log("res", res);
-      if (res?.status == 201) {
-        console.log("blockkk");
-        Swal.fire({
-          icon: "success",
-          title: "",
-          text: "Event Created Successfully",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log("blockkk2");
-
-        history.push("/Events");
-        console.log("blockkk3");
-      }
-    } catch (error) {
-      console.log("error", error?.response?.data);
-      setloading(false);
-
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    console.log('createEventHandler')
+    const formData = new FormData();
+    formData.append("user_image", image);
+    formData.append("title", title);
+    formData.append("desc", desc);
+    formData.append("date", date);
+    formData.append("filetype", filetype);
+    console.log('body', formData)
+    const body = formData;
+    mutate(body)
   };
 
- 
+
   return (
     <><div>
       <div className="app-content dashboard content">
@@ -153,7 +129,7 @@ const AddEvent = ({ history }) => {
                                   setdesc(e.target.value);
                                 }} />
                             </div>
-                            {!loading ? (
+                            {!isLoading ? (
                               <button type="button" className="btn" data-toggle="modal" data-target="#updateEvent" onClick={() =>
                                 title?.length > 0 &&
                                   image?.name?.length > 0 &&
@@ -164,7 +140,9 @@ const AddEvent = ({ history }) => {
                                     "error",
                                     `Please fill out all the required fields!`
                                   )
-                              }>Add</button>) : (
+                              }>
+                                Add
+                              </button>) : (
                               <i className="fas fa-spinner fa-pulse"></i>
                             )}
                           </form>

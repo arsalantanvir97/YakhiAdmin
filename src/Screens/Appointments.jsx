@@ -1,58 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { baseURL } from "../utils/api";
-import axios from "axios";
-import moment from "moment";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
-import Swal from "sweetalert2";
 import ShowEntries from "../components/ShowEntries";
 import Calender from "../components/Calender";
 import SearchFilter from "../components/SearchFilter";
+import { useQuery } from "react-query";
+import Loader from "../components/Loader";
+import { getAppointments } from "./Api/Appointments";
 const Appointments = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
   const [sort, setsort] = useState();
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchString, setSearchString] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [consultationlogs, setconsultationlogs] = useState([]);
+  // const [consultationlogs, setconsultationlogs] = useState([]);
 
-  useEffect(() => {
-    handleGetConsultations();
-  }, [page, perPage, from, to, searchString, sort]);
+  
+  const { isFetching, isLoading, data: consultationlogs, status: prodstatus, refetch } = useQuery({
+    queryKey: ["appointments", page, perPage, from, to, searchString, sort,],
+    queryFn: () => getAppointments(page, perPage, from, to, searchString, sort,),
+    keepPreviousData: true
 
-  const handleGetConsultations = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/consultationRoutes/logs`,
-        method: "GET",
-        params: {
-          page,
-          perPage,
-          searchString,
-          from,
-          to,
-          sort
-        },
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-
-      console.log("res", res);
-      setconsultationlogs(res.data?.consultation);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+  });
 
   return (
     <div>
+      {isLoading?<Loader/>:
       <div className="app-content dashboard content">
         <div className="content-wrapper">
           <div className="content-body">
@@ -115,7 +91,7 @@ const Appointments = () => {
                                       searchString={searchString}
                                       setSearchString={setSearchString}
                                       setPage={setPage}
-                                      functionhandler={handleGetConsultations}
+                                      // functionhandler={handleGetConsultations}
                                     />
                                   </div>
                                 </div>
@@ -173,7 +149,7 @@ const Appointments = () => {
                                                   </button>
                                                   <div className="dropdown-menu">
                                                     <Link
-                                                      to={`/AppointmentDetails${userr?._id}`}
+                                                      to={`/AppointmentDetails/${userr?._id}`}
                                                       className="dropdown-item"
                                                     >
                                                       <i className="fa fa-eye" />
@@ -210,7 +186,7 @@ const Appointments = () => {
             </section>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ImageSelectDropzone from "../components/ImageSelectDropzone";
 import InputNumber from "../components/InputNumber";
@@ -9,18 +8,21 @@ import { baseURL, imageURL } from "../utils/api";
 import Swal from "sweetalert2";
 import { Parser } from "html-to-react";
 import { Editor } from "@tinymce/tinymce-react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getCategories } from "./Api/Categories";
+import { editProduct, getProductDetails } from "./Api/Products";
+import SwalAlert from "../components/SwalAlert";
 
 const htmlToReactParser = new Parser();
 
 const GeoGeneticEdit = ({ match, enable_dot, history }) => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+  const usequeryClient = new useQueryClient();
 
   const editorRef = useRef(null);
 
   const [loading, setloading] = useState(false);
 
-  const [allofcategory, setallofcategory] = useState([]);
+  // const [allofcategory, setallofcategory] = useState([]);
   const [productdetails, setproductdetails] = useState();
   const [is_edit, setIsEdit] = useState(false);
   const [productimage, setproductimage] = useState([]);
@@ -45,50 +47,58 @@ const GeoGeneticEdit = ({ match, enable_dot, history }) => {
   const [data, setData] = useState({
     project_images: []
   });
-  useEffect(() => {
-    gettingallCategoriesHandler();
-    handleGetCourse();
-  }, []);
-  const gettingallCategoriesHandler = async () => {
-    const res = await axios.get(`${baseURL}/category/allOfCategories`, {
-      headers: {
-        Authorization: `Bearer ${adminInfo.token}`
-      }
-    });
-    console.log("res", res);
-    setallofcategory(res?.data?.getAllCategories);
-  };
+  const { isLoading: catloading, data: allofcategory } = useQuery(["categories"], () =>
+  getCategories()
+);
+const { isLoading,data:prodData } = useQuery(
+    {
+      enabled: allofcategory?.length > 0,
+      queryKey: ["product", match.params.id],
+      queryFn: () =>
+        getProductDetails(match.params.id),
+      // onSuccess: (data) => {
+      //   console.log("Get data!",data?.data);
+      //   setproductdetails(data?.data?.product);
+      //   setproductimage(data?.data?.product?.productimage);
+      //   setimages(data?.data?.product?.productimage);
 
-  const handleGetCourse = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/product/getProductDetails/${match?.params?.id}`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      console.log("resssssssss", res);
-      setproductdetails(res?.data?.product);
-      setproductimage(res?.data?.product?.productimage);
-      setimages(res?.data?.product?.productimage);
+      //   setname(data?.data?.product?.name);
+      //   setdescription(data?.data?.product?.description);
+      //   setprice(data?.data?.product?.price);
+      //   setcountInStock(data?.data?.product?.countInStock);
 
-      setname(res?.data?.product?.name);
-      setdescription(res?.data?.product?.description);
-      setprice(res?.data?.product?.price);
-      setcountInStock(res?.data?.product?.countInStock);
+      //   setvisible(data?.data?.product?.visible);
 
-      setvisible(res?.data?.product?.visible);
-
-      setcategory(res?.data?.product?.category);
-    } catch (err) {
-      console.log(err);
+      //   setcategory(data?.data?.product?.category);
+      // }
     }
-  };
+  );
   useEffect(() => {
-    console.log(images, "images");
-  }, [images]);
+    setproductdetails(prodData?.data?.product);
+    setproductimage(prodData?.data?.product?.productimage);
+    setimages(prodData?.data?.product?.productimage);
 
+    setname(prodData?.data?.product?.name);
+    setdescription(prodData?.data?.product?.description);
+    setprice(prodData?.data?.product?.price);
+    setcountInStock(prodData?.data?.product?.countInStock);
+
+    setvisible(prodData?.data?.product?.visible);
+
+    setcategory(prodData?.data?.product?.category);
+    }, [prodData])
+  // const gettingallCategoriesHandler = async () => {
+  //   const res = await axios.get(`${baseURL}/category/allOfCategories`, {
+  //     headers: {
+  //       Authorization: `Bearer ${adminInfo.token}`
+  //     }
+  //   });
+  //   console.log("res", res);
+  //   setallofcategory(res?.data?.getAllCategories);
+  // };
+
+  
+ 
   const handleMouseEnter = () => {
     sethover(true);
   };
@@ -101,42 +111,23 @@ const GeoGeneticEdit = ({ match, enable_dot, history }) => {
     console.log("tempdata", temp_data);
     setimages(temp_data);
   };
-  function formatInput(e) {
-    // Prevent characters that are not numbers ("e", ".", "+" & "-") ✨
-    let checkIfNum;
-    if (e.key !== undefined) {
-      // Check if it's a "e", ".", "+" or "-"
-      const filter = enable_dot
-        ? e.key === "e" || e.key === "+" || e.key === "-"
-        : e.key === "e" || e.key === "." || e.key === "+" || e.key === "-";
-      checkIfNum = filter;
-    } else if (e.keyCode !== undefined) {
-      // Check if it's a "e" (69), "." (190), "+" (187) or "-" (189)
-      checkIfNum =
-        e.keyCode === 69 ||
-        e.keyCode === 190 ||
-        e.keyCode === 187 ||
-        e.keyCode === 189;
-    }
-    return checkIfNum && e.preventDefault();
-  }
-  const handleclickfields = () => {
-    setInputfields([
-      ...inputfields,
-      { rangestartingquantity: 0, rangestartingprice: 0 }
-    ]);
-  };
+
+  
+  const { mutate, isLoading:editProductloading ,status} = useMutation((data) => editProduct(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success','SUCCESS','Product Edited Successfully');
+
+      usequeryClient.invalidateQueries(['products','geogeneticsproducts'])
+      usequeryClient.invalidateQueries(['product',match.params.id])
+     history.push("/GeoGenetics");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
 
   const updateCourseData = async () => {
     const { project_images } = data;
-    console.log("addProductHandler", productimage);
-    setloading(true);
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      };
+  
       const formData = new FormData();
       formData.append("id", match?.params?.id);
       formData.append("name", name);
@@ -151,40 +142,9 @@ const GeoGeneticEdit = ({ match, enable_dot, history }) => {
       project_images.forEach((reciept) => formData.append("reciepts", reciept));
 
       const body = formData;
-      console.log("await");
-      const res = await axios.post(
-        `${baseURL}/product/editProduct`,
-        body,
-        config
-      );
-      setloading(false);
-      console.log("res", res);
-      if (res?.status == 201) {
-        console.log("blockkk");
-        Swal.fire({
-          icon: "success",
-          title: "",
-          text: "Product Updated Successfully",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log("blockkk2");
+      mutate(body)
 
-        history.push("/GeoGenetics");
-        console.log("blockkk3");
-      }
-    } catch (error) {
-      setloading(false);
-
-      console.log("error", error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+     
   };
   const editorHandler = (value) => {
     console.log("value", value, typeof value, value?.length);
@@ -207,7 +167,7 @@ const GeoGeneticEdit = ({ match, enable_dot, history }) => {
                             <h1>Product {is_edit ? "Edit" : "Details"}</h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                            {!loading ? (
+                            {!editProductloading ? (
                               <Link
                                 to="#"
                                 onClick={() => {

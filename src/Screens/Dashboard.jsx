@@ -1,71 +1,49 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { baseURL } from "../utils/api";
+import api, { baseURL } from "../utils/api";
 import Graph from "../components/Graph";
 import moment from "moment";
 import VecttorMap from "../components/VecttorMap";
 import Toasty from "../utils/toast";
+import { useRecoilValue } from "recoil";
+import { adminInfo } from "../Recoil";
+import { useQuery } from "react-query";
+import { getLatestOrdersHandler, handleGetDashboarddata } from "./Api/Dashboard";
+import Loader from "../components/Loader";
 const Dashboard = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+  const adminData = useRecoilValue(adminInfo);
+
   const [loading, setloading] = useState(false);
 
-  const [dashboarddata, setdashboarddata] = useState();
-  const [latestorders, setlatestorders] = useState([]);
+  // const [dashboarddata, setdashboarddata] = useState();
+  // const [latestorders, setlatestorders] = useState([]);
   const [year, setyear] = useState("");
   const [searchstring, setsearchstring] = useState("");
   const [searchedResult, setsearchedResult] = useState([]);
   const [orders, setorders] = useState([]);
 
-  useEffect(() => {
-    handleGetDashboarddata();
-  }, [year]);
 
   useEffect(() => {
-    getLatestOrdersHandler();
     searchHandelr();
   }, []);
+  const { isLoading, data: dashboarddata } = useQuery(["dashboarddata",year], () =>
+  handleGetDashboarddata(),
+    console.log('abc')
+  );
+  const {  data: latestorders } = useQuery(["latestorders"], () =>
+  getLatestOrdersHandler(),
+    console.log('abc')
+  );
 
-  const handleGetDashboarddata = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/order/getCountofallCollection`,
-        method: "GET",
-        params: { year },
+ 
 
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      console.log("handleGetDashboarddatares", res);
-      setdashboarddata(res?.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
-  const getLatestOrdersHandler = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/order/getLatestOrders`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      console.log("getLatestOrdersHandler", res);
-      setlatestorders(res?.data?.order);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   const searchHandelr = async () => {
     try {
       setloading(true);
 
-      const res = await axios.post(`${baseURL}/product/searchProductlogs`, {
+      const res = await api.post(`${baseURL}/product/searchProductlogs`, {
         searchString: searchstring ? searchstring : "tea"
       });
       setloading(false);
@@ -80,6 +58,7 @@ const Dashboard = () => {
 
   return (
     <div>
+      {isLoading?<Loader/>:
       <div className="app-content content dashboard">
         <div className="content-wrapper">
           <div className="content-body">
@@ -453,7 +432,7 @@ const Dashboard = () => {
             </section>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

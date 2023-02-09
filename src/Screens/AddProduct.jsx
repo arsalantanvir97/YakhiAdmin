@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import ImageSelectDropzone from "../components/ImageSelectDropzone";
 import { Link } from "react-router-dom";
 
@@ -6,20 +6,24 @@ import axios from "axios";
 
 import { baseURL } from "../utils/api";
 
-import { useSelector } from "react-redux";
 
 import Toasty from "../utils/toast";
 import InputNumber from "../components/InputNumber";
 import Swal from "sweetalert2";
 import { Editor } from "@tinymce/tinymce-react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getCategories } from "./Api/Categories";
+import SwalAlert from "../components/SwalAlert";
+import { createProduct } from "./Api/Products";
+import { useRecoilValue } from "recoil";
+import { adminInfo } from "../Recoil";
 
 const AddProduct = (props) => {
-  const [loading, setloading] = useState(false);
+  const adminData = useRecoilValue(adminInfo);
 
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+  const usequeryClient = new useQueryClient();
+
   const [productimage, setproductimage] = useState([]);
-  const [allofcategory, setallofcategory] = useState([]);
   const [name, setname] = useState("");
   const [description, setdescription] = useState("");
   const [category, setcategory] = useState("");
@@ -32,28 +36,41 @@ const AddProduct = (props) => {
 
   const editorRef = useRef(null);
 
+  const { isLoading: catloading, data: allofcategory } = useQuery(["categories"], () =>
+    getCategories()
+  );
+  const { mutate, isLoading ,status} = useMutation((data) => createProduct(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success','SUCCESS','Product Created Successfully');
+      usequeryClient.invalidateQueries(['products'])
 
-  useEffect(() => {
-    gettingallCategoriesHandler();
-  }, []);
+      props?.history.push("/Products");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
 
-  const gettingallCategoriesHandler = async () => {
-    const res = await axios.get(`${baseURL}/category/allOfCategories`, {
-      headers: {
-        Authorization: `Bearer ${adminInfo.token}`
-      }
-    });
-    console.log("res", res);
-    setallofcategory(res?.data?.getAllCategories);
-  };
+
+  // useEffect(() => {
+  //   gettingallCategoriesHandler();
+  // }, []);
+
+  // const gettingallCategoriesHandler = async () => {
+  //   const res = await axios.get(`${baseURL}/category/allOfCategories`, {
+  //     headers: {
+  //       Authorization: `Bearer ${adminInfo.token}`
+  //     }
+  //   });
+  //   console.log("res", res);
+  //   setallofcategory(res?.data?.getAllCategories);
+  // };
 
   const addProductHandler = async () => {
     const { project_images } = data;
     console.log("addProductHandler", productimage, category);
-    setloading(true);
-    try {
+   
       const formData = new FormData();
-      formData.append("id", adminInfo?._id);
+      formData.append("id", adminData?._id);
       formData.append("category", category);
       formData.append("name", name);
       formData.append("price", price);
@@ -64,42 +81,10 @@ const AddProduct = (props) => {
       project_images.forEach((reciept) => formData.append("reciepts", reciept));
 
       const body = formData;
-      console.log("await");
-      const res = await axios.post(`${baseURL}/product/createProduct`, body, {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      setloading(false);
-
-      console.log("res", res);
-      if (res?.status == 201) {
-        console.log("blockkk");
-        Swal.fire({
-          icon: "success",
-          title: "",
-          text: "Product Created Successfully",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log("blockkk2");
-
-        props?.history.push("/Products");
-        console.log("blockkk3");
-      }
-    } catch (error) {
-      setloading(false);
-
-      console.log("error", error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    mutate(body)
+   
   };
+
   const editorHandler = (value) => {
     console.log("value", value, typeof value, value?.length);
     setdescription(value);
@@ -119,9 +104,10 @@ const AddProduct = (props) => {
                         <div className="row">
                           <div className="col-12 col-md-6 col-lg-6">
                             <h1>Add Product</h1>
+
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                            {!loading ? (
+                            {!isLoading ? (
                               <Link
                                 onClick={() =>
                                   data?.project_images?.length > 0 &&

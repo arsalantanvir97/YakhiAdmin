@@ -3,15 +3,17 @@ import { Route, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { useRecoilValue } from "recoil";
+import { adminInfo } from "../Recoil";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+  const adminData = useRecoilValue(adminInfo);
+  console.log('adminInfo',adminData,adminData ? 'yes' : 'no')
   return (
     <Route
       {...rest}
       render={(props) =>
-        !adminInfo ? (
+        !adminData ? (
           <Redirect to="/" />
         ) : (
           <>

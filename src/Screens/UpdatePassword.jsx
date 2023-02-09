@@ -1,43 +1,39 @@
 import React, { useEffect, useState } from "react";
+import { useMutation } from "react-query";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useRecoilState } from "recoil";
 import { adminverfyadnresetpasword } from "../actions/adminActions";
+import { adminInfo } from "../Recoil";
 import Toasty from "../utils/toast";
 import { validateEmail } from "../utils/ValidateEmail";
+import { verfyadnresetpasword } from "./Api/Auth";
 
 const UpdatePassword = ({ history }) => {
-  const dispatch = useDispatch();
   const [existingpassword, setexistingpassword] = useState("");
   const [newpassword, setnewpassword] = useState("");
   const [confirm_password, setconfirm_password] = useState("");
   const [showicon, setshowicon] = useState(true);
   const [showicon2, setshowicon2] = useState(true);
   const [showicon3, setshowicon3] = useState(true);
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
 
-  const submitHandler = async () => {
-      console.log("submitHandler");
-      console.log(
-        "submitHandlerreqbody",
-        existingpassword,
-        newpassword,
-        confirm_password
+  const [adminData, setadminData] = useRecoilState(adminInfo);
+
+  const { mutate, isLoading, status } = useMutation((data) => verfyadnresetpasword(data), {
+    retry: false,
+    onSuccess: (res) => {
+      console.log('ressssss', res)
+      setadminData(res?.data);
+      localStorage.setItem(
+        "token",
+        JSON.stringify(res?.data.token)
       );
-      await dispatch(
-        adminverfyadnresetpasword(
-          existingpassword,
-          newpassword,
-          confirm_password,
-          adminInfo?.email,
-          history
-        )
-      );
-      setexistingpassword("");
-      setnewpassword("");
-      setconfirm_password("");
-    
-  };
+      history.replace("/Dashboard");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+
+
+ 
   return (
     <div>
       <div className="app-content content dashboard">
@@ -152,13 +148,18 @@ const UpdatePassword = ({ history }) => {
                                 to="#"
                                 onClick={() =>
                                   existingpassword?.length > 0 &&
-                                  newpassword?.length > 0 &&
-                                  confirm_password?.length > 0
-                                    ? submitHandler()
+                                    newpassword?.length > 0 &&
+                                    confirm_password?.length > 0
+                                    ? mutate({
+                                      existingpassword,
+                                      newpassword,
+                                      confirm_password,
+                                      email: adminData?.email,
+                                    })
                                     : Toasty(
-                                        "error",
-                                        `Please fill out all the required fields!`
-                                      )
+                                      "error",
+                                      `Please fill out all the required fields!`
+                                    )
                                 }
                                 className="btn btn-primary"
                               >

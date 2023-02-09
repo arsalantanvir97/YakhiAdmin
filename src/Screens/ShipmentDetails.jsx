@@ -1,43 +1,31 @@
 import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
+import Loader from "../components/Loader";
 import { baseURL, imageURL } from "../utils/api";
-import Toasty from "../utils/toast";
+import { getShipmentDetails } from "./Api/Shipments";
 
 const ShipmentDetails = ({ match, history }) => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
   const [shipmentdetails, setshipmentdetails] = useState("");
   const [orders, setorders] = useState([]);
 
-  useEffect(() => {
-    handleGetShipment();
-  }, []);
+  const { isLoading: shiploading } = useQuery(["shipment", match.params.id], () =>
+  getShipmentDetails(match.params.id),
+     {onSuccess: (data) => {
+        console.log("Get data!",data?.data);
+         setshipmentdetails(data?.data?.shipment);
+      setorders(data?.data?.order);
+      }}
+  );
 
-  const handleGetShipment = async () => {
-    console.log("match?.params?.id", match?.params?.id);
-    try {
-      const res = await axios({
-        url: `${baseURL}/shipment/getshipmentdetails/${match?.params?.id}`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      console.log("res", res);
-      setshipmentdetails(res?.data?.shipment);
-      setorders(res?.data?.order);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+ 
   
   return (
     <>
       <div>
+        {shiploading?<Loader/>:
         <div className="app-content dashboard content">
           <div className="content-wrapper">
             <div className="content-body">
@@ -138,7 +126,7 @@ const ShipmentDetails = ({ match, history }) => {
               </section>
             </div>
           </div>
-        </div>
+        </div>}
         {/* Add Document Popup */}
         <div
           className="modal fade delete-product p-0"

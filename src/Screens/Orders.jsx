@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
-import { baseURL } from "../utils/api";
-import axios from "axios";
+import React, { useState, useRef } from "react";
 import moment from "moment";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
-import Swal from "sweetalert2";
 import ShowEntries from "../components/ShowEntries";
 import Calender from "../components/Calender";
 import SearchFilter from "../components/SearchFilter";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { getOrders } from "./Api/Orders";
+import { useQuery } from "react-query";
+import Loader from "../components/Loader";
 
 const Orders = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
   const [sort, setsort] = useState();
   const [hideDownload, sethideDownload] = useState(false);
 
@@ -26,38 +22,15 @@ const Orders = () => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [status, setStatus] = useState("");
-  const [orders, setorders] = useState([]);
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    handleGetOrders();
-  }, [page, perPage, from, to, status, searchString, sort]);
 
-  const handleGetOrders = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/order/logs`,
-        method: "GET",
-        params: {
-          page,
-          perPage,
-          searchString,
-          from,
-          to,
-          status,
-          sort
-        },
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
+  const { isFetching, isLoading, data: orders, status: ordstatus, refetch } = useQuery({
+    queryKey: ["orders", page, perPage, from, to, status, searchString, sort,],
+    queryFn: () => getOrders(page, perPage, from, status, to, searchString, sort,),
+    keepPreviousData: true
 
-      console.log("res", res);
-      setorders(res.data?.order);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+  });
 
   const printDocument = async () => {
     await sethideDownload(true);
@@ -79,6 +52,7 @@ const Orders = () => {
 
   return (
     <div>
+      {isLoading? <Loader/>:
       <div className="app-content dashboard content">
         <div className="content-wrapper">
           <div className="content-body">
@@ -147,7 +121,6 @@ const Orders = () => {
                                       searchString={searchString}
                                       setSearchString={setSearchString}
                                       setPage={setPage}
-                                      functionhandler={handleGetOrders}
                                     />
                                   </div>
                                 </div>
@@ -210,7 +183,7 @@ const Orders = () => {
                                                   </button>
                                                   <div className="dropdown-menu">
                                                     <Link
-                                                      to={`/OrderDetails${orderr?._id}`}
+                                                      to={`/OrderDetails/${orderr?._id}`}
                                                       className="dropdown-item"
                                                     >
                                                       <i className="fa fa-eye" />
@@ -247,7 +220,7 @@ const Orders = () => {
             </section>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

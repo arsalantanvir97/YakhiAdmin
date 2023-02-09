@@ -1,15 +1,18 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { baseURL } from "../utils/api";
 import Toasty from "../utils/toast";
-import { validateEmail } from "../utils/ValidateEmail";
 import DatePicker from "react-datepicker";
 import InputNumber from "../components/InputNumber";
+import { createAPromoCode } from "./Api/PromoCodes";
+import { useMutation, useQueryClient } from "react-query";
+import SwalAlert from "../components/SwalAlert";
 
 const AddPromoCode = ({ history }) => {
+  const usequeryClient = new useQueryClient();
+
   const [title, settitle] = useState("");
   const [startingdate, setstartingdate] = useState("");
   const [endingdate, setendingdate] = useState("");
@@ -18,54 +21,21 @@ const AddPromoCode = ({ history }) => {
 
   const [loading, setloading] = useState(false);
 
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+  const { mutate, isLoading, status } = useMutation((data) => createAPromoCode(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'PromoCode Created Successfully');
+      usequeryClient.invalidateQueries(['promocodes'])
 
+      history.push("/PromoCode");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
   const submitHandler = async () => {
-    setloading(true);
-    console.log("createCategoryHandler");
-    try {
-      console.log("await");
-      const res = await axios.post(
-        `${baseURL}/promo/createPromoCode`,
-        { title, startingdate, endingdate, promocode, discount },
-        {
-          headers: {
-            Authorization: `Bearer ${adminInfo.token}`
-          }
-        }
-      );
-      setloading(false);
-      console.log("res", res);
-      if (res?.status == 201) {
-        console.log("blockkk");
-        Swal.fire({
-          icon: "success",
-          title: "",
-          text: "PromoCode Created Successfully",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log("blockkk2");
-
-        history.push("/PromoCode");
-        console.log("blockkk3");
-      }
-    } catch (error) {
-      setloading(false);
-      console.log("error", error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: error?.response?.data?.message,
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    console.log("await");
+    const body = { title, startingdate, endingdate, promocode, discount }
+    mutate(body)
   };
-  useEffect(() => {
-    console.log("startingdatae", startingdate);
-  }, [startingdate]);
 
   return (
     <div>
@@ -171,19 +141,19 @@ const AddPromoCode = ({ history }) => {
                         </div>
                         <div className="row detail-row mt-1">
                           <div className="col-12 col-md-6 col-xl-4">
-                            {!loading ? (
+                            {!isLoading ? (
                               <Link
                                 to="#"
                                 className="btn btn-primary btn-fixed-190"
                                 onClick={() => {
                                   promocode > 0 &&
-                                  discount > 0 &&
-                                  title?.length > 0
+                                    discount > 0 &&
+                                    title?.length > 0
                                     ? submitHandler()
                                     : Toasty(
-                                        "error",
-                                        `Please fill out all the required fields!`
-                                      );
+                                      "error",
+                                      `Please fill out all the required fields!`
+                                    );
                                 }}
                               >
                                 Create

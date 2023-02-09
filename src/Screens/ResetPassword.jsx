@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useMutation } from "react-query";
 import { Link } from "react-router-dom";
 import { adminResetPasswordAction } from "../actions/adminActions";
+import SwalAlert from "../components/SwalAlert";
 import Toasty from "../utils/toast";
+import { resetPasswordAction } from "./Api/Auth";
+import { useRecoilState } from "recoil";
+
+import { adminInfo } from "../Recoil";
+
 
 const ResetPassword = (props) => {
-  const dispatch = useDispatch();
   const [showicon, setshowicon] = useState(true);
   const [showicon2, setshowicon2] = useState(true);
+  const [adminData, setadminData] = useRecoilState(adminInfo);
 
   const [password, setpassword] = useState("");
   const [confirm_password, setconfirm_password] = useState("");
-  const onSubmitHandler = () => {
-      
-    console.log(
-      "body",
-      password,
-      confirm_password,
-      props?.location?.state?.code,
-      props?.location?.state?.email
-    );
-    dispatch(
-      adminResetPasswordAction(
-        password,
-        confirm_password,
-        props?.location?.state?.code,
-        props?.location?.state?.email
-      )
-    );
-  };
+  const { mutate, isLoading, status } = useMutation((data) => resetPasswordAction(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'Password reset successfully');
+
+      setadminData(res?.data);
+      localStorage.setItem(
+        "token",
+        JSON.stringify(res?.data.token)
+      );
+      props?.history.replace("/Dashboard");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
+
+
+ 
   return (
     <div>
       <section className="login-wrap">
@@ -94,20 +99,22 @@ const ResetPassword = (props) => {
                             }
                             aria-hidden="true"
                           />
-                         
+
                         </div>
                       </div>
                     </div>
                     <div className="row">
                       <div className="d-block col-12 text-center mt-2">
                         <button
-                         onClick={() =>
+                          onClick={() =>
                             password?.length > 0 && confirm_password?.length > 0
-                              ? onSubmitHandler()
+                              ? mutate({
+                                password, confirm_password, code: props?.location?.state?.code, email: props?.location?.state?.email,
+                              })
                               : Toasty(
-                                  "error",
-                                  `Please fill out all the required fields!`
-                                )
+                                "error",
+                                `Please fill out all the required fields!`
+                              )
                           }
                           type="button"
                           className="btn btn-primary btn-login"

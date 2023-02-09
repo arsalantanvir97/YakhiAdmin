@@ -1,68 +1,41 @@
-import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ImageSelector from "../components/ImageSelector";
-import { baseURL } from "../utils/api";
-import Swal from "sweetalert2";
 import Toasty from "../utils/toast";
-import { useSelector } from "react-redux";
+import { createCategory } from "./Api/Categories";
+import SwalAlert from "../components/SwalAlert";
+import { useMutation, useQueryClient } from "react-query";
 
 const AddCategory = ({ history }) => {
-  const [loading, setloading] = useState(false);
+const usequeryClient = new useQueryClient();
 
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
   const [image, setimage] = useState();
   const [is_edit, setIsEdit] = useState(true);
   const [categorytitle, setcategorytitle] = useState();
   const [description, setdescription] = useState();
   const [visible, setvisible] = useState(true);
 
+  const { mutate, isLoading ,status} = useMutation((data) => createCategory(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success','SUCCESS','Category Created Successfully');
+      usequeryClient.invalidateQueries(['categories'])
+      usequeryClient.invalidateQueries(['categorylogs'])
+
+      history.push("/Categories");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
   const createCategoryHandler = async () => {
-    console.log("createCategoryHandler");
-    try {
-      setloading(true);
+  
       const formData = new FormData();
       formData.append("user_image", image);
       formData.append("categorytitle", categorytitle);
       formData.append("description", description);
       formData.append("visible", visible);
       const body = formData;
-      console.log("await");
-      const res = await axios.post(`${baseURL}/category/createCategory`, body, {
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      setloading(false);
-
-      console.log("res", res);
-      if (res?.status == 201) {
-        console.log("blockkk");
-        Swal.fire({
-          icon: "success",
-          title: "",
-          text: "Category Created Successfully",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log("blockkk2");
-
-        history.push("/Categories");
-        console.log("blockkk3");
-      }
-    } catch (error) {
-      console.log("error", error?.response?.data);
-      setloading(false);
-
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    mutate(body)
+   
   };
   return (
     <div>
@@ -86,7 +59,7 @@ const AddCategory = ({ history }) => {
                             </h1>
                           </div>
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
-                            {!loading ? (
+                            {!isLoading ? (
                               <Link
                                 to="#"
                                 onClick={() =>

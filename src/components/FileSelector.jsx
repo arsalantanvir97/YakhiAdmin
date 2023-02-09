@@ -46,9 +46,7 @@ export default function FileSelector({
             setfiletype(event.target.files[0].type)
         }
     };
-    useEffect(() => {
-        console.log('imageeeeeeeeeee', image)
-    }, [image])
+   
 
     return (
         <div>

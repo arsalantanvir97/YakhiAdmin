@@ -2,23 +2,23 @@ import React, { useState, useEffect } from "react";
 import { baseURL } from "../utils/api";
 import axios from "axios";
 import moment from "moment";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Pagination from "../components/Padgination";
 import Swal from "sweetalert2";
 import Toasty from "../utils/toast";
-import InputNumber from "../components/InputNumber";
 import ShowEntries from "../components/ShowEntries";
 import SearchFilter from "../components/SearchFilter";
-import { closeModals } from "../utils/closeModals";
-const Subemployees = () => {
-  const adminLogin = useSelector((state) => state.adminLogin);
-  const { adminInfo } = adminLogin;
+import { addAdmin, deleteAdmin, getAdminDetails, getAdmins } from "./Api/SubEmployees";
+import SwalAlert from "../components/SwalAlert";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import Loader from "../components/Loader";
+const Subemployees = ({history}) => {
+  const usequeryClient = new useQueryClient();
+
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
   const [email, setemail] = useState("");
-  const [admins, setadmins] = useState([]);
+  // const [admins, setadmins] = useState([]);
   const [admindetails, setadmindetails] = useState();
   const [deladminid, setdeladminid] = useState("");
   const [page, setPage] = useState(1);
@@ -28,121 +28,78 @@ const Subemployees = () => {
   const [to, setTo] = useState("");
   const [sort, setsort] = useState();
   const [status, setStatus] = useState("");
-  useEffect(() => {
-    handleGetAdmins();
-  }, [page, perPage, from, to, status, searchString, sort]);
+  const { isFetching, isLoading, data: admins, status: prodstatus, refetch } = useQuery({
+    queryKey: ["admins", page,
+      perPage,
+      searchString,
+      from,
+      to,
+      status,
+      sort],
+    queryFn: () => getAdmins(page,
+      perPage,
+      searchString,
+      from,
+      to,
+      status,
+      sort),
+    keepPreviousData: true
 
-  const handleGetAdmins = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/auth/adminlogs`,
-        method: "GET",
-        params: {
-          page,
-          perPage,
-          searchString,
-          from,
-          to,
-          status,
-          sort
-        },
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
+  });
 
-      console.log("res", res);
-      setadmins(res.data?.admin);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+  const { mutate, isLoading: addTaxLoading } = useMutation((data) => addAdmin(data), {
+    retry: false,
+    onSuccess: (res) => {
+      SwalAlert('success', 'SUCCESS', 'Subemployee Created Successfully');
+      usequeryClient.invalidateQueries(['admins'])
+
+      history.push("/Subemployees");
+    },
+    onError: (err) => Error(err?.response?.data?.message),
+  });
 
   const createAdminHandler = async () => {
-    try {
-      const res = await axios.post(
-        `${baseURL}/auth/registerAdminbyAdmin`,
-        { firstName, lastName, email },
-        {
-          headers: {
-            Authorization: `Bearer ${adminInfo.token}`
-          }
-        }
-      );
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Subemplyee Created Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetAdmins();
-    } catch (error) {
-      console.log("error", error, error?.response?.data);
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: error?.response?.data?.message
-          ? error?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    }
+    const body = { firstName, lastName, email }
+    mutate(body)
+
 
     setfirstName("");
     setlastName("");
     setemail("");
   };
-  const getDetailsHadnler = async (id) => {
-    setadmindetails({});
-    try {
-      const res = await axios({
-        url: `${baseURL}/auth/admin-details/${id}`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      console.log("res", res);
-      setadmindetails(res?.data?.admin);
-    } catch (err) {
-      console.log(err);
+  // const { isLoading: admloading, data: admindetails } = useQuery(["admin", match.params.id], () =>
+  //   getShipmentDetails(match.params.id),
+  //   usequeryClient.invalidateQueries(['admins'])
+
+  // );
+   const getDetailsHadnler = useMutation(
+    {
+      mutationFn: (data) => getAdminDetails(data),
+
+      onSuccess: (res) => {
+        setadmindetails(res)
+        usequeryClient.invalidateQueries(['admins'])
+      },
+      onError: (err) => Error(err?.response?.data?.message),
     }
-  };
-  const deleteHadnler = async () => {
-    try {
-      const res = await axios({
-        url: `${baseURL}/auth/deleteAdmin/${deladminid}`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${adminInfo.token}`
-        }
-      });
-      Swal.fire({
-        icon: "success",
-        title: "",
-        text: "Subemployee Deleted Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      handleGetAdmins();
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "ERROR",
-        text: err?.response?.data?.message
-          ? err?.response?.data?.message
-          : "Internal Server Error",
-        showConfirmButton: false,
-        timer: 1500
-      });
+  );
+  const deleteAdminHandler = useMutation(
+    {
+      mutationFn: (data) => deleteAdmin(data),
+
+      onSuccess: (res) => {
+        SwalAlert('success', 'SUCCESS', 'Subemployee Deleted Successfully');
+
+        usequeryClient.invalidateQueries(['admins'])
+      },
+      onError: (err) => Error(err?.response?.data?.message),
     }
-  };
+  );
 
   return (
     <>
       <div>
+        {isLoading?<Loader/>:
         <div className="app-content dashboard content">
           <div className="content-wrapper">
             <div className="content-body">
@@ -210,7 +167,6 @@ const Subemployees = () => {
                                         searchString={searchString}
                                         setSearchString={setSearchString}
                                         setPage={setPage}
-                                        functionhandler={handleGetAdmins}
                                       />
                                     </div>
                                   </div>
@@ -270,7 +226,7 @@ const Subemployees = () => {
                                                       className="dropdown-item"
                                                       to="#"
                                                       onClick={() => {
-                                                        getDetailsHadnler(
+                                                        getDetailsHadnler.mutate(
                                                           adm?._id
                                                         );
                                                       }}
@@ -322,7 +278,7 @@ const Subemployees = () => {
               </section>
             </div>
           </div>
-        </div>
+        </div>}
         {/* Add Sub Employee Popup */}
         <div
           className="modal fade delete-product p-0"
@@ -415,13 +371,13 @@ const Subemployees = () => {
                       aria-label="Close"
                       onClick={() =>
                         firstName?.length > 0 &&
-                        lastName?.length > 0 &&
-                        email?.length > 0
+                          lastName?.length > 0 &&
+                          email?.length > 0
                           ? createAdminHandler()
                           : Toasty(
-                              "error",
-                              `Please fill out all the required fields!`
-                            )
+                            "error",
+                            `Please fill out all the required fields!`
+                          )
                       }
                     >
                       Add
@@ -513,7 +469,7 @@ const Subemployees = () => {
               </div>
               <div className="modal-body">
                 <form action="login.php" method="post">
-                  <div className="row">
+                  <div className="row">{getDetailsHadnler?.isLoading?<Loader/>:
                     <div className="col-12 text-center">
                       <h3>Sub Employee Detail</h3>
                       <div className="appointment-details">
@@ -540,7 +496,7 @@ const Subemployees = () => {
                         Okay
                       </button>
                       {/* <button type="submit" class="btn btn-secondary ml-1" data-dismiss="modal" aria-label="Close">No</button> */}
-                    </div>
+                    </div>}
                   </div>
                 </form>
               </div>
@@ -578,7 +534,7 @@ const Subemployees = () => {
                     <button
                       type="button"
                       className="btn btn-secondary mr-1"
-                      onClick={deleteHadnler}
+                      onClick={()=>{deleteAdminHandler.mutate(deladminid)}}
                       data-dismiss="modal"
                       aria-label="Close"
                     >
