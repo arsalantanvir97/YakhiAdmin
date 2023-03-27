@@ -38,6 +38,21 @@ const Sidebar = (props) => {
             </li>
             <li
               className={
+                props?.match?.path == "/Analytics"
+                  ? "nav-item active "
+                  : "nav-item"
+              }
+              style={{}}
+            >
+              <Link to="/Analytics" target="_self">
+                <i className="fa fa-chart-line" />
+                <span className="menu-title" data-i18n>
+                  Analytics
+                </span>
+              </Link>
+            </li>
+            <li
+              className={
                 props?.match?.path == "/Products" ||
                 props?.match?.path == "/Categories"
                   ? "nav-item has-sub active open"

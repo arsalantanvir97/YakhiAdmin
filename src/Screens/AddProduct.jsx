@@ -17,6 +17,10 @@ import SwalAlert from "../components/SwalAlert";
 import { createProduct } from "./Api/Products";
 import { useRecoilValue } from "recoil";
 import { adminInfo } from "../Recoil";
+import { useForm } from "react-hook-form";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import { addProductSchema } from "../Validation.js/Schema";
 
 const AddProduct = (props) => {
   const adminData = useRecoilValue(adminInfo);
@@ -99,6 +103,8 @@ const AddProduct = (props) => {
               <div className="row">
                 <div className="col-12">
                   <div className="card rounded">
+                  <form>
+
                     <div className="card-body p-md-2 p-lg-3 p-xl-4">
                       <div className="page-title mb-3">
                         <div className="row">
@@ -106,6 +112,7 @@ const AddProduct = (props) => {
                             <h1>Add Product</h1>
 
                           </div>
+
                           <div className="col-12 col-sm-6 col-lg-6 text-right">
                             {!isLoading ? (
                               <Link
@@ -276,6 +283,7 @@ const AddProduct = (props) => {
                         </div>
                       </div>
                     </div>
+                    </form>
                   </div>
                 </div>
               </div>

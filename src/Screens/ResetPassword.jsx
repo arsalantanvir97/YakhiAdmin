@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "react-query";
 import { Link } from "react-router-dom";
-import { adminResetPasswordAction } from "../actions/adminActions";
 import SwalAlert from "../components/SwalAlert";
 import Toasty from "../utils/toast";
 import { resetPasswordAction } from "./Api/Auth";

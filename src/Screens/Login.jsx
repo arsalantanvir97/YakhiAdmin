@@ -7,12 +7,13 @@ import { useMutation } from "react-query";
 import { useRecoilState } from "recoil";
 import { login } from "./Api/Auth";
 import { adminInfo } from "../Recoil";
+import { useForm } from "react-hook-form";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import { loginSchema } from "../Validation.js/Schema";
 
 export default function Login({ history }) {
-  const [email, setemail] = useState("");
-  const [password, setpassword] = useState("");
   const [showicon, setshowicon] = useState(true);
-  const [loading, setloading] = useState(false);
   const [adminData, setadminData] = useRecoilState(adminInfo);
 
   const { mutate, isLoading, status } = useMutation((data) => login(data), {
@@ -28,7 +29,18 @@ export default function Login({ history }) {
     },
     onError: (err) => Error(err?.response?.data?.message),
   });
+  const {
+    register,
+    control,
 
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty, isValid },
+    reset
+  } = useForm({
+    mode: 'onChange',
+
+    resolver: yupResolver(loginSchema),
+  });
   return (
     <div>
       <section className="login-wrap">
@@ -41,7 +53,8 @@ export default function Login({ history }) {
                     <img src="images/login-logo.png" alt="" />
                   </div>
                   <h1 className>Login</h1>
-                  <form>
+                  <form onSubmit={handleSubmit((data) => mutate({ email: data?.email, password: data?.password }))
+                  }>
                     <div className="row">
                       <div className="col-12 form-group position-relative">
                         <label htmlFor>
@@ -51,11 +64,11 @@ export default function Login({ history }) {
                           type="email"
                           className="form-control"
                           placeholder="Enter Email Address"
-                          value={email}
-                          onChange={(e) => {
-                            setemail(e.target.value);
-                          }}
+                          {...register("email",
+                          )}
                         />
+                        {errors.email && <p className="errorMsg">{errors.email.message}</p>}
+
                       </div>
                       <div className="col-12 form-group mb-1">
                         <label htmlFor>
@@ -65,12 +78,12 @@ export default function Login({ history }) {
                           <input
                             type={showicon ? "password" : "text"}
                             className="form-control enter-input"
-                            value={password}
-                            onChange={(e) => {
-                              setpassword(e.target.value);
-                            }}
+                            {...register("password", {
+                            })}
                             placeholder="Enter Password"
                           />{" "}
+                          {errors.password && <p className="errorMsg">{errors.password.message}</p>}
+
                           <i
                             onClick={() => setshowicon(!showicon)}
                             className={
@@ -122,10 +135,10 @@ export default function Login({ history }) {
                               <i className="fas fa-spinner fa-pulse"></i>
                             )} */}
 
-                        {isLoading ? <i className="fas fa-spinner fa-pulse"></i> : <button
-                          disabled={isLoading}
-                          type="button"
-                          onClick={() => mutate({ email, password })}
+                        {isSubmitting ? <i className="fas fa-spinner fa-pulse"></i> : <button
+                          disabled={isSubmitting}
+                          type="submit"
+                          // onClick={() => mutate({ email, password })}
                           className="btn btn-primary btn-login"
                         >
                           Login

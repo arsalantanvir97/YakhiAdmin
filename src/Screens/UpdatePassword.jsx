@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import { Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { adminverfyadnresetpasword } from "../actions/adminActions";
 import { adminInfo } from "../Recoil";
 import Toasty from "../utils/toast";
 import { validateEmail } from "../utils/ValidateEmail";

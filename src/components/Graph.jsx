@@ -1,7 +1,7 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
 
-const Graph = ({ graph_data }) => {
+const Graph = ({ graph_data ,label}) => {
   const data = {
     labels: [
       "January",
@@ -19,7 +19,7 @@ const Graph = ({ graph_data }) => {
     ],
     datasets: [
       {
-        label: "Revenue",
+        label,
         data: graph_data,
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",

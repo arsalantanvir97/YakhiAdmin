@@ -50,6 +50,7 @@ const Instructions = lazy(() => import("./Screens/Instructions"));
 const PromoCode = lazy(() => import("./Screens/PromoCode"));
 const AddPromoCode = lazy(() => import("./Screens/AddPromoCode"));
 const Faqs = lazy(() => import("./Screens/Faqs"));
+const Analytics = lazy(() => import("./Screens/Analytics"));
 
 export default function App() {
   return (
@@ -59,7 +60,7 @@ export default function App() {
         <PrivateRoute path="/Events" component={Events} exact />
         <PrivateRoute path="/EditEventt/:id" component={EditEventt} exact />
         <PrivateRoute path="/AddEvent" component={AddEvent} exact />
-
+        <PrivateRoute path="/Analytics" component={Analytics} exact />
         <Route path="/forgotpassword" component={ForgotPassword} exact />
         <Route
           path="/verificationcode:email"
