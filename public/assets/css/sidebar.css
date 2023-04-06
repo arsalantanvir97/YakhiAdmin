@@ -1,0 +1,441 @@
+:root{
+    --orange: #E3572A;
+    --white: #fff;
+}
+
+/**** Header Profile Dropdown Module*****/
+.navbar-nav .dropdown-menu {
+	background: #fff;
+	border-radius: 10px;
+	border: none;
+	padding: 15px;
+	box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
+	position: relative;
+	min-width: 7rem;
+	border: 1px solid #E5E5E5;
+}
+
+/* .navbar-nav .dropdown-menu:before { border: solid transparent; border-color: rgba(194, 225, 245, 0); border-bottom-color: #313131; border-width: 10px; position: absolute; content: ""; bottom: 100%; right: 8px; } */
+
+.navbar-nav .dropdown-menu a.dropdown-item {
+	background-color: transparent;
+	padding: 10px 8px;
+	text-transform: capitalize;
+	color: #B1B1B1;
+	font-size: 15px;
+	font-weight: normal;
+}
+
+.navbar-nav .dropdown-menu a.dropdown-item:not(:last-child) {
+	border-bottom: 1px solid #000000;
+}
+
+.navbar-nav .dropdown-menu a.dropdown-item:first-child {}
+
+.navbar-nav .dropdown-menu a.dropdown-item:last-child {}
+
+.navbar-nav .dropdown-menu a.dropdown-item i {
+	color: var(--yellow);
+	margin-right: 7px;
+	display: inline-block;
+	width: 20px;
+	font-size: 16px;
+	transition: all 0.3s ease-out;
+}
+
+.nav.navbar-nav .dropdown-item:hover,
+.nav.navbar-nav .dropdown-item:hover:focus {
+	color: #163459;
+}
+
+.nav.navbar-nav .dropdown-item:hover i,
+.nav.navbar-nav .dropdown-item:hover:focus i {
+	color: #163459;
+}
+
+.header-navbar .navbar-container ul.nav li a.menu-toggle {
+	margin-top: 4px;
+}
+
+.header-navbar .navbar-container ul.nav li a.menu-toggle i {
+	font-size: 2rem;
+	color: #ffffff;
+}
+
+
+
+/**** Header Notification Module*****/
+
+
+.dropdown-notification span.badge {
+	background: var(--orange);
+	min-height: 20px;
+	min-width: 20px;
+	padding: 5px 5px 4px 5px;
+	line-height: 10px;
+	font-size: 11px;
+	color: white;
+	transition: all 0.3s ease-out;
+	border-radius: 50px;
+	right: 20px;
+}
+
+.dropdown-notification.show span.badge {
+	background: var(--orange);
+}
+
+.dropdown-notification a.nav-link-label {
+	margin: 7px 0 0 0;
+	color: var(--orange);
+}
+
+.dropdown-notification.show a.nav-link-label i {
+	color: #FF0000 !important;
+}
+
+
+.dropdown-notification .dropdown-menu {
+	transform: translate3d(50px, 0, 0);
+	padding: 0px;
+	width: 24rem;
+	box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
+	background-color: #ffffff;
+}
+
+.dropdown-notification .dropdown-menu:after {
+	display: none;
+}
+
+.navbar-nav .dropdown-menu:before {
+	right: 77px;
+}
+
+.dropdown-notification .dropdown-menu-header {
+	border-bottom: 0px;
+	padding-top: 10px;
+}
+
+.dropdown-notification .dropdown-header {
+	font-size: 25px;
+	font-weight: 500;
+	text-transform: capitalize;
+	color: #ffffff;
+	padding-bottom: 0px;
+	margin-top: 0px;
+}
+
+.dropdown-notification .dropdown-menu-footer {
+	padding: 0;
+	border-top: 0;
+	margin: 0;
+}
+
+.dropdown-notification .dropdown-menu-footer a.dropdown-item {
+	background-color: transparent;
+	border: none;
+	color: var(--orange);
+	text-decoration: underline;
+	font-weight: 500;
+	padding: 0px;
+}
+
+.dropdown-notification .dropdown-menu-footer a.dropdown-item:hover {
+	color: var(--orange);
+	text-decoration: underline;
+}
+
+
+/* .header-navbar .navbar-container ul.nav li .media-list */
+.header-navbar .navbar-container ul.nav li.dropdown-notification .dropdown-menu .media-list {
+	max-height: 16rem;
+}
+
+/* .header-navbar .navbar-container ul.nav li .media-list {
+    max-height: 17rem;
+} */
+
+.dropdown-notification .media-left {
+	padding-top: 2px;
+	padding-right: 1rem;
+	font-size: 20px;
+}
+
+.dropdown-notification .media-left i {
+	background-color: transparent;
+	border-radius: 50%;
+	width: auto;
+	height: auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 10px;
+	color: var(--orange);
+}
+
+.dropdown-notification .media-list a {
+	padding: 0;
+}
+
+.dropdown-notification .media-list .media {
+	padding: 0.7rem 1.5rem 0.7rem 1.5rem;
+	border: none;
+	border-bottom: 1px solid transparent;
+}
+
+.dropdown-notification .media-list .media h6.media-heading {
+	color: #666;
+	text-transform: none;
+	font-weight: 300;
+	font-size: 15px;
+	line-height: normal;
+}
+
+.dropdown-notification .media-list .media .notification-text {
+	line-height: 1.2;
+	font-size: 15px;
+	font-weight: 400;
+	color: #ffffff;
+}
+
+.dropdown-notification .media-list .media small {
+	font-size: 12px;
+	color: #565656;
+	font-weight: 500;
+	display: block;
+	text-align: left;
+	margin-top: 10px;
+}
+
+.dropdown-notification>.nav-link i
+.dropdown-notification>.nav-link i {
+	font-size: 28px;
+	color: #1F2640;
+	transition: all 0.3s ease-out;
+}
+
+/***********
+Header Login Navigation
+********/
+.header-navbar .dropdown-user {}
+
+.header-navbar .avatar {
+	width: 35px;
+	display: inline-block;
+	margin-right: 0.5rem;
+}
+
+.header-navbar .dropdown-user .dropdown-toggle {
+	padding: 0px 0px;
+	display: inline-flex;
+	align-items: center;
+}
+
+.header-navbar .dropdown-user .dropdown-toggle:after {
+	content: "\f107";
+	font-family: 'Font Awesome 5';
+	font-weight: 900;
+	text-align: center;
+	vertical-align: middle;
+	width: 20px;
+	height: 16px;
+	top: 0px;
+	left: 0px;
+	border: 0px;
+	color: #666666;
+}
+
+.header-navbar .dropdown-user .dropdown-menu {
+	min-width: 12rem;
+}
+
+.header-navbar .dropdown-user .avatar {}
+
+.header-navbar .dropdown-user .avatar img {
+	max-width: 50px;
+}
+
+.header-navbar .dropdown-user .user-name {
+	margin-bottom: 0;
+	color: #666666;
+	;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*================================ login page end here ===================================*/
+
+
+
+
+
+
+/*********
+	Dashboard start here
+*********/
+
+html body .content-wrapper {
+	padding-left: 50px !important;
+	padding-right: 50px !important;
+}
+
+
+
+
+/*===================== responsive start here=====================*/
+
+@media (min-width: 991px) and (max-width: 1440px) {}
+
+
+@media (min-width:1440px) {}
+
+@media (max-width:1399px) {}
+
+
+@media (min-width:1666px) {}
+
+@media (max-width:1666px) {}
+
+@media (max-width:1440px) {}
+
+@media (max-width:1366px) {}
+
+@media (max-width:1280px) {}
+
+
+@media (max-width:1199px) {}
+
+@media (max-width: 1050px) {}
+
+@media (max-width: 991px) {
+
+	.main-menu.menu-light .navigation>li {
+		padding-right: 0px;
+	}
+
+	.main-menu.menu-light .navigation li a {
+		border-radius: 0px;
+	}
+
+
+
+}
+
+@media (min-width: 0px) and (max-width: 991px) {}
+
+@media (max-width: 768px) {
+
+	html body .content-wrapper {
+		padding-left: 30px !important;
+		padding-right: 30px !important;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+	.header-navbar .navbar-container ul.nav li a.menu-toggle {
+		margin-top: -1px;
+	}
+
+	.vertical-overlay-menu .main-menu .navigation>li>a>i {
+		width: 22px;
+	}
+
+}
+
+@media (max-width: 767px) {
+
+	.navbar-light .navbar-nav .nav-link i,
+	.navbar-light .navbar-nav .nav-link i {
+		color: #fff;
+	}
+
+
+
+	.nav.nav-tabs.nav-underline .nav-item a.nav-link {
+		margin: 0 2px;
+		width: 32.33%
+	}
+
+	.vertical-overlay-menu .navbar .navbar-header {
+		background: #ffffff;
+		width: 100% !important;
+	}
+
+	.header-navbar .navbar-header .open-navbar-container i {
+		color: #333333;
+		margin: 20px 10px 0 0;
+	}
+
+	.header-navbar .navbar-container ul.nav li .dropdown-toggle::after {
+		color: #fff !important;
+		top: 0px;
+	}
+
+	.userName, .userRole {
+		color: #fff;
+	}
+
+
+	/***
+	Header Responsive Nav
+	***/
+	.navbar-header .navbar-light .navbar-nav .nav-link {
+		padding: 0px;
+	}
+
+	.header-navbar.navbar-with-menu .navbar-container {
+		background: #097eeb !important;
+	}
+
+	.header-navbar .navbar-header .navbar-brand {
+		top: 40px;
+		margin: 0;
+		width: 140px;
+	}
+
+	.navbar-header i.ft-menu.font-large-1 {
+		float: left;
+		margin: 40px 0 0 10px;
+		color: #333333;
+	}
+
+	i.fa-ellipsis-v {
+		float: right;
+	}
+
+
+	.vertical-overlay-menu .main-menu .navigation>li>a>i {
+		width: 22px;
+	}
+
+	html body .content-wrapper {
+		padding-left: 15px !important;
+		padding-right: 15px !important;
+	}
+
+}
+
+@media (max-width: 575px) {
+	html body .dashboard .content-wrapper {
+		padding-left: 15px !important;
+		padding-right: 15px !important;
+	}
+
+	.vertical-overlay-menu .main-menu .navigation>li>a>i {
+		width: 22px;
+	}
+
+}
+
+@media (max-width: 480px) {}
+
+@media (max-width: 375px) {}
+
+@media (max-width: 360px) {}

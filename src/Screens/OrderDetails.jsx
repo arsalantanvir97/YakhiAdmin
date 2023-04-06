@@ -10,6 +10,7 @@ import { jsPDF } from "jspdf";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getOrderDetails, updateOrderStatusHandler } from "./Api/Orders";
 import SwalAlert from "../components/SwalAlert";
+import Loader from "../components/Loader";
 
 const OrderDetails = ({ match, history }) => {
   const usequeryClient = new useQueryClient();
@@ -21,17 +22,17 @@ const OrderDetails = ({ match, history }) => {
   const inputRef2 = useRef(null);
 
   const { isLoading: orderloading, data: orderdetails } = useQuery(["order", match.params.id], () =>
-  getOrderDetails(match.params.id)
+    getOrderDetails(match.params.id)
   );
 
-  const { mutate, isLoading:updateStatusLoading } = useMutation((data) => updateOrderStatusHandler(data), {
+  const { mutate, isLoading: updateStatusLoading } = useMutation((data) => updateOrderStatusHandler(data), {
     retry: false,
     onSuccess: (res) => {
-      SwalAlert('success','SUCCESS','Order Updated Successfully');
+      SwalAlert('success', 'SUCCESS', 'Order Updated Successfully');
 
       usequeryClient.invalidateQueries(['orders'])
-      usequeryClient.invalidateQueries(['order',match.params.id])
-     history.push("/Orders");
+      usequeryClient.invalidateQueries(['order', match.params.id])
+      history.push("/Orders");
     },
     onError: (err) => Error(err?.response?.data?.message),
   });
@@ -95,331 +96,193 @@ const OrderDetails = ({ match, history }) => {
   };
   return (
     <div>
-      <div className="app-content dashboard content">
-        <div className="content-wrapper">
-          <div className="content-body">
-            {/* Basic form layout section start */}
-            <section id="configuration" className="order-detail">
-              <div className="row">
-                <div className="col-12">
-                  <div >
-                    <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4" id="divToPrint" ref={inputRef}>
-                        <div className="page-title mb-2">
-                          <div className="row">
-                            <div className="col-12 col-md-6 col-lg-6">
-                              <h1>
-                                <Link
-                                  to="#"
-                                  onClick={() => {
-                                    history.goBack();
-                                  }}
-                                >
-                                  {!hideDownload && (
-                                    <i className="fa fa-angle-left" />
-                                  )}
-                                </Link>
-                                Order Details
-                              </h1>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="order-block mb-1">
-                          <div className="row ">
-                            <div className="col-12">
-                              <h3>Order &amp; Account</h3>
-                            </div>
-                            <div className="col-12 ">
-                              <div className="card light-primary-bg">
-                                <div className="card-header">
-                                  <h4>Order Information</h4>
-                                </div>
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-12 mb-2">
-                                      <div id="divToPrint" ref={inputRef2}>
-                                        <h4>Order ID</h4>
-                                        <p> {orderdetails?._id}</p>
-                                      </div>
-                                      <div className="col-md-12 col-12 align-self-end text-right">
-                                        <Link
-                                          to="#"
-                                          onClick={() => {
-                                            printDocument(inputRef2);
-                                          }}
-                                          className="btn btn-primary"
-                                        >
-                                          Print Label
-                                        </Link>
-                                      </div>
-                                      <h4>Order Date</h4>
-                                      <p>
-                                        {" "}
-                                        {moment
-                                          .utc(orderdetails?.createdAt)
-                                          .format("LL")}
-                                      </p>
-                                    </div>
-                                  </div>
+                        {orderloading ? <Loader /> :
 
-                                  <div className="row">
-                                    <div className="col-12">
-                                      <h4>Order Status</h4>
-                                      {orderdetails?.isPaid == true && orderdetails?.isDelivered =="Pending"?
-                                            <>
-                                              <div className="d-block mt-1">
-                                                <div className="form-check form-check-inline radio">
-                                                  <input
-                                                    id="radio-1"
-                                                    name="radio"
-                                                    type="radio"
-                                                    defaultChecked
-                                                    value={status}
-                                                    onChange={() => {
-                                                      setstatus("InProcess");
-                                                    }}
-                                                  />
-                                                  <label
-                                                    htmlFor="radio-1"
-                                                    className="radio-label"
-                                                  >
-                                                    {" "}
-                                                    In Process
-                                                  </label>
-                                                </div>
-                                                <div className="radio form-check form-check-inline">
-                                                  <input
-                                                    id="radio-2"
-                                                    name="radio"
-                                                    type="radio"
-                                                    value={status}
-                                                    onChange={() => {
-                                                      setstatus("Delivered");
-                                                    }}
-                                                  />
-                                                  <label
-                                                    htmlFor="radio-2"
-                                                    className="radio-label"
-                                                  >
-                                                    Delivered
-                                                  </label>
-                                                </div>
-                                              </div>
-                                              <Link
-                                                to="#"
-                                                onClick={()=>{
-                                                  mutate({id:match.params.id,status})
-                                                }}
-                                                className="btn btn-primary mt-2"
-                                                data-toggle="modal"
-                                                data-target=".order-update"
-                                              >
-                                                Update Status
-                                              </Link>{" "}
-                                            </>
-                                       
-                                      :null}
-                                      <p>
-                                        {orderdetails?.isPaid == false
-                                          ? "Not paid"
-                                          : orderdetails?.isDelivered == true &&
-                                            "Delivered"}{" "}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="card light-primary-bg">
-                                <div className="card-header">
-                                  <h4>Account Information</h4>
-                                </div>
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-12 mb-2">
-                                      <h4>Customer Name</h4>
-                                      <p>{orderdetails?.user?.firstName}</p>
-                                    </div>
-                                  </div>
-                                  <div className="row">
-                                    <div className="col-12">
-                                      <h4>Email</h4>
-                                      <p> {orderdetails?.user?.email}</p>
-                                    </div>
-                                  </div>
-                                  {orderdetails?.isGeoGenetics == true && (
-                                    <div className="row">
-                                      <div className="col-12">
-                                        <h4>Valid Government Issued ID</h4>
-                                        <button
-                                          type="button"
-                                          className="btn btn-primary btn-login"
-                                          onClick={() =>
-                                            window.open(
-                                              `${imageURL}${orderdetails?.governmentid}`,
-                                              "_blank"
-                                            )
-                                          }
-                                        >
-                                          View
-                                        </button>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="order-block mb-1">
-                          <div className="row ">
-                            <div className="col-12 title">
-                              <h3>Address</h3>
-                            </div>
-                            <div className="col-12">
-                              <div className="card light-primary-bg">
-                                <div className="card-header">
-                                  <h4>Billing Address</h4>
-                                </div>
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-12 col-md-6 col-xl-4">
-                                      <p>
-                                        {
-                                          orderdetails?.shippingAddress
-                                            ?.billingaddress
-                                        }
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="order-block mb-1">
-                          <div className="row ">
-                            <h3 className="col-md-6 col-12">
-                              Payment and Shipping
-                            </h3>
-                            {!hideDownload && (
-                              <div className="col-md-6 col-12 align-self-end text-right">
-                                <Link
-                                  to="#"
-                                  onClick={() => {
-                                    printDocument(inputRef);
-                                  }}
-                                  className="btn btn-primary"
-                                >
-                                  Print Invoice
-                                </Link>
-                              </div>
-                            )}
-                            <div className="col-12 mt-2">
-                              <div className="card light-primary-bg">
-                                <div className="card-header">
-                                  <h4>Payment Information</h4>
-                                </div>
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-12">
-                                      <h4>Payment Method</h4>
-                                      <p>
-                                        {
-                                          orderdetails?.paymentMethod
-                                            ?.paymentmethod
-                                        }
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="card light-primary-bg">
-                                <div className="card-header">
-                                  <h4>Shipping Information</h4>
-                                </div>
-                                <div className="card-body">
-                                  <div className="row"></div>
-                                  <div className="row">
-                                    <div className="col-12">
-                                      <h4>Shipping Price</h4>
-                                      <p>${orderdetails?.shippingPrice}</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="order-block ">
-                          <div className="row ">
-                            <div className="col-12 title">
-                              <h3>Products</h3>
-                            </div>
-                            <div className="col-12">
-                              <div className="card mb-0 light-primary-bg">
-                                <div className="table-responsive">
-                                  <table className="table shop_table table-bordered">
-                                    <thead>
-                                      <tr>
-                                        <th className="product-sku">SKU</th>
-                                        <th className="product-name">
-                                          Product
-                                        </th>
+      <div class="app-content content dashboard">
+        <div class="content-wrapper">
+          <div class="content-body">
 
-                                        <th className="product-quantity">
-                                          Qty
-                                        </th>
-                                        <th className="product-price-per">
-                                          Price per unit
-                                        </th>
-                                        <th className="product-price">
-                                          Price{" "}
-                                        </th>
-                                        <th className="product-subtotal">
-                                          Sub Total
-                                        </th>
-                                        <th className="product-tax">
-                                          Tax Amount
-                                        </th>
-                                        <th className="product-tax-amount">
-                                          Tax Percent
-                                        </th>
-                                        <th className="product-total">Total</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {orderdetails?.orderItems?.length > 0 &&
-                                        orderdetails?.orderItems?.map((ord) => (
-                                          <tr>
-                                            <td
+
+            <section class="myprofile " id="configuration">
+              <div class="box py-5">
+                <div class="row justify-content-center">
+                  <div class="col-md-12">
+                    <div class="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                      <h3 class="pageTitle"><i class="fas fa-arrow-left me-3 topMArrow" onClick={() => {
+                        history.goBack()
+                      }}></i> Order Details</h3>
+
+                      <div class="div">
+                        {orderdetails?.isPaid == true && orderdetails?.isDelivered == "Pending" &&
+
+                          <label onClick={() => {
+                            mutate({ id: match.params.id, status })
+                          }}>Change The Status</label>}
+                        <button onClick={() => {
+                          orderdetails?.isPaid == true && orderdetails?.isDelivered == "Pending" &&
+                          mutate({ id: match.params.id, status })
+                        }} class={orderdetails?.status == 'Pending' ? "yellowBg selectStatus" : "greenBg selectStatus"} >{orderdetails?.status}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-8">
+                    <form class="myprofile_main px-5">
+                      <div class="row border-bottom-1 mb-3">
+                        <div class="col-md-4">
+                          <div class="felid d-flex">
+                            <label class="h_20 text-black fw-semibold">Order ID:</label>
+                            <p class="h_20 gray-colour fw-semibold ps-3">{orderdetails?._id}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-12">
+                          <div class="felid">
+                            <h3 class="fw-semibold">Order Information</h3>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row border-bottom-1 pb-3 mb-3">
+                        <div class="col-md-3">
+                          <div class="felid">
+                            <label class="h_16 gray-colour fw-semibold">Order Date</label>
+                            <p class="h_16 text-black fw-semibold"> {moment
+                              .utc(orderdetails?.createdAt)
+                              .format("LL")}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col-md-12">
+                          <div class="felid">
+                            <h3 class="fw-semibold">Account Information</h3>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row border-bottom-1 pb-3 mb-3">
+                        <div class="col-md-3">
+                          <div class="felid">
+                            <label class="h_16 gray-colour fw-semibold">Name</label>
+                            <p class="h_16 text-black fw-semibold">{orderdetails?.user?.firstname + ' ' + orderdetails?.user?.lastname}</p>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="felid">
+                            <label class="h_16 gray-colour fw-semibold">Email Address</label>
+                            <p class="h_16 text-black fw-semibold">{orderdetails?.user?.email}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col-md-12">
+                          <div class="felid">
+                            <h3 class="fw-semibold">Address</h3>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row border-bottom-1 pb-3 mb-3">
+                        <div class="col-md-6">
+                          <div class="felid">
+                            <label class="h_16 gray-colour fw-semibold">Billing Address</label>
+                            <p class="h_16 text-black fw-semibold"> {
+                              orderdetails?.shippingAddress
+                                ?.billingaddress
+                            }</p>
+                          </div>
+                        </div>
+                        {orderdetails?.shippingAddress
+                          ?.shippingaddress &&
+                          <div class="col-md-6">
+                            <div class="felid">
+                              <label class="h_16 gray-colour fw-semibold">Shipping Address</label>
+                              <p class="h_16 text-black fw-semibold">{orderdetails?.shippingAddress
+                                ?.shippingaddress}</p>
+                            </div>
+                          </div>}
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col-md-12">
+                          <div class="felid">
+                            <h3 class="fw-semibold">Payment Information</h3>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row border-bottom-1 pb-3 mb-3">
+                        <div class="col-md-6">
+                          <div class="felid">
+                            <label class="h_16 gray-colour fw-semibold">Payment Method</label>
+                            <p class="h_16 text-black fw-semibold">  {
+                              orderdetails?.paymentMethod
+                                ?.paymentmethod
+                            }</p>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-md-12">
+                    <div class="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                      <h3 class="pageTitle"> Products</h3>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <div class="maain-tabble table-responsive">
+                      <table class="table table-bordered zero-configuration">
+                        <thead>
+                          <tr>
+                            <th>Product Name</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {orderdetails?.orderItems?.length > 0 &&
+                            orderdetails?.orderItems?.map((ord) => (
+                              <tr>
+                                {/* <td
                                               className="product-sku"
                                               data-title="sku"
                                             >
                                               {ord?._id}
-                                            </td>
-                                            <td className="product-name">
-                                              {ord?.name}
-                                            </td>
+                                            </td> */}
+                                <td className="product-name">
+                                  {ord?.name}
+                                </td>
 
-                                            <td
-                                              className="product-quantity"
-                                              data-title="quantity"
-                                            >
-                                              {ord?.qty}
-                                            </td>
-                                            <td
-                                              className="product-price-per"
-                                              data-title="sku"
-                                            >
-                                              ${ord?.price}
-                                            </td>
-                                            <td
-                                              className="product-price"
-                                              data-title="sku"
-                                            >
-                                              ${ord?.price * ord?.qty}
-                                            </td>
-                                            <td
+                                <td
+                                  className="product-quantity"
+                                  data-title="quantity"
+                                >
+                                  {ord?.qty}
+                                </td>
+                                <td
+                                  className="product-price-per"
+                                  data-title="sku"
+                                >
+                                  ${ord?.price}
+                                </td>
+                                <td
+                                  className="product-price"
+                                  data-title="sku"
+                                >
+                                  ${ord?.price * ord?.qty}
+                                </td>
+                                {/* <td
                                               className="product-subtotal"
                                               data-title="subtotal"
                                             >
@@ -457,73 +320,37 @@ const OrderDetails = ({ match, history }) => {
                                                   ord?.price * ord?.qty
                                                 ).toFixed(0) +
                                                 ord?.price * ord?.qty}
-                                            </td>
-                                          </tr>
-                                        ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row info-block justify-content-end">
-                          <div className="col-12 col-md-4 col-lg-3 d-flex justify-content-end">
-                            <table
-                              cellSpacing={0}
-                              className="table total-table table-borderless mt-5"
-                            >
-                              <tbody>
-                                <tr className="cart-subtotal">
-                                  <th>Sub Total</th>
-                                  <td data-title="Subtotal">
-                                    <span className="amount">
-                                      <span className="currencySymbol">$</span>
-                                      {orderdetails?.totalPrice -
-                                        orderdetails?.taxPrice}
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr className="cart-subtotal">
-                                  <th>Shipping </th>
-                                  <td data-title="Subtotal">
-                                    <span className="amount">
-                                      <span className="currencySymbol">$</span>
-                                      {orderdetails?.shippingPrice}
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr className="order-total">
-                                  <th>Tax</th>
-                                  <td data-title="Total">
-                                    <span className="amount">
-                                      <span className="currencySymbol">$</span>
-                                      {orderdetails?.taxPrice}
-                                    </span>{" "}
-                                  </td>
-                                </tr>
-                                <tr className="order-total light-primary-bg">
-                                  <th>Total</th>
-                                  <td data-title="Total">
-                                    <span className="amount">
-                                      <span className="currencySymbol">$</span>
-                                      {orderdetails?.totalPrice}
-                                    </span>{" "}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
+                                            </td> */}
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
                     </div>
+                  </div>
+                </div>
+                <div class="row justify-content-end">
+                  <div class="col-3">
+                    <ul class="productBoxTotal">
+                      <li>
+                        <p class="h_16 text-black fw-semibold">Sub Total</p>
+                        <label class="h_16 gray-colour fw-semibold">$                                      {orderdetails?.totalPrice}
+                        </label>
+                      </li>
+                      <li>
+                        <p class="h_16 text-black fw-semibold">Sub Total</p>
+                        <label class="h_16 gray-colour fw-semibold">$                                      {orderdetails?.totalPrice}
+                        </label>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </section>
+
           </div>
         </div>
-      </div>
+      </div>}
+
     </div>
   );
 };

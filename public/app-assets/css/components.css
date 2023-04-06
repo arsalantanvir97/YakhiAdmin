@@ -3,10 +3,9 @@ html {
   height: 100%; }
   html body {
     height: 100%;
-    background-color: #F5F7FA;
     direction: ltr; }
     html body.fixed-navbar {
-      /*padding-top: 4rem;  */}
+      /* padding-top: 4rem; */}
     html body .content {
       padding: 0;
       position: relative;
@@ -432,9 +431,6 @@ footer.footer-dark {
       text-decoration: none; }
 
 .navigation {
-  font-size: 1rem;
-  font-family: "Montserrat", Georgia, "Times New Roman", Times, serif;
-  font-weight: 300;
   overflow-y: hidden;
   padding-bottom: 20px; }
   .navigation .navigation-header {

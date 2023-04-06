@@ -7,13 +7,8 @@ const SearchFilter = ({
   functionhandler
 }) => {
   return (
-    <div>
-      {" "}
-      <input
-        type="search"
-        className="form-control form-control-sm"
-        placeholder="Search"
-        value={searchString}
+    <form className="serchbarHead">
+    <input type="email"  value={searchString}
         onChange={(e) => {
           setSearchString(e.target.value);
           setPage(1);
@@ -22,9 +17,27 @@ const SearchFilter = ({
           if (e.key === "Enter") {
             functionhandler();
           }
-        }}
-      />
-    </div>
+        }} name placeholder="Search...." />
+    <button type="button"><i className="fas fa-search" /></button>
+  </form>
+    // <div>
+    //   {" "}
+    //   <input
+    //     type="search"
+    //     className="form-control form-control-sm"
+    //     placeholder="Search"
+    //     value={searchString}
+    //     onChange={(e) => {
+    //       setSearchString(e.target.value);
+    //       setPage(1);
+    //     }}
+    //     onKeyDown={(e) => {
+    //       if (e.key === "Enter") {
+    //         functionhandler();
+    //       }
+    //     }}
+    //   />
+    // </div>
   );
 };
 

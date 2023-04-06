@@ -17,7 +17,7 @@ ReactDOM.render(
     <HttpsRedirect>
       <RecoilRoot>
         <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={true}/>
+        {/* <ReactQueryDevtools initialIsOpen={true}/> */}
 
         <ToastContainer />
         <App />

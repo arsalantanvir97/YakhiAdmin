@@ -43,107 +43,63 @@ export default function Login({ history }) {
   });
   return (
     <div>
-      <section className="login-wrap">
-        <div className="container m-auto">
-          <div className="login-inner">
-            <div className="row">
-              <div className="col-lg-12 col-12 ">
-                <div className="right">
-                  <div className="logo text-center">
-                    <img src="images/login-logo.png" alt="" />
+      <section className="loginPage">
+        <div className="container">
+          <div className="row align-items-center justify-content-center">
+            <div className="col-lg-6 px-0 loginBgLeft d-none d-lg-block">
+              <img src="images/loginLeftImage.png" alt="" className="img-fluid w-100" />
+            </div>
+            <div className="col-lg-6 loginBgRight">
+              <div className="loginCard">
+                <div className="text-center mb-3">
+                  <img src="images/loginLogo.png" alt="" className="loginLogo img-fluid" />
+                </div>
+                <div className="formBox">
+                  <div className="formHeading text-center">
+                    <h2>login</h2>
+                    <p>Login To Your Account</p>
                   </div>
-                  <h1 className>Login</h1>
-                  <form onSubmit={handleSubmit((data) => mutate({ email: data?.email, password: data?.password }))
+                  <form className="py-2" onSubmit={handleSubmit((data) => mutate({ email: data?.email, password: data?.password }))
                   }>
-                    <div className="row">
-                      <div className="col-12 form-group position-relative">
-                        <label htmlFor>
-                          Email Address<span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          placeholder="Enter Email Address"
-                          {...register("email",
-                          )}
-                        />
-                        {errors.email && <p className="errorMsg">{errors.email.message}</p>}
-
+                    <div className="form-field">
+                      <label htmlFor className="siteLabel ps-4 mb-2">Email Address<span className="text-danger recoleta">*</span></label>
+                      <div className="position-relative">
+                        <input type="email" className="siteInput" placeholder="Enter Your Email Address"    {...register("email",
+                        )} />
                       </div>
-                      <div className="col-12 form-group mb-1">
-                        <label htmlFor>
-                          Password <span className="text-danger">*</span>{" "}
-                        </label>
-                        <div className="position-relative">
-                          <input
-                            type={showicon ? "password" : "text"}
-                            className="form-control enter-input"
-                            {...register("password", {
-                            })}
-                            placeholder="Enter Password"
-                          />{" "}
+                    </div>
+                    <div className="form-field">
+                      <label htmlFor className="siteLabel ps-4 mb-2">Password<span className="text-danger recoleta">*</span></label>
+                      <div className="passwordWrapper position-relative">
+                        <input className="siteInput passInput" placeholder="Enter Password" name id type={showicon ? "password" : "text"}
+
+                          {...register("password", {
+                          })} />
+                        <button type="button" className="passDisplay">
                           {errors.password && <p className="errorMsg">{errors.password.message}</p>}
 
-                          <i
-                            onClick={() => setshowicon(!showicon)}
+                          <i onClick={() => setshowicon(!showicon)}
                             className={
                               showicon
-                                ? "fa enter-icon-3 right-icon fa-eye-slash right-icon-90"
-                                : "fa enter-icon-3 right-icon fa-eye right-icon-90"
+                                ? "fas fa-eye-slash"
+                                : "fas fa-eye"
                             }
-                            aria-hidden="true"
-                          />
-                        </div>
+                            aria-hidden="true" />
+                        </button>
                       </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="remember-pass">
-                        {/* <div className="login-check">
-                          Remember Me
-                          <input type="checkbox" />
-                          <span className="checkmark" />
-                        </div> */}
-                      </div>
-                      <div className="d-flex justify-content-end">
-                        <div className="forgot">
-                          {" "}
-                          <Link to='/forgotpassword'
-                            className=" primary-text"
-                          >
-                            Forgot Password?
-                          </Link>{" "}
-                        </div>
+                    <div className="d-lg-flex d-block justify-content-between">
+                      {/* <div className="d-flex align-items-center">
+                        <input type="checkbox" id="rme" name="rme" />
+                        <label htmlFor="rme" className="ps-4 text-black">Remember Me</label>
+                      </div> */}
+                      <div className="text-end">
+                        <Link to='/forgotpassword' className="forgotLink">Forgot Password?</Link>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="d-block col-12 text-center mt-4">
-                        {/* {!loading ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            password?.length > 0 && email?.length > 0
-                              ? submitHandler()
-                              : Toasty(
-                                  "error",
-                                  `Please fill out all the required fields!`
-                                );
-                          }}
-                          className="btn btn-primary btn-login"
-                        >
-                          Login
-                        </button> ) : (
-                              <i className="fas fa-spinner fa-pulse"></i>
-                            )} */}
-
-                        {isSubmitting ? <i className="fas fa-spinner fa-pulse"></i> : <button
-                          disabled={isSubmitting}
-                          type="submit"
-                          // onClick={() => mutate({ email, password })}
-                          className="btn btn-primary btn-login"
-                        >
-                          Login
-                        </button>}
-                      </div>
+                    <div className="form-field text-center mt-4">
+                      {isSubmitting ? <i className="fas fa-spinner fa-pulse"></i> :
+                        <button type="submit" disabled={isSubmitting} className="siteBtn mx-auto">Login</button>}
                     </div>
                   </form>
                 </div>
@@ -152,6 +108,7 @@ export default function Login({ history }) {
           </div>
         </div>
       </section>
+
     </div>
   );
 }

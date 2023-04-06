@@ -30,3 +30,10 @@ export const addTax = (data) =>
         url: `${baseURL}/tax/deleteTax/${id}`,
         method: "GET",
       });
+      export const getTaxDetails =async (id) =>
+        api({
+            url: `${baseURL}/tax/taxDetails/${id}`,
+            method: "GET",
+        });
+       
+     

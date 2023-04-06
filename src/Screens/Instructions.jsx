@@ -11,6 +11,8 @@ import Loader from "../components/Loader";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { addInstruction, editEattoliveTextHandler, editInstruction, editInstructionTextHandler, getInstruction } from "./Api/Instructions";
 import SwalAlert from "../components/SwalAlert";
+import { Link } from "react-router-dom";
+import Calender from "../components/Calender";
 
 const Instructions = ({ history }) => {
   const usequeryClient = new useQueryClient();
@@ -67,6 +69,7 @@ const Instructions = ({ history }) => {
   useEffect(() => {
     setinstructions(instructionsdata?.instruction);
     setinstructiontext(instructionsdata?.editinstruction?.text);
+    // console.log('instructions',instructionsdata)
   }, [instructionsdata])
   const { mutate: addInstructions, isLoading: addInstructionLoading } = useMutation((data) => addInstruction(data), {
     retry: false,
@@ -162,209 +165,128 @@ const Instructions = ({ history }) => {
     <>
       {isLoading ? <Loader /> :
         <div>
-          <div className="app-content dashboard content">
+          <div className="app-content content dashboard">
             <div className="content-wrapper">
               <div className="content-body">
                 {/* Basic form layout section start */}
-                <section id="configuration" className="user-page">
+                <section id="configuration">
                   <div className="row">
                     <div className="col-12">
-                      <div className="card rounded">
-                        <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                          <div className="page-title">
-                            <div className="row">
-                              <div className="col-12 col-md-6 col-lg-6">
-                                <h1>Instructions</h1>
-                              </div>
-                              <div className="col-12 col-sm-6 col-lg-6 text-md-right">
-                                <a
-                                  href="#"
-                                  className="btn btn-primary mr-2 mb-2"
-                                  data-toggle="modal"
-                                  data-target="#addDocument"
-                                >
-                                  Add New
-                                </a>
-                                <a
-                                  href="#"
-                                  className="btn btn-primary mr-2 mb-2"
-                                  data-toggle="modal"
-                                  data-target="#editText"
-                                >
-                                  Edit Text
-                                </a>
-                                <a
-                                  href="#"
-                                  className="btn btn-primary mr-2"
-                                  data-toggle="modal"
-                                  data-target="#eattolive"
-                                >
-                                  Eat to Live
-                                </a>
-                              </div>
+                      <div className="card-content collapse show dashCard py-5 px-5">
+                        <div className="row justify-content-center">
+                          <div className="col-md-12">
+                            <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                              <h3 className="pageTitle"> Video Management</h3>
+                              <Link to='/AddVideo' className="btn_darkbluep ">Add Video</Link>
                             </div>
                           </div>
-                          <div className="dataTables_wrapper">
-                            <div className="user-listing-top">
-                              <div className="row align-items-end d-flex mb-1">
-                                <div className="col-xl-9">
-                                  <div className="row align-items-center justify-content-start">
-                                    <div className="col-12 col-md-6 col-lg-6 col-xl-3 mt-2">
-                                      <label>Show entries </label>
-                                      <ShowEntries
-                                        perPage={perPage}
-                                        setPerPage={setPerPage}
-                                        setPage={setPage}
-                                      />
+                        </div>
+                        <div className="row mb-4">
+                          <div className="col-xl-12 col-md-12">
+                            <div className="row">
+                              <div className="col d-lg-flex align-items-center justify-content-between">
+                                <SearchFilter
+                                  searchString={searchString}
+                                  setSearchString={setSearchString}
+                                  setPage={setPage}
+                                />
+                                <div className="dropFilter">
+                                  <button className="filterIcon redBg rounded-circle ms-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i className="fas fa-filter" />
+                                  </button>
+                                  <div className="dropdown-menu filterDropdown">
+                                    <div className="filterDropdownHeader">
+                                      <p className="mainLabel m-0">Filter</p>
                                     </div>
-                                    <div className="col-12 col-md-6 col-lg-6 col-xl-3 mt-2">
-                                      <label htmlFor className="d-block">
-                                        Sort by:
-                                      </label>
-                                      <select
-                                        name
-                                        className="w-100 form-control sort-select"
-                                        value={sort}
-                                        onChange={(e) => {
-                                          setsort(e.target.value);
-                                        }}
-                                      >
-                                        <option value={"asc"}>Latest</option>
-                                        <option value={"des"}>Earlier</option>
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-xl-3">
-                                  <div className="row align-items-center justify-content-center">
-                                    <div className="col-12 col-md-6 col-lg-6 col-xl-12 mt-2">
-                                      <div className="search-filter w-100">
-                                        <label>Search:</label>
-                                        <SearchFilter
-                                          searchString={searchString}
-                                          setSearchString={setSearchString}
-                                          setPage={setPage}
+                                    <div className="dropdown-divider" />
+                                    <div className="filterDropdownBody">
+                                      <div className="userInput mb-3">
+                                        <label htmlFor className="mainLabel">Creation Date:</label>
+                                        <Calender
+                                          from={from}
+                                          to={to}
+                                          setFrom={setFrom}
+                                          setTo={setTo}
                                         />
+                                      </div>
+                                      {/* <div className="userInput mb-3">
+                                        <label htmlFor className="mainLabel">Filter by Status:</label>
+                                        <div className="mb-2">
+                                          <select name id className="mainInput filterInput">
+                                            <option value="s">Select Status</option>
+                                            <option value={1}>Active</option>
+                                            <option value={2}>Inactive</option>
+                                          </select>
+                                        </div>
+                                      </div> */}
+                                      <div className="filterAction">
+                                        <button type="button" className="btn_darkbluep">Apply</button>
+                                      </div>
+                                      <div className="filterAction">
+                                        <button type="button" className="btn_orangebor">Clear All</button>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className="row row-table">
-                              <div className="main-tabble table-responsive">
-                                <div className="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                                  <div className="row">
-                                    <div className="col-sm-12">
-                                      <table className="table table-borderless  dataTable">
-                                        <thead>
-                                          {instructions?.docs?.length > 0 && (
-                                            <tr>
-                                              <th className="sorting_asc">ID</th>
-                                              <th className="sorting">
-                                                Video Title
-                                              </th>
-                                              <th className="sorting">
-                                                Uploaded Date
-                                              </th>
-                                              <th className="sorting">Actions</th>
-                                            </tr>
-                                          )}
-                                        </thead>
-                                        <tbody>
-                                          {instructions?.docs?.length > 0 ? (
-                                            instructions?.docs?.map(
-                                              (ins, index) => (
-                                                <tr>
-                                                  <td className>{index + 1}</td>
-                                                  <td>{ins?.videotitle}</td>
-                                                  <td>
-                                                    {" "}
-                                                    {moment(
-                                                      ins?.createdAt
-                                                    ).format("LL")}
-                                                  </td>
-                                                  <td>
-                                                    <div className="btn-group ml-1">
-                                                      <button
-                                                        type="button"
-                                                        className="btn btn-drop-table btn-sm"
-                                                        data-toggle="dropdown"
-                                                      >
-                                                        <i className="fa fa-ellipsis-v" />
-                                                      </button>
-                                                      <div className="dropdown-menu">
-                                                        <a
-                                                          className="dropdown-item"
-                                                          href="#"
-                                                          data-toggle="modal"
-                                                          data-target="#viewDocument"
-                                                          onClick={() => {
-                                                            setvideotitle(
-                                                              ins?.videotitle
-                                                            );
-                                                            setvideoview(
-                                                              ins?.videouri
-                                                            );
-                                                            setdescription(
-                                                              ins?.description
-                                                            );
-                                                          }}
-                                                        >
-                                                          <i className="fa fa-eye" />
-                                                          View Detail
-                                                        </a>
-                                                        <a
-                                                          className="dropdown-item"
-                                                          href="#"
-                                                          data-toggle="modal"
-                                                          data-target="#editDocument"
-                                                          onClick={() => {
-                                                            setad_video(
-                                                              ins?.videouri
-                                                            );
-                                                            seteditvideotitle(
-                                                              ins?.videotitle
-                                                            );
-                                                            seteditdescription(
-                                                              ins?.description
-                                                            );
-                                                            setinsutructionid(
-                                                              ins?._id
-                                                            );
-                                                          }}
-                                                        >
-                                                          <i className="far fa-edit" />
-                                                          Edit
-                                                        </a>
-                                                      </div>
-                                                    </div>
-                                                  </td>
-                                                </tr>
-                                              )
-                                            )
-                                          ) : (
-                                            <p>No Instruction</p>
-                                          )}
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  </div>
-                                  {instructions?.docs?.length > 0 && (
-                                    <Pagination
-                                      totalDocs={instructions?.totalDocs}
-                                      totalPages={instructions?.totalPages}
-                                      currentPage={instructions?.page}
-                                      setPage={setPage}
-                                      hasNextPage={instructions?.hasNextPage}
-                                      hasPrevPage={instructions?.hasPrevPage}
-                                    />
-                                  )}
-                                </div>
-                              </div>
+                          </div>
+                        </div>
+                        <div className="row mb-3">
+                          <div className="col-12">
+                            <div className="maain-tabble table-responsive">
+                              <table className="table table-bordered zero-configuration">
+                                <thead>
+                                  <tr>
+                                    <th>S. No</th>
+                                    <th>Video Title</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {instructions?.docs?.length > 0 ? (
+                                    instructions?.docs?.map(
+                                      (ins, index) => (
+
+                                        <tr>
+                                          <td className>{index + 1}</td>
+                                          <td>{ins?.videotitle}</td>
+                                          <td>
+                                            {" "}
+                                            {moment(
+                                              ins?.createdAt
+                                            ).format("LL")}
+                                          </td>
+                                          <td>
+                                            <div className="dropdown">
+                                              <button className="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i className="fa fa-ellipsis-v" />
+                                              </button>
+                                              <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                <li>
+                                                  <Link className="dropdown-item" to={`/VideoDetails/${ins?._id}`}><i className="fa fa-eye" /> View</Link>
+                                                </li>
+                                              </ul>
+                                            </div>
+                                          </td>
+                                        </tr>))) : null}
+                                </tbody>
+                              </table>
                             </div>
                           </div>
                         </div>
+                        {instructions?.docs?.length > 0 && (
+                          <Pagination
+                            totalDocs={instructions?.totalDocs}
+                            totalPages={instructions?.totalPages}
+                            currentPage={instructions?.page}
+                            setPage={setPage}
+                            hasNextPage={instructions?.hasNextPage}
+                            hasPrevPage={instructions?.hasPrevPage}
+                          />
+                        )}
+
                       </div>
                     </div>
                   </div>
@@ -372,6 +294,7 @@ const Instructions = ({ history }) => {
               </div>
             </div>
           </div>
+
           {/* Add Document Popup */}
           <div
             className="modal fade delete-product p-0"

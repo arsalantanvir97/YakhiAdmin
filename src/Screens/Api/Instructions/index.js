@@ -12,6 +12,15 @@ export const getInstruction = async (page, perPage, from, to, status, searchStri
     return data
 
 };
+export const getInstructionDetails =async (id) =>{
+    const {data}=await api({
+         url: `${baseURL}/instruction/getInstructionDetails/${id}`,
+         method: "GET",
+     })
+     console.log('data',data)
+ return data?.instruction
+ }
+     
 export const addInstruction = (data) =>
     api({
         url: `${baseURL}/instruction/createinstruction`,

@@ -2,6 +2,24 @@ import api, { baseURL } from "../../../utils/api";
 
 export const getOrders = async(page, perPage, from, to, searchString, sort, ) => {
    const {data}= await api({
+      url: `${baseURL}/order/nogeoorderlogs`,
+      method: "GET",
+      params: {
+        page,
+          perPage,
+          searchString,
+          from,
+          to,
+          sort,
+      },
+    
+    });
+    console.log('getUsersdata',data?.order)
+    return data?.order
+
+  };
+  export const getAllOrdersLogs = async(page, perPage, from, to, searchString, sort, ) => {
+   const {data}= await api({
       url: `${baseURL}/order/logs`,
       method: "GET",
       params: {

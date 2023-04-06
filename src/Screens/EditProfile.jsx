@@ -6,7 +6,7 @@ import { adminInfo } from "../Recoil";
 import { useMutation } from "react-query";
 import { editAdminProfile } from "./Api/Auth";
 
-const EditProfile = () => {
+const EditProfile = ({ history }) => {
   const [loading, setloading] = useState(false);
 
   const [firstName, setfirstName] = useState();
@@ -27,7 +27,7 @@ const EditProfile = () => {
     }
   }, [adminData]);
 
-  const { mutate, isLoading ,status} = useMutation((data) => editAdminProfile(data), {
+  const { mutate, isLoading, status } = useMutation((data) => editAdminProfile(data), {
     retry: false,
     onSuccess: (res) => {
       setadminData(res?.data);
@@ -39,155 +39,121 @@ const EditProfile = () => {
 
 
   const updateProfileData = async () => {
-  
-        const formData = new FormData();
-        formData.append("user_image", image);
-        formData.append("firstName", firstName);
-        formData.append("lastName", lastName);
-        formData.append("email", email);
 
-        const body = formData;
-        mutate(body)
-      
-        setIsEdit(false);
-    
+    const formData = new FormData();
+    formData.append("user_image", image);
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+
+    const body = formData;
+    mutate(body)
+
+    setIsEdit(false);
+
   };
   return (
-    <div className="app-content content dashboard">
-      <div className="content-wrapper">
-        <div className="content-body">
-          {/* Basic form layout section start */}
-          <section id="configuration" className="edit-profile">
-            <div className="row">
-              <div className="col-12">
-                <div className="card rounded pad-20">
-                  <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                    <div className="page-title">
-                      <div className="row">
-                        <div className="col-12">
-                          <h1>
-                            <Link to="/Dashboard">
-                              <i className="fa fa-angle-left" />
-                            </Link>
-                            {is_edit ? "Edit profile" : "My Profile"}
-                          </h1>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="user-block">
-                      {/* <h1>{status && status}</h1> */}
-                      {/* <h1>{isLoading && isLoading}</h1> */}
-                      <div className="row justify-content-center">
-                        <div className="col-12 col-lg-10 col-md-8 col-xl-5 light-primary-bg text-center">
-                          <div className="d-flex justify-content-center mb-3">
-                            <div className="main-over-box">
-                              <ImageSelector
-                                setImage={setimage}
-                                image={image}
-                                is_edit={is_edit}
-                              />
-                            </div>
-                          </div>
-                          {!is_edit && (
-                            <div className="col-12 mb-3">
-                              <Link to="/UpdatePassword">Change Password</Link>
-                            </div>
-                          )}
-                          <div className="row detail-row d-flex align-items-center justify-content-around px-3">
-                            <div className="col-md-6 col-12 text-left mb-1 lablename">
-                              <label htmlFor>First Name:</label>
-                            </div>
-                            <div className="col-md-6 col-12 text-left mb-1">
-                              {is_edit ? (
-                                <input
-                                  type="text"
-                                  className="form-control cutum-input"
-                                  id="exampleInputEmail1"
-                                  aria-describedby="emailHelp"
-                                  placeholder="First Name"
-                                  value={firstName}
-                                  onChange={(e) => {
-                                    setfirstName(e.target.value);
-                                  }}
-                                />
-                              ) : (
-                                <p>{firstName}</p>
-                              )}
-                            </div>
-                            <div className="col-md-6 col-12 text-left mb-1 lablename">
-                              <label htmlFor>Last Name:</label>
-                            </div>
-                            <div className="col-md-6 col-12 text-left mb-1">
-                              {is_edit ? (
-                                <input
-                                  type="text"
-                                  className="form-control cutum-input"
-                                  id="exampleInputEmail1"
-                                  aria-describedby="emailHelp"
-                                  placeholder="Last Name"
-                                  value={lastName}
-                                  onChange={(e) => {
-                                    setlastName(e.target.value);
-                                  }}
-                                />
-                              ) : (
-                                <p>{lastName}</p>
-                              )}
-                            </div>
-                            <div className="col-md-6 col-12 text-left mb-1 lablename">
-                              <label htmlFor>Email Address:</label>
-                            </div>
-                            <div className="col-md-6 col-12 text-left mb-1">
-                              {is_edit ? (
-                                <input
-                                  type="email"
-                                  className="form-control cutum-input"
-                                  id="exampleInputEmail1"
-                                  aria-describedby="emailHelp"
-                                  placeholder="Email"
-                                  value={email}
-                                  onChange={(e) => {
-                                    setemail(e.target.value);
-                                  }}
-                                />
-                              ) : (
-                                <p>{email}</p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="row detail-row d-flex align-items-center mb-1">
-                            <div className="col-12">
-                              {!loading ? (
-                                <Link
-                                
-                                  to="#"
-                                  onClick={() => {
-                                    if (!is_edit) {
-                                      setIsEdit(true);
-                                    } else {
-                                      updateProfileData();
-                                    }
-                                  }}
-                                  className="btn btn-primary btn-fixed-190"
-                                >
-                                  Update
-                                </Link>
-                              ) : (
-                                <i className="fas fa-spinner fa-pulse"></i>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+    <div>
+      <div className="app-content content dashboard">
+        <div className="content-wrapper">
+          <div className="content-body">
+            <section className="myprofile box py-5" id="configuration">
+              <div className="row justify-content-center">
+                <div className="col-md-12">
+                  <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                    <h3 className="pageTitle"><i className="fas fa-arrow-left me-3 topMArrow" onClick={() => {
+                      history.goBack()
+                    }} />   {is_edit ? "Edit profile" : "My Profile"}</h3>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+              <div className="row justify-content-center">
+                <div className="col-md-4">
+                  <form className="myprofile_main">
+                    <div className="row">
+                      <div className="col-md-12">
+                        <div className="mb-5 text-center">
+                          <div className="attached">
+                            <ImageSelector
+                              setImage={setimage}
+                              image={image}
+                              is_edit={is_edit}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row justify-content-center">
+                      <div className="form-field">
+                        <label htmlFor className="siteLabel ps-4 mb-2">Full Name<span className="text-danger">*</span></label>
+                        <div className="position-relative">
+                          {is_edit ? (
+                            <input type="text" className="siteInput" value={firstName}
+                              onChange={(e) => {
+                                setfirstName(e.target.value);
+                              }}
+                            />
+                          ) : (
+                            <p>{firstName}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="form-field">
+                        <label htmlFor className="siteLabel ps-4 mb-2">Last Name<span className="text-danger">*</span></label>
+                        <div className="position-relative">
+                          {is_edit ? (
+                            <input type="text" className="siteInput" value={lastName}
+                              onChange={(e) => {
+                                setlastName(e.target.value);
+                              }}
+                            />
+                          ) : (
+                            <p>{lastName}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="col-md-12">
+                        <div className="felid">
+                          <label className="siteLabel ps-4 mb-2">Email Address</label>
+
+                          <p className="h_16 ps-4 mb-2">{email}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="button text-center mt-5">
+                      {!loading ? (
+                        <Link
+
+                          to="#"
+                          onClick={() => {
+                            if (!is_edit) {
+                              setIsEdit(true);
+                            } else {
+                              updateProfileData();
+                            }
+                          }}
+                          className="btn_darkbluep"                                >
+                          Update
+                        </Link>
+                      ) : (
+                        <i className="fas fa-spinner fa-pulse"></i>
+                      )}
+                      {!is_edit && (
+
+                        <Link to="/UpdatePassword" className="btn_orangebor ms-2">Change Password</Link>
+                      )}
+
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </div>
+
+
   );
 };
 

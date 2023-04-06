@@ -32,102 +32,75 @@ const ResetPassword = (props) => {
   });
 
 
- 
+
   return (
     <div>
-      <section className="login-wrap">
-        <div className="container m-auto">
-          <div className="login-inner">
-            <div className="row">
-              <div className="col-lg-12 col-12 ">
-                <div className="right">
-                  <div className="logo text-center">
-                    <img src="images/login-logo.png" alt="" />
+      <section className="loginPage">
+        <div className="container">
+          <div className="row align-items-center justify-content-center">
+            <div className="col-lg-6 px-0 loginBgLeft d-none d-lg-block">
+              <img src="images/loginLeftImage.png" alt="" className="img-fluid w-100" />
+            </div>
+            <div className="col-lg-6 loginBgRight">
+              <div className="loginCard">
+                <div className="text-center mb-3">
+                  <img src="images/loginLogo.png" alt="" className="loginLogo img-fluid" />
+                </div>
+                <div className="formBox">
+                  <div className="formHeading text-center">
+                    <h2>Password Recovery</h2>
+                    <p>Please Enter New Password</p>
                   </div>
-                  <h1 className>Password Recovery</h1>
-                  <form action="dashboard.php">
-                    <div className="row">
-                      <div className="col-12 form-group mb-1">
-                        <label htmlFor>
-                          New Password <span className="text-danger">*</span>{" "}
-                        </label>
-                        <div className="position-relative">
-                          <input
-                            type={showicon ? "password" : "text"}
-                            className="form-control enter-input"
-                            placeholder="New Password"
-                            value={password}
-                            onChange={(e) => {
-                              setpassword(e.target.value);
-                            }}
-                          />{" "}
-                          <i
-                            onClick={() => setshowicon(!showicon)}
+                  <form className="py-2">
+                    <div className="form-field">
+                      <label htmlFor className="siteLabel ps-4 mb-2">New Password<span className="text-danger">*</span></label>
+                      <div className="passwordWrapper position-relative">
+                        <input type={showicon ? "password" : "text"}
+                          className="siteInput passInput" placeholder="Enter New Password" value={password}
+                          onChange={(e) => {
+                            setpassword(e.target.value);
+                          }} />
+                        <button type="button" className="passDisplay">
+                          <i onClick={() => setshowicon(!showicon)}
                             className={
                               showicon
-                                ? "fa enter-icon-3 right-icon fa-eye-slash right-icon-90"
-                                : "fa enter-icon-3 right-icon fa-eye right-icon-90"
-                            }
-                            aria-hidden="true"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-12 form-group mb-1">
-                        <label htmlFor>
-                          Confirm Password{" "}
-                          <span className="text-danger">*</span>{" "}
-                        </label>
-                        <div className="position-relative">
-                          <input
-                            type={showicon2 ? "password" : "text"}
-                            className="form-control enter-input"
-                            placeholder="Enter Password"
-                            value={confirm_password}
-                            onChange={(e) => {
-                              setconfirm_password(e.target.value);
-                            }}
-                          />{" "}
-                          <i
-                            onClick={() => setshowicon2(!showicon2)}
-                            className={
-                              showicon2
-                                ? "fa enter-icon-3 right-icon fa-eye-slash right-icon-90"
-                                : "fa enter-icon-3 right-icon fa-eye right-icon-90"
-                            }
-                            aria-hidden="true"
-                          />
-
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="d-block col-12 text-center mt-2">
-                        <button
-                          onClick={() =>
-                            password?.length > 0 && confirm_password?.length > 0
-                              ? mutate({
-                                password, confirm_password, code: props?.location?.state?.code, email: props?.location?.state?.email,
-                              })
-                              : Toasty(
-                                "error",
-                                `Please fill out all the required fields!`
-                              )
-                          }
-                          type="button"
-                          className="btn btn-primary btn-login"
-                        >
-                          Update
+                                ? "fas fa-eye-slash"
+                                : "fas fa-eye"
+                            } aria-hidden="true" />
                         </button>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="d-block col-12 text-center mt-2">
-                        <Link to="/" className="primary-text font-weight-bold">
-                          Back To Login
-                        </Link>
+                    <div className="form-field">
+                      <label htmlFor className="siteLabel ps-4 mb-2">Confirm Password<span className="text-danger">*</span></label>
+                      <div className="passwordWrapper position-relative">
+                        <input type={showicon2 ? "password" : "text"}
+                          className="siteInput passInput" placeholder="Enter Confirm Password" value={confirm_password}
+                          onChange={(e) => {
+                            setconfirm_password(e.target.value);
+                          }}
+                        />
+                        <button type="button" className="passDisplay">
+                          <i onClick={() => setshowicon2(!showicon2)}
+                            className={
+                              showicon2
+                                ? "fas fa-eye-slash"
+                                : "fas fa-eye"
+                            } aria-hidden="true" />
+                        </button>
                       </div>
+                    </div>
+                    <div className="form-field text-center mt-4">
+                      <button onClick={() =>
+                        password?.length > 0 && confirm_password?.length > 0
+                          ? mutate({
+                            password, confirm_password, code: props?.location?.state?.code, email: props?.location?.state?.email,
+                          })
+                          : Toasty(
+                            "error",
+                            `Please fill out all the required fields!`
+                          )
+                      } type="button" className="siteBtn mx-auto" data-bs-toggle="modal" data-bs-target=".lpassword_sufl">Continue</button>
+                      <Link to="/" className="backToW"><i className="far fa-long-arrow-alt-left" /> Back To Login</Link>
                     </div>
                   </form>
                 </div>
@@ -136,6 +109,7 @@ const ResetPassword = (props) => {
           </div>
         </div>
       </section>
+
     </div>
   );
 };

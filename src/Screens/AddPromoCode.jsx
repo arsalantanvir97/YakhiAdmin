@@ -18,10 +18,13 @@ const AddPromoCode = ({ history }) => {
   const [endingdate, setendingdate] = useState("");
   const [promocode, setpromocode] = useState("");
   const [discount, setdiscount] = useState("");
+  const [minorderamount, setminorderamount] = useState("");
+  const [status, setstatus] = useState("");
+
 
   const [loading, setloading] = useState(false);
 
-  const { mutate, isLoading, status } = useMutation((data) => createAPromoCode(data), {
+  const { mutate, isLoading, status: promostatus } = useMutation((data) => createAPromoCode(data), {
     retry: false,
     onSuccess: (res) => {
       SwalAlert('success', 'SUCCESS', 'PromoCode Created Successfully');
@@ -33,136 +36,134 @@ const AddPromoCode = ({ history }) => {
   });
   const submitHandler = async () => {
     console.log("await");
-    const body = { title, startingdate, endingdate, promocode, discount }
+    const body = { title, startingdate, endingdate, promocode, discount, minorderamount,status }
     mutate(body)
   };
 
   return (
     <div>
-      <div className="app-content dashboard content">
+      <div className="app-content content uploadVideoMain">
         <div className="content-wrapper">
           <div className="content-body">
             {/* Basic form layout section start */}
-            <section id="configuration" className="user-page">
+            <section id="configuration">
               <div className="row">
                 <div className="col-12">
-                  <div className="card rounded">
-                    <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                      <div className="page-title">
-                        <div className="row">
-                          <div className="col-12">
-                            <h1>
-                              <Link to="/PromoCode">
-                                <i className="fa fa-angle-left" />
-                              </Link>
-                              Add Promo Code
-                            </h1>
-                          </div>
+                  <div className="card-content collapse show dashCard py-5 px-5">
+                    <div className="row justify-content-center mb-3">
+                      <div className="col-md-12">
+                        <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                          <h3 className="pageTitle"><i className="fas fa-arrow-left me-3 topMArrow" onClick={() => {
+                            history.goBack()
+                          }} /> Add Promo</h3>
                         </div>
                       </div>
-                      <div className="user-block">
-                        <div className="row detail-row">
-                          <div className="col-12 col-md-6  col-xl-4 form-group">
-                            <label>
-                              Title
-                              <span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
+                    </div>
+                    <div className="row">
+                      <div className="col-md-4">
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Promo Code<span className="text-danger">*</span></label>
+                          <div className="position-relative">
+                            <InputNumber
+                              value={promocode}
+                              onChange={setpromocode}
+                              max={9}
                               className="form-control"
-                              placeholder="Enter First Name"
-                              value={title}
-                              onChange={(e) => {
-                                settitle(e.target.value);
-                              }}
                             />
                           </div>
                         </div>
-                        <div className="row detail-row">
-                          <div className="col-12 col-md-6  col-xl-4 form-group">
-                            <label>
-                              Starting Date{" "}
-                              <span className="text-danger">*</span>
-                            </label>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Amount Or Percent<span className="text-danger">*</span></label>
+                          <div className="position-relative">
+                            <InputNumber
+                              value={discount}
+                              onChange={setdiscount}
+                              max={9}
+                              className="form-control"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-md-4">
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Min Order Amount* $<span className="text-danger">*</span></label>
+                          <div className="position-relative">
+                            <InputNumber
+                              value={minorderamount}
+                              onChange={setminorderamount}
+                              max={9}
+                              className="form-control"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Starting Date<span className="text-danger">*</span></label>
+                          <div className="position-relative">
                             <DatePicker
                               minDate={new Date()}
                               selected={startingdate}
                               onChange={(startingdate) =>
                                 setstartingdate(startingdate)
                               }
-                              className="sort-date customdate form-conform-controltrol"
+                              className="siteInput"
                             />
                           </div>
                         </div>
-                        <div className="row detail-row">
-                          <div className="col-12 col-md-6  col-xl-4 form-group">
-                            <label>
-                              Ending Date <span className="text-danger">*</span>
-                            </label>
-                            <DatePicker
-                              minDate={new Date()}
-                              selected={endingdate}
-                              onChange={(endingdate) =>
-                                setendingdate(endingdate)
-                              }
-                              className="sort-date customdate form-conform-controltrol"
-                            />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-md-4">
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Status<span className="text-danger">*</span></label>
+                          <div className="position-relative">
+                            <select value={status}
+                              onChange={(e) => {
+                                setstatus(e.target.value);
+
+                              }}>
+                              <option value={true} >
+                                Active
+                              </option>
+                              <option value={false}>Inactive</option>
+                            </select>
                           </div>
                         </div>
-                        <div className="row detail-row">
-                          <div className="col-12 col-md-6  col-xl-4 form-group">
-                            <label>
-                              PromoCode <span className="text-danger">*</span>
-                            </label>
-                            <div className="position-relative">
-                              <InputNumber
-                                value={promocode}
-                                onChange={setpromocode}
-                                max={9}
-                                className="form-control"
-                              />
-                            </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Promo Desc<span className="text-danger">*</span></label>
+                          <div className="position-relative">
+                            <input type="text" className="siteInput" value={title}
+                              onChange={(e) => {
+                                settitle(e.target.value);
+                              }} name id />
                           </div>
                         </div>
-                        <div className="row detail-row">
-                          <div className="col-12 col-md-6  col-xl-4 form-group">
-                            <label>
-                              Discount %<span className="text-danger">*</span>
-                            </label>
-                            <div className="position-relative">
-                              <InputNumber
-                                value={discount}
-                                onChange={setdiscount}
-                                max={9}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row detail-row mt-1">
-                          <div className="col-12 col-md-6 col-xl-4">
-                            {!isLoading ? (
-                              <Link
-                                to="#"
-                                className="btn btn-primary btn-fixed-190"
-                                onClick={() => {
-                                  promocode > 0 &&
-                                    discount > 0 &&
-                                    title?.length > 0
-                                    ? submitHandler()
-                                    : Toasty(
-                                      "error",
-                                      `Please fill out all the required fields!`
-                                    );
-                                }}
-                              >
-                                Create
-                              </Link>
-                            ) : (
-                              <i className="fas fa-spinner fa-pulse"></i>
-                            )}
-                          </div>
-                        </div>
+                      </div>
+                    </div>
+                    <div className="row mt-3">
+                      <div className="col-md-12">
+                        {!isLoading ? (
+                          <Link
+                            to="#" onClick={() => {
+                              promocode > 0 &&
+                                discount > 0 &&
+                                title?.length > 0
+                                ? submitHandler()
+                                : Toasty(
+                                  "error",
+                                  `Please fill out all the required fields!`
+                                );
+                            }} className="btn_darkbluep">Add </Link>
+                        ) : (
+                          <i className="fas fa-spinner fa-pulse"></i>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -172,6 +173,7 @@ const AddPromoCode = ({ history }) => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };

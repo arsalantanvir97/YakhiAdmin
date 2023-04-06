@@ -17,8 +17,6 @@ const EditCategory = ({ match, history }) => {
   const [image, setimage] = useState();
   const [is_edit, setIsEdit] = useState(false);
 
-
-
   const { isLoading, data: catData } = useQuery(
     {
       queryKey: ["category", match.params.id],
@@ -68,188 +66,95 @@ const EditCategory = ({ match, history }) => {
   return (
     <div>
       {isLoading ? <Loader /> :
-        <div className="app-content dashboard content">
+        <div className="app-content content dashboard">
           <div className="content-wrapper">
             <div className="content-body">
-              {/* Basic form layout section start */}
-              <section id="configuration" className="user-page">
-                <div className="row">
-                  <div className="col-12">
-                    <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                        <div className="page-title">
-                          <div className="row">
-                            <div className="col-12 col-md-6 col-lg-6">
-                              <h1>
-                                <Link to="/Categories">
-                                  <i className="fa fa-angle-left" />
-                                </Link>
-                                Edit Category
-                              </h1>
-                            </div>
-                            <div className="col-12 col-sm-6 col-lg-6 text-right">
-                              {!editCatloading ? (
-                                <Link
-                                  onClick={() => {
-                                    if (!is_edit) {
-                                      setIsEdit(true);
-                                    } else {
-                                      updateCategoryData();
-                                    }
-                                  }}
-                                  to="#"
-                                  className="btn btn-primary"
-                                >
-                                  {is_edit ? "Update" : "Edit"}
-                                </Link>
-                              ) : (
-                                <i className="fas fa-spinner fa-pulse"></i>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="user-block">
-                          <div className="row detail-row">
-                            <div className="col-12 col-md-6 col-xl-4">
-                              <label>
-                                Category Title{" "}
-                                <span className="text-danger">*</span>
-                              </label>
-                              {is_edit ? (
-                                <input
-                                  type="text"
-                                  className="form-control enter-input"
-                                  id="exampleInputEmail1"
-                                  aria-describedby="emailHelp"
-                                  placeholder="Enter Category Title"
-                                  value={categorytitle}
-                                  onChange={(e) => {
-                                    setcategorytitle(e.target.value);
-                                  }}
-                                />
-                              ) : (
-                                <p>{categorytitle} </p>
-                              )}{" "}
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="col-12 col-lg-6 lablename">
-                              <label>
-                                Visible In Menu
-                                <span className="text-danger">*</span>
-                              </label>
-                              {is_edit ? (
-                                <select
-                                  id
-                                  className="form-control"
-                                  value={visible}
-                                  onChange={(e) => {
-                                    setvisible(e.target.value);
-                                  }}
-                                >
-                                  <option >Select Visible In Menu</option>
-                                  <option value={true} >
-                                    Yes
-                                  </option>
-                                  <option value={false}>No</option>
-                                </select>
-                              ) : (
-                                <p>{visible ? "Yes" : "No"} </p>
-                              )}{" "}
-                            </div>
-                          </div>
-                          <div className="row detail-row mb-1">
-                            <div className="col-12 col-md-5">
-                              <h4 className="pl-15">Description and Images</h4>
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="col-12 col-md-6 col-xl-4">
-                              <label>
-                                Description <span className="text-danger">*</span>
-                              </label>
-                              {is_edit ? (
-                                <textarea
-                                  placeholder="Enter Description"
-                                  value={description}
-                                  onChange={(e) => {
-                                    setdescription(e.target.value);
-                                  }}
-                                />
-                              ) : (
-                                <p>{description}</p>
-                              )}{" "}
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="main-over-box">
-                              <ImageSelector
-                                setImage={setimage}
-                                image={image}
-                                is_edit={is_edit}
-                              />
-                            </div>
-                            {/* <div className="col-12 col-md-6 col-xl-6">
-                            <label>Image</label>
-                            <div className="upload-thumbs">
-                              <div className="upload-thumb  d-inline-block position-relative mr-1">
-                                <button
-                                  type="button"
-                                  className="btn download rotate-45"
-                                  data-dismiss="modal"
-                                  aria-label="Close"
-                                >
-                                  <i
-                                    className="fa fa-plus"
-                                    aria-hidden="true"
-                                  />
-                                </button>
-                                <label htmlFor="picture" className="d-block">
-                                  <img
-                                    src="images/jacket-product.png"
-                                    alt=""
-                                    className="img-fluid"
-                                  />
-                                </label>
-                              </div>
-                              <div className="upload-thumb  d-inline-block position-relative mr-1">
-                                <button
-                                  type="button"
-                                  className="btn download rotate-45"
-                                  data-dismiss="modal"
-                                  aria-label="Close"
-                                >
-                                  <i
-                                    className="fa fa-plus"
-                                    aria-hidden="true"
-                                  />
-                                </button>
-                                <label htmlFor="picture" className="d-block">
-                                  <img
-                                    src="images/jacket-product.png"
-                                    alt=""
-                                    className="img-fluid"
-                                  />
-                                </label>
-                              </div>
-                              <div className="d-inline-block align-bottom">
-                                <label htmlFor="upload" className="d-block">
-                                  <i className="fa fa-upload" />
-                                </label>
-                                <input type="file" id="upload" name="file" />
-                              </div>
-                            </div>
-                          </div> */}
-                          </div>
+              <section className="myprofile " id="configuration">
+                <div className="box py-5">
+                  <div className="row justify-content-center">
+                    <div className="col-md-12">
+                      <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                        <h3 className="pageTitle"><i onClick={() => {
+                          history.goBack()
+                        }} className="fas fa-arrow-left me-3 topMArrow" />Category {is_edit ? "Edit" : "Details"} </h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-4">
+                      <div className="form-field">
+                        <label htmlFor className="siteLabel ps-4 mb-2">Category Name<span className="text-danger">*</span></label>
+                        <div className="position-relative">
+                          {is_edit ? (
+                            <input
+                              type="text"
+                              className="siteInput"
+                              value={categorytitle}
+                              onChange={(e) => {
+                                setcategorytitle(e.target.value);
+                              }}
+                            />
+                          ) : (
+                            <p>{categorytitle}</p>
+                          )}                </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-4">
+                      <div className="form-field">
+                        <label htmlFor className="siteLabel ps-4 mb-2">Status<span className="text-danger">*</span></label>
+                        <div className="position-relative">
+                          {is_edit ? (
+
+                            <select value={visible}
+                            className="mainInput filterInput"
+
+                              onChange={(e) => {
+                                setvisible(e.target.value);
+                                
+                              }}
+                            >
+                              <option >Select Visible In Menu</option>
+                              <option value={true} >
+                                Yes
+                              </option>
+                              <option value={false}>No</option>
+                            </select>) : (
+                            <p>{visible ? "Yes" : "No"} </p>
+                          )}{" "}
                         </div>
                       </div>
+                    </div>
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col-md-12">
+                      {!editCatloading ? (
+                        <Link
+                          onClick={() => {
+                            if (!is_edit) {
+                              setIsEdit(true);
+                            } else {
+                              updateCategoryData();
+                            }
+                          }}
+                          to="#"
+                          className="btn_darkbluep"
+                        >
+                          {is_edit ? "Update" : "Edit"}
+                        </Link>
+                      ) : (
+                        <i className="fas fa-spinner fa-pulse"></i>
+                      )}
                     </div>
                   </div>
                 </div>
               </section>
             </div>
           </div>
-        </div>}
+        </div>
+
+      }
     </div>
   );
 };

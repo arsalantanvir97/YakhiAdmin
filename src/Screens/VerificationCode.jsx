@@ -15,7 +15,7 @@ const VerificationCode = ({ match, history }) => {
       const body = { code, email: match?.params?.email };
       console.log("TEST");
       // try {
-        setloading(true);
+      setloading(true);
 
       const res = await api.post("/auth/adminverifyRecoverCode", body);
       console.log("res", res);
@@ -67,79 +67,45 @@ const VerificationCode = ({ match, history }) => {
   };
   return (
     <div>
-      <section className="login-wrap">
-        <div className="container m-auto">
-          <div className="login-inner">
-            <div className="row">
-              <div className="col-lg-12 col-12 ">
-                <div className="right">
-                  <div className="logo text-center">
-                    <img src="images/login-logo.png" alt="" />
+      <section className="loginPage">
+        <div className="container">
+          <div className="row align-items-center justify-content-center">
+            <div className="col-lg-6 px-0 loginBgLeft d-none d-lg-block">
+              <img src="images/loginLeftImage.png" alt="" className="img-fluid w-100" />
+            </div>
+            <div className="col-lg-6 loginBgRight">
+              <div className="loginCard">
+                <div className="text-center mb-3">
+                  <img src="images/loginLogo.png" alt="" className="loginLogo img-fluid" />
+                </div>
+                <div className="formBox">
+                  <div className="formHeading text-center">
+                    <h2>Password Recovery</h2>
+                    <p>Enter Verification Code To Recover Your Password.</p>
                   </div>
-                  <h1 className>Password Recovery</h1>
-                  <form>
-                    <div className="row">
-                      <div className="col-12 form-group position-relative mb-1">
-                        <label htmlFor>
-                          Verification Code
-                          <span className="primary-text">*</span>
-                        </label>
+                  <form className="py-2">
+                    <div className="form-field">
+                      <label htmlFor className="siteLabel ps-4 mb-2">Verification Code<span className="text-danger">*</span></label>
+                      <div className="position-relative">
                         <InputNumber
                           value={code}
                           onChange={setcode}
                           max={12}
                           className="form-control"
-                        />
-                        <div className="d-flex justify-content-between pl-2 pt-1">
-                          <p className="text-dark">
-                            Please Enter Your Email Address
-                          </p>
-                          <p className="primary-text d-none">
-                            The number you've entered does not match your code.
-                            Please try again!
-                          </p>
-                          <p className="text-dark">
-                            Didn't Get A Code?{" "}
-                            <Link
-                              onClick={resentCodeHandler}
-                              to="#"
-                              className="primary-text forgot"
-                            >
-                              {" "}
-                              Sent It Again
-                            </Link>
-                          </p>
-                        </div>
-                      </div>
+                        />                </div>
                     </div>
-                    <div className="row">
-                      <div className="d-block col-12 text-center mt-1">
-                      {!loading ? (
-                        <button
-                          type="button"
-                          onClick={() =>
+                    <div className="form-field text-center mt-4">
+                    {!loading ? ( <button onClick={() =>
                             code > 0
                               ? onSubmitHandler()
                               : Toasty(
                                   "error",
                                   `Please fill out all the required fields!`
                                 )
-                          }
-                          className="btn btn-primary btn-login"
-                        >
-                          Continue
-                        </button>
-                         ) : (
+                          } type="button" className="siteBtn mx-auto">Continue</button>   ) : (
                           <i className="fas fa-spinner fa-pulse"></i>
-                        )}
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="d-block col-12 text-center mt-2">
-                        <Link to="/" className="primary-text font-weight-bold">
-                          Back To Login
-                        </Link>
-                      </div>
+                        )} 
+                     <Link to="/" className="backToW"><i className="far fa-long-arrow-alt-left" /> Back To Login</Link>
                     </div>
                   </form>
                 </div>
@@ -148,6 +114,7 @@ const VerificationCode = ({ match, history }) => {
           </div>
         </div>
       </section>
+
     </div>
   );
 };

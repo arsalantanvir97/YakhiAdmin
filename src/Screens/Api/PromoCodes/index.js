@@ -25,3 +25,20 @@ export const getPromoCodes = async(page, perPage, from, to, status, searchString
         method: "POST",
         data,
     });
+    export const changeStatus = (id) =>
+//   console.log('id',id)
+  api({
+    url: `${baseURL}/promo/toggle-active/${id}`,
+    method: "GET",
+  });
+  export const getPromoCOdeDetails = (id) =>
+    api({
+        url: `${baseURL}/promo/promoCodeDetails/${id}`,
+        method: "GET",
+    });
+    export const editPromoCode = (data) =>
+    api({
+      url: `${baseURL}/promo/editPromoCOde`,
+      method: "POST",
+      data,
+    });

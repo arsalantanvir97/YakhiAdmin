@@ -12,8 +12,10 @@ import { changeStatus, deleteProduct, getProducts } from "./Api/Products";
 import { getCategories } from "./Api/Categories";
 import Loader from "../components/Loader";
 import SwalAlert from "../components/SwalAlert";
+import SearchFilter from "../components/SearchFilter";
+import Calender from "../components/Calender";
 
-const Products = () => {
+const Products = ({ history }) => {
   const [sort, setsort] = useState();
 
   const [products, setproducts] = useState([]);
@@ -70,251 +72,217 @@ const Products = () => {
   return (
     <div>
       {prodstatus == 'loading' ? <Loader /> :
-        <div className="app-content dashboard content">
+        <div className="app-content content dashboard">
           <div className="content-wrapper">
             <div className="content-body">
-              {/* Basic form layout section start */}
-              <section id="configuration" className="product-page">
-                <div className="row">
-                  <div className="col-12">
-                    <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                        <div className="page-title">
-                          <div className="row">
-                            <div className="col-12 col-md-6 col-lg-6">
-                              <h1>Products</h1>
-                            </div>
-                            <div className="col-12 col-sm-6 col-lg-6 text-right">
-                              <Link
-                                to="/AddProduct"
-                                className="btn btn-primary"
-                              >
-                                Add Product
-                              </Link>
+              <section className="myprofile " id="configuration">
+                <div className="box py-5">
+                  <div className="row justify-content-center">
+                    <div className="col-md-12">
+                      <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                        <h3 className="pageTitle"> Products</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <ul className="nav nav-tabs tabTop justify-content-center" id="myTab" role="tablist">
+                      <li className="nav-item flex-grow-0 flex-fill" role="presentation">
+                        <button onClick={() => {
+                          history?.push('/Categories')
+                        }} className="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab" aria-controls="categories" aria-selected="false">Categories</button>
+                      </li>
+                      <li className="nav-item flex-grow-0 flex-fill" role="presentation">
+                        <button  className="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="true">Products</button>
+                      </li>
+                      <li className="nav-item flex-grow-0 flex-fill" role="presentation">
+                        <button  onClick={() => {
+                          history?.push('/Tags')
+                        }} className="nav-link" id="tags-tab" data-bs-toggle="tab" data-bs-target="#tags" type="button" role="tab" aria-controls="tags" aria-selected="false">Tags</button>
+                      </li>
+                    </ul>
+                    <div className="tab-content" id="myTabContent">
+                      <div className="tab-pane fade show active" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+                        <div className="col-md-12">
+                          <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                            <h3 className="pageTitle"> Products</h3>
+                            <div>
+                              <Link to='/AddProduct' className="btn_darkbluep">Add Products</Link>
                             </div>
                           </div>
+
                         </div>
-                        <div className="dataTables_wrapper custom-filter">
-                          <div className="user-listing-top">
-                            <div className="row align-items-center justify-content-between mb-1">
-                              <div className="col-xl-9">
-                                <div className="row align-items-center justify-content-between">
-                                  <div className="col-xl-3 col-md-6 col-12 mt-2">
-                                    <label>Show entries </label>
-                                    <select
-                                      className="form-control"
-                                      value={perPage}
-                                      onChange={(e) => {
-                                        setPerPage(e.target.value);
-                                        setPage(1);
-                                      }}
-                                    >
-                                      <option value={10}>10</option>
-                                      <option value={25}>25</option>
-                                      <option value={50}>50</option>
-                                      <option value={100}>100</option>
-                                    </select>
-                                  </div>
-                                  <div className="col-xl-3 col-md-6 col-12 mt-2">
-                                    <label htmlFor className="d-block">
-                                      Sort by:
-                                    </label>
-                                    <select
-                                      name
-                                      className="form-control sort-select"
-                                      id
-                                      value={sort}
-                                      onChange={(e) => {
-                                        setsort(e.target.value);
-                                      }}
-                                    >
-                                      <option value={"asc"}>Latest</option>
-                                      <option value={"des"}>Earlier</option>
-                                    </select>
-                                  </div>
-                                  <div className="col-xl-3 col-md-6 col-12 mt-2">
-                                    <label htmlFor className="d-block">
-                                      Filter by Category
-                                    </label>
-                                    <select
-                                      name
-                                      className="form-control"
-                                      id
-                                      value={category}
-                                      onChange={(e) => {
-                                        setcategory(e.target.value);
-                                      }}
-                                    >
-                                      <option value="">All</option>
-                                      {allofcategory?.length > 0 &&
-                                        allofcategory?.map((allcat) => (
-                                          <option value={allcat?._id}>
-                                            {allcat?.categorytitle}
-                                          </option>
-                                        ))}
-                                    </select>
-                                  </div>
-                                  <div className="col-xl-3 col-md-6 col-12 mt-2">
-                                    <label htmlFor className="d-block">
-                                      Filter by Status
-                                    </label>
-                                    <select
-                                      name
-                                      className="form-control"
-                                      id
-                                      value={status}
-                                      onChange={(e) => {
-                                        setStatus(e.target.value);
-                                        setPage(1);
-                                      }}
-                                    >
-                                      <option value="">All</option>
+                        <div className="row mb-4">
+                          <div className="col-xl-12 col-md-12">
+                            <div className="row">
+                              <div className="col d-lg-flex align-items-center justify-content-between">
+                                <SearchFilter
+                                  searchString={searchString}
+                                  setSearchString={setSearchString}
+                                  setPage={setPage}
+                                />
+                                <div className="dropFilter">
+                                  <button className="filterIcon redBg rounded-circle ms-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i className="fas fa-filter" />
+                                  </button>
+                                  <div className="dropdown-menu filterDropdown">
+                                    <div className="filterDropdownHeader">
+                                      <p className="mainLabel m-0">Filter</p>
+                                    </div>
+                                    <div className="dropdown-divider" />
+                                    <div className="filterDropdownBody">
+                                      <div className="userInput mb-3">
+                                        <label htmlFor className="mainLabel">Creation Date:</label>
+                                        <Calender
+                                          from={from}
+                                          to={to}
+                                          setFrom={setFrom}
+                                          setTo={setTo}
+                                        />
+                                      </div>
+                                      <div className="userInput mb-3">
+                                        <label htmlFor className="mainLabel">Filter by Status:</label>
+                                        <div className="mb-2">
+                                          <select name id className="mainInput filterInput" value={status}
+                                            onChange={(e) => {
+                                              setStatus(e.target.value);
+                                              setPage(1);
+                                            }}
+                                          >
+                                            <option value="">All</option>
 
-                                      <option value={true}>Active</option>
-                                      <option value={false}>Inactive</option>
-                                    </select>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-xl-3">
-                                <div className="row">
-                                  <div className="col-12 mt-2">
-                                    <div className="search-filter w-100">
-                                      <label>Search:</label>
-                                      <input
-                                        type="search"
-                                        className="form-control form-control-sm"
-                                        placeholder="Search"
-                                        value={searchString}
-                                        onChange={(e) => {
-                                          setSearchString(e.target.value);
-                                          setPage(1);
-                                        }}
-                                        onKeyDown={(e) => {
-                                          if (e.key === "Enter") {
-                                            console.log('object');
+                                            <option value={true}>Active</option>
+                                            <option value={false}>Inactive</option>
+                                          </select>
 
-                                          }
-                                        }}
-                                      />
+                                        </div>
+                                      </div>
+                                      <div className="filterAction">
+                                        <button type="button" className="btn_darkbluep">Apply</button>
+                                      </div>
+                                      <div className="filterAction">
+                                        <button type="button" className="btn_orangebor">Clear All</button>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                          <div className="row row-table">
-                            <div className="main-tabble table-responsive">
-                              <div className="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                                <div className="row">
-                                  <div className="col-sm-12">
-                                    <table className="table table-borderless dataTable">
-                                      <thead>
-                                        <tr>
-                                          <th className>ID</th>
-                                          <th className>SKU</th>
-                                          <th className>Name</th>
-                                          <th className>Category</th>
-                                          <th className>Status</th>
-                                          <th className>Action</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {data?.docs?.length > 0 &&
-                                          data?.docs?.map((prod, index) => (
-                                            <tr>
-                                              <td className>{index + 1}</td>
-                                              <td>{prod?._id}</td>
-                                              <td>{prod?.name}</td>
-                                              <td>
-                                                {prod?.category?.categorytitle}
-                                              </td>
-                                              <td>
-                                                {" "}
-                                                {prod?.status
-                                                  ? "Active"
-                                                  : "Inactive"}
-                                              </td>
-                                              <td>
-                                                <div className="btn-group ml-1">
-                                                  <button
-                                                    type="button"
-                                                    className="btn btn-drop-table btn-sm"
-                                                    data-toggle="dropdown"
-                                                  >
-                                                    <i className="fa fa-ellipsis-v" />
-                                                  </button>
-                                                  <div className="dropdown-menu">
-                                                    <Link
-                                                      className="dropdown-item"
-                                                      to={`/ProductEdit/${prod?._id}`}
-                                                    >
-                                                      <i className="fa fa-eye" />
-                                                      View Detail
-                                                    </Link>
+                        </div>
+                        <div className="row mb-3">
+                          <div className="col-12">
+                            <div className="maain-tabble table-responsive">
+                              <table className="table table-bordered zero-configuration">
+                                <thead>
+                                  <tr>
+                                    <th>S No.</th>
+                                    <th>Product  Name</th>
+                                    <th>Saller</th>
+                                    <th>Price</th>
+                                    <th>Added On</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {data?.docs?.length > 0 &&
+                                    data?.docs?.map((prod, index) => (
+                                      <tr>
+                                        <td className>{index + 1}</td>
+                                        <td>{prod?.name}</td>
+                                        <td>{prod?.name}</td>
+                                        <td>{prod?.price}</td>
+                                        <td>
+                                          {moment
+                                            .utc(prod?.createdAt)
+                                            .format("LL")}
+                                        </td>
+                                        <td>
+                                          {" "}
+                                          {prod?.status
+                                            ? "Active"
+                                            : "Inactive"}
+                                        </td>
+                                        <td>
+                                          <div className="btn-group ml-1">
+                                            <div className="dropdown">
+                                              <button className="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i className="fa fa-ellipsis-v" />
+                                              </button>
+                                              <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                <li>
+                                                  <Link
 
-                                                    <Link
-                                                      to="#"
-                                                      onClick={() => {
-                                                        deleteProductHandler.mutate(
-                                                          prod?._id
-                                                        );
-                                                      }}
-                                                      className="dropdown-item"
-                                                      data-toggle="modal"
-                                                      data-target=".delete-product"
-                                                    >
-                                                      <i className="fa fa-trash-alt" />
-                                                      Remove
-                                                    </Link>
-                                                    <Link
-                                                      onClick={() =>
-                                                        handleChangeStatus.mutate(
-                                                          prod?._id,
-                                                        )
-                                                      }
-                                                      className="dropdown-item"
-                                                      data-toggle="modal"
-                                                      data-target=".inactive-product"
-                                                    >
-                                                      <i className={!prod.status
-                                                        ? "fa fa-check-circle"
-                                                        : "fa fa-ban"} />
-                                                      {!prod.status
-                                                        ? "Active"
-                                                        : "Inactive"}
-                                                    </Link>
-                                                  </div>
-                                                </div>
-                                              </td>
-                                            </tr>
-                                          ))}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                </div>
-                                {data?.docs?.length > 0 && (
-                                  <Pagination
-                                    totalDocs={data?.totalDocs}
-                                    totalPages={data?.totalPages}
-                                    currentPage={data?.page}
-                                    setPage={setPage}
-                                    hasNextPage={data?.hasNextPage}
-                                    hasPrevPage={data?.hasPrevPage}
-                                  />
-                                )}
-                              </div>
+                                                    to={`/ProductEdit/${prod?._id}`}
+                                                    className="dropdown-item" ><i className="fa fa-eye" /> View</Link>
+                                                  <Link
+                                                    to="#"
+                                                    onClick={() => {
+                                                      deleteProductHandler.mutate(
+                                                        prod?._id
+                                                      );
+                                                    }}
+                                                    className="dropdown-item"
+                                                    data-toggle="modal"
+                                                    data-target=".delete-product"
+                                                  >
+                                                    <i className="fa fa-trash-alt" />
+                                                    Remove
+                                                  </Link>
+                                                  <Link
+                                                    onClick={() =>
+                                                      handleChangeStatus.mutate(
+                                                        prod?._id,
+                                                      )
+                                                    }
+                                                    className="dropdown-item"
+                                                    data-toggle="modal"
+                                                    data-target=".inactive-product"
+                                                  >
+                                                    <i className={!prod.status
+                                                      ? "fa fa-check-circle"
+                                                      : "fa fa-ban"} />
+                                                    {!prod.status
+                                                      ? "Active"
+                                                      : "Inactive"}
+                                                  </Link>
+                                                </li>
+                                              </ul>
+                                            </div>
+
+
+                                          </div>
+
+                                        </td>
+                                      </tr>
+                                    ))}
+                                </tbody>
+                              </table>
                             </div>
                           </div>
                         </div>
+                        {data?.docs?.length > 0 && (
+                          <Pagination
+                            totalDocs={data?.totalDocs}
+                            totalPages={data?.totalPages}
+                            currentPage={data?.page}
+                            setPage={setPage}
+                            hasNextPage={data?.hasNextPage}
+                            hasPrevPage={data?.hasPrevPage}
+                          />
+                        )}
+
                       </div>
+
                     </div>
                   </div>
                 </div>
               </section>
             </div>
           </div>
-        </div>}
+        </div>
+
+      }
     </div>
   );
 };

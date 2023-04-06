@@ -32,118 +32,85 @@ const UpdatePassword = ({ history }) => {
   });
 
 
- 
+
   return (
     <div>
       <div className="app-content content dashboard">
         <div className="content-wrapper">
           <div className="content-body">
-            {/* Basic form layout section start */}
-            <section id="configuration" className="update-password">
-              <div className="row">
-                <div className="col-12">
-                  <div className="card rounded">
-                    <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                      <div className="page-title">
-                        <div className="row">
-                          <div className="col-12">
-                            <h1>
-                              <Link to="/EditProfile" href="edit-profile.php">
-                                <i className="fa fa-angle-left" />
-                              </Link>
-                              Change Password
-                            </h1>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="user-block">
-                        <div className="row justify-content-center">
-                          <div className="col-12 col-lg-10 col-md-8 col-xl-5 light-primary-bg text-left">
-                            <div className="row detail-row p-3 mb-0">
-                              <div className="col-12 form-group mb-2">
-                                <label>
-                                  Existing Password{" "}
-                                  <span className="text-danger">*</span>
-                                </label>
-                                <div className="position-relative">
-                                  <input
-                                    type={showicon ? "password" : "text"}
+            <section className="myprofile box py-5" id="configuration">
+              <div className="row justify-content-center">
+                <div className="col-md-12">
+                  <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                    <h3 className="pageTitle"><i className="fas fa-arrow-left me-3 topMArrow" onClick={() => {
+                      history.goBack()
+                    }} /> Change Password</h3>
+                  </div>
+                </div>
+              </div>
+              <div className="row justify-content-center">
+                <div className="col-md-4">
+                  <form className="myprofile_main">
+                    <div className="row justify-content-center">
+                      <div className="col-md-12 mr-5">
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Current  Password<span className="text-danger">*</span></label>
+                          <div className="passwordWrapper position-relative">
+                            <input    type={showicon ? "password" : "text"}
                                     value={existingpassword}
                                     onChange={(e) => {
                                       setexistingpassword(e.target.value);
-                                    }}
-                                    className="form-control enter-input"
-                                    placeholder="Enter Current Password"
-                                  />
-
-                                  <i
-                                    onClick={() => setshowicon(!showicon)}
-                                    className={
-                                      showicon
-                                        ? "fa enter-icon-3 right-icon fa-eye-slash right-icon-90"
-                                        : "fa enter-icon-3 right-icon fa-eye right-icon-90"
-                                    }
-                                    aria-hidden="true"
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-12 form-group mb-2">
-                                <label>
-                                  New Password{" "}
-                                  <span className="text-danger">*</span>
-                                </label>
-                                <div className="position-relative">
-                                  <input
-                                    type={showicon2 ? "password" : "text"}
-                                    className="form-control enter-input"
-                                    value={newpassword}
+                                    }} className="siteInput passInput" placeholder="Enter Current  Password" name id />
+                            <button type="button" className="passDisplay">
+                              <i onClick={() => setshowicon(!showicon)}
+                            className={
+                              showicon
+                                ? "fas fa-eye-slash"
+                                : "fas fa-eye"
+                            } aria-hidden="true" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">New Password<span className="text-danger">*</span></label>
+                          <div className="passwordWrapper position-relative">
+                            <input                                     type={showicon2 ? "password" : "text"}
+ value={newpassword}
                                     onChange={(e) => {
                                       setnewpassword(e.target.value);
-                                    }}
-                                    placeholder="Enter Current Password"
-                                  />
+                                    }} className="siteInput passInput" placeholder="Enter New Password" name id />
+                            <button type="button" className="passDisplay">
+                              <i onClick={() => setshowicon2(!showicon2)}
+                            className={
+                              showicon2
+                                ? "fas fa-eye-slash"
+                                : "fas fa-eye"
+                            } aria-hidden="true" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="form-field">
+                          <label htmlFor className="siteLabel ps-4 mb-2">Confirm Password<span className="text-danger">*</span></label>
+                          <div className="passwordWrapper position-relative">
+                            <input                                     type={showicon3 ? "password" : "text"}
 
-                                  <i
-                                    onClick={() => setshowicon2(!showicon2)}
-                                    className={
-                                      showicon2
-                                        ? "fa enter-icon-3 right-icon fa-eye-slash right-icon-90"
-                                        : "fa enter-icon-3 right-icon fa-eye right-icon-90"
-                                    }
-                                    aria-hidden="true"
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-12 form-group mb-2">
-                                <label>
-                                  Confirm Password{" "}
-                                  <span className="text-danger">*</span>
-                                </label>
-                                <div className="position-relative">
-                                  <input
-                                    type={showicon3 ? "password" : "text"}
-                                    className="form-control enter-input"
-                                    placeholder="Enter Current Password"
-                                    value={confirm_password}
-                                    onChange={(e) => {
-                                      setconfirm_password(e.target.value);
-                                    }}
-                                  />
-
-                                  <i
-                                    onClick={() => setshowicon3(!showicon3)}
-                                    className={
-                                      showicon3
-                                        ? "fa enter-icon-3 right-icon fa-eye-slash right-icon-90"
-                                        : "fa enter-icon-3 right-icon fa-eye right-icon-90"
-                                    }
-                                    aria-hidden="true"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-12 text-center">
-                              <Link
+value={confirm_password}
+                                   onChange={(e) => {
+                                     setconfirm_password(e.target.value);
+                                   }} className="siteInput passInput" placeholder="Confirm Password" name id />
+                            <button type="button" className="passDisplay">
+                              <i onClick={() => setshowicon3(!showicon3)}
+                            className={
+                              showicon3
+                                ? "fas fa-eye-slash"
+                                : "fas fa-eye"
+                            } aria-hidden="true" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="button text-center mt-5">
+                        <Link
                                 to="#"
                                 onClick={() =>
                                   existingpassword?.length > 0 &&
@@ -159,23 +126,17 @@ const UpdatePassword = ({ history }) => {
                                       "error",
                                       `Please fill out all the required fields!`
                                     )
-                                }
-                                className="btn btn-primary"
-                              >
-                                Update
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
+                                } className="btn_darkbluep pl-5 pr-5" data-bs-toggle="modal" data-bs-target=".profileUpdate_sufl">Update</Link>
                       </div>
                     </div>
-                  </div>
+                  </form>
                 </div>
               </div>
             </section>
           </div>
         </div>
       </div>
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import api, { baseURL } from "../../../utils/api";
 
-export const getUsers = async (page, perPage, from, to, searchString, sort,) => {
+export const getUsers = async (page, perPage, from, to, searchString, sort,userstatus) => {
     const { data } = await api({
         url: `${baseURL}/user/logs`,
         method: "GET",
@@ -11,6 +11,7 @@ export const getUsers = async (page, perPage, from, to, searchString, sort,) => 
             from,
             to,
             sort,
+            status:userstatus
         },
 
     });

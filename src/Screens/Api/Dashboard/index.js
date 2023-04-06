@@ -53,7 +53,18 @@ export const handleGetcategoriesummarydata = async (year4,category) => {
     console.log('getCategories', data)
     return data
 };
-
+export const handleGetanalysisproductsdata = async (year4) => {
+    const { data } = await api({
+        url: `${baseURL}/order/analysisproducts`,
+        method: "GET",
+        params: {
+            year4,
+            
+        }
+    });
+    console.log('getCategories', data)
+    return data
+};
 export const getLatestOrdersHandler = async () => {
     const { data } = await api({
         url: `${baseURL}/order/getLatestOrders`,

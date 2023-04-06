@@ -7,6 +7,8 @@ import ImageSlider from "../components/ImageSlider";
 import { baseURL, imageURL } from "../utils/api";
 import Swal from "sweetalert2";
 import { Parser } from "html-to-react";
+import { MultiSelect } from "react-multi-select-component";
+
 import { Editor } from "@tinymce/tinymce-react";
 import { useRecoilValue } from "recoil";
 import { adminInfo } from "../Recoil";
@@ -15,6 +17,8 @@ import { editProduct, getProductDetails } from "./Api/Products";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import Loader from "../components/Loader";
 import SwalAlert from "../components/SwalAlert";
+import { getAllTags } from "./Api/Tags";
+let taggg=[]
 const htmlToReactParser = new Parser();
 
 const ProductEdit = ({ match, enable_dot, history }) => {
@@ -31,8 +35,12 @@ const ProductEdit = ({ match, enable_dot, history }) => {
   const [name, setname] = useState("");
 
   const [description, setdescription] = useState("");
+  const [selected, setSelected] = useState([]);
+
+  const [options, setoptions] = useState([]);
 
   const [category, setcategory] = useState("");
+  const [howtouse, sethowtouse] = useState("");
 
   const [inputfields, setInputfields] = useState([]);
 
@@ -51,8 +59,17 @@ const ProductEdit = ({ match, enable_dot, history }) => {
     getCategories(),
     console.log('abc')
   );
+  const { data: alloftags } = useQuery(["alltags"], () =>
+    getAllTags()
+  );
+  useEffect(() => {
+    alloftags?.length > 0 &&
+      alloftags?.map((tagg) =>
+        options?.push({ label: tagg?.title, value: tagg?._id })
+      );
+  }, [alloftags])
 
-  const { isLoading,data:prodData } = useQuery(
+  const { isLoading, data: prodData } = useQuery(
     {
       enabled: allofcategory?.length > 0,
       queryKey: ["product", match.params.id],
@@ -76,29 +93,33 @@ const ProductEdit = ({ match, enable_dot, history }) => {
     }
   );
   useEffect(() => {
-    console.log('prodData',prodData)
+    console.log('prodData', prodData)
     setproductdetails(prodData?.data?.product);
-      setproductimage(prodData?.data?.product?.productimage);
-      setimages(prodData?.data?.product?.productimage);
+    setproductimage(prodData?.data?.product?.productimage);
+    setimages(prodData?.data?.product?.productimage);
 
-      setname(prodData?.data?.product?.name);
-      setdescription(prodData?.data?.product?.description);
-      setprice(prodData?.data?.product?.price);
-      setcountInStock(prodData?.data?.product?.countInStock);
+    setname(prodData?.data?.product?.name);
+    setdescription(prodData?.data?.product?.description);
+    setprice(prodData?.data?.product?.price);
+    setcountInStock(prodData?.data?.product?.countInStock);
+    sethowtouse(prodData?.data?.product?.howtouse);
+    setvisible(prodData?.data?.product?.visible);
 
-      setvisible(prodData?.data?.product?.visible);
+    setcategory(prodData?.data?.product?.category);
+    prodData?.data?.product?.tag?.length > 0 &&
+    prodData?.data?.product?.tag?.map((tagg) =>
+      selected?.push({ label: tagg?.title, value: tagg?._id })
+    );
+  }, [prodData])
 
-      setcategory(prodData?.data?.product?.category);
-    }, [prodData])
-    
-  const { mutate, isLoading:editProductloading ,status} = useMutation((data) => editProduct(data), {
+  const { mutate, isLoading: editProductloading, status } = useMutation((data) => editProduct(data), {
     retry: false,
     onSuccess: (res) => {
-      SwalAlert('success','SUCCESS','Product Edited Successfully');
+      SwalAlert('success', 'SUCCESS', 'Product Edited Successfully');
 
       usequeryClient.invalidateQueries(['products'])
-      usequeryClient.invalidateQueries(['product',match.params.id])
-     history.push("/Products");
+      usequeryClient.invalidateQueries(['product', match.params.id])
+      history.push("/Products");
     },
     onError: (err) => Error(err?.response?.data?.message),
   });
@@ -144,53 +165,58 @@ const ProductEdit = ({ match, enable_dot, history }) => {
 
   const updateCourseData = async () => {
     const { project_images } = data;
+    selected?.length > 0 &&
+    selected?.map((sel) => taggg?.push(sel?.value));
+
     console.log("addProductHandler", productimage);
-      const formData = new FormData();
-      formData.append("id", match?.params?.id);
-      formData.append("name", name);
-      formData.append("price", price);
-      formData.append("countInStock", countInStock);
+    const formData = new FormData();
+    formData.append("id", match?.params?.id);
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("countInStock", countInStock);
+    formData.append("howtouse", howtouse);
+    formData.append("visible", visible);
+    formData.append("category", categoryy);
+    formData.append("tag", JSON.stringify(taggg));
 
-      formData.append("visible", visible);
-      formData.append("category", categoryy);
-      formData.append("description", description);
-      formData.append("images", JSON.stringify(images));
+    formData.append("description", description);
+    formData.append("images", JSON.stringify(images));
 
-      project_images.forEach((reciept) => formData.append("reciepts", reciept));
+    project_images.forEach((reciept) => formData.append("reciepts", reciept));
 
-      const body = formData;
-      mutate(body)
-      // const res = await axios.post(
-      //   `${baseURL}/product/editProduct`,
-      //   body,
-      //   config
-      // );
-      // setloading(false);
-      // console.log("res", res);
-      // if (res?.status == 201) {
-      //   console.log("blockkk");
-      //   Swal.fire({
-      //     icon: "success",
-      //     title: "",
-      //     text: "Product Updated Successfully",
-      //     showConfirmButton: false,
-      //     timer: 1500
-      //   });
-      //   console.log("blockkk2");
+    const body = formData;
+    mutate(body)
+    // const res = await axios.post(
+    //   `${baseURL}/product/editProduct`,
+    //   body,
+    //   config
+    // );
+    // setloading(false);
+    // console.log("res", res);
+    // if (res?.status == 201) {
+    //   console.log("blockkk");
+    //   Swal.fire({
+    //     icon: "success",
+    //     title: "",
+    //     text: "Product Updated Successfully",
+    //     showConfirmButton: false,
+    //     timer: 1500
+    //   });
+    //   console.log("blockkk2");
 
-      //   history.push("/Products");
-      //   console.log("blockkk3");
-      // }
-      // setloading(false);
+    //   history.push("/Products");
+    //   console.log("blockkk3");
+    // }
+    // setloading(false);
 
-      // console.log("error", error?.response?.data);
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "ERROR",
-      //   text: "Internal Server Error",
-      //   showConfirmButton: false,
-      //   timer: 1500
-      // });
+    // console.log("error", error?.response?.data);
+    // Swal.fire({
+    //   icon: "error",
+    //   title: "ERROR",
+    //   text: "Internal Server Error",
+    //   showConfirmButton: false,
+    //   timer: 1500
+    // });
   };
   const editorHandler = (value) => {
     console.log("value", value, typeof value, value?.length);
@@ -198,294 +224,261 @@ const ProductEdit = ({ match, enable_dot, history }) => {
   };
   return (
     <div>
-      {isLoading  ? <Loader /> :
-        <div className="app-content dashboard content">
+      {isLoading ? <Loader /> :
+        <div className="app-content content uploadVideoMain">
           <div className="content-wrapper">
             <div className="content-body">
-              <section id="configuration" className="page-view-page">
+              {/* Basic form layout section start */}
+              <section id="configuration">
                 <div className="row">
                   <div className="col-12">
-                    <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                        <div className="page-title mb-3">
-                          <div className="row">
-                            <div className="col-12 col-md-6 col-lg-6">
-                              <h1>Product {is_edit ? "Edit" : "Details"}</h1>
+                    <div className="card-content collapse show dashCard py-5 px-5">
+                      <div className="row justify-content-center mb-3">
+                        <div className="col-md-12">
+                          <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                            <h3 className="pageTitle"><i onClick={() => {
+                              history.goBack()
+                            }} className="fas fa-arrow-left me-3 topMArrow" /> {is_edit ? "Edit" : "Details"}</h3>
+                          </div>
+
+                        </div>
+                      </div>
+                      <div className="row"> {!is_edit && (
+                        <div className="row ">
+                          <div className="form-group mb-2">
+                            <label style={{ paddingLeft: 0 }}>
+                              Images
+                            </label>
+                          </div>
+                          <div className="col-lg-10 col-12 mt-2">
+                            <div className="row">
+                              {productimage?.length > 0 &&
+                                productimage?.map((img) => (
+                                  <div className="col-lg-3">
+                                    <img
+                                      src={
+                                        img && img !== null
+                                          ? `${imageURL}${img}`
+                                          : "images/img-1.png"
+                                      }
+                                      alt=""
+                                      className="course-img"
+                                    />
+                                  </div>
+                                ))}
                             </div>
-                            <div className="col-12 col-sm-6 col-lg-6 text-right">
-                              {!editProductloading ? (
-                                <Link
-                                  to="#"
-                                  onClick={() => {
-                                    if (!is_edit) {
-                                      setIsEdit(true);
-                                    } else {
-                                      updateCourseData();
+                          </div>
+                        </div>
+                      )}
+                        {is_edit && (
+                          <>
+                            {" "}
+                            <div className="row ">
+                              <div className="col-lg-6 mt-2 userss">
+                                <label className="all-label2 mb-1 d-block">
+                                  {images?.length > 0
+                                    ? "Delete Uploaded Images:"
+                                    : ""}
+                                </label>{" "}
+                                <ImageSlider
+                                  images={images}
+                                  enable_delete={true}
+                                  handleMouseEnter={handleMouseEnter}
+                                  handleMouseLeave={handleMouseLeave}
+                                  hover={hover}
+                                  handleDeleteImage={handleDeleteImage}
+                                />
+                                <div style={{ height: 35 }}></div>
+                                <label className="all-label2 mb-1 d-block">
+                                  Upload New Images:
+                                </label>
+                                <div className="row ">
+                                  <ImageSelectDropzone
+                                    max={5 - images?.length}
+                                    setproductimage={setproductimage}
+                                    files={data?.project_images}
+                                    setFiles={(project_images) =>
+                                      setData({ ...data, project_images })
                                     }
+                                    accept="image/*"
+                                  />{" "}
+                                </div>
+                              </div>
+                            </div>
+                            <p className="primary-text pt-2 pl-2">
+                              Please note that you can upload up to{" "}
+                              {5 - images?.length} images only
+                            </p>
+                          </>
+                        )}
+                        <div style={{ height: 15 }}></div>
+                        <div className="col-md-4">
+                          <div className="form-field">
+                            <label htmlFor className="siteLabel ps-4 mb-2">Product Name<span className="text-danger">*</span></label>
+                            <div className="position-relative">
+                              {is_edit ? (
+                                <input
+                                  type="text"
+                                  className="siteInput"
+                                  value={name}
+                                  onChange={(e) => {
+                                    setname(e.target.value);
                                   }}
-                                  className="btn btn-primary"
-                                >
-                                  {is_edit ? "Update" : "Edit"}
-                                </Link>
+                                />
                               ) : (
-                                <i className="fas fa-spinner fa-pulse"></i>
+                                <p>{name}</p>
                               )}
                             </div>
                           </div>
                         </div>
-                        <div className="product-gallery">
-                          <div className="row">
-                            <div className="col-12 col-lg-6">
-                              {!is_edit && (
-                                <div className="row ">
-                                  <div className="form-group mb-2">
-                                    <label style={{ paddingLeft: 0 }}>
-                                      Images
-                                    </label>
-                                  </div>
-                                  <div className="col-lg-10 col-12 mt-2">
-                                    <div className="row">
-                                      {productimage?.length > 0 &&
-                                        productimage?.map((img) => (
-                                          <div className="col-lg-3">
-                                            <img
-                                              src={
-                                                img && img !== null
-                                                  ? `${imageURL}${img}`
-                                                  : "images/img-1.png"
-                                              }
-                                              alt=""
-                                              className="course-img"
-                                            />
-                                          </div>
-                                        ))}
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                              {is_edit && (
-                                <>
-                                  {" "}
-                                  <div className="row ">
-                                    <div className="col-lg-6 mt-2 userss">
-                                      <label className="all-label2 mb-1 d-block">
-                                        {images?.length > 0
-                                          ? "Delete Uploaded Images:"
-                                          : ""}
-                                      </label>{" "}
-                                      <ImageSlider
-                                        images={images}
-                                        enable_delete={true}
-                                        handleMouseEnter={handleMouseEnter}
-                                        handleMouseLeave={handleMouseLeave}
-                                        hover={hover}
-                                        handleDeleteImage={handleDeleteImage}
-                                      />
-                                      <div style={{ height: 35 }}></div>
-                                      <label className="all-label2 mb-1 d-block">
-                                        Upload New Images:
-                                      </label>
-                                      <div className="row ">
-                                        <ImageSelectDropzone
-                                          max={5 - images?.length}
-                                          setproductimage={setproductimage}
-                                          files={data?.project_images}
-                                          setFiles={(project_images) =>
-                                            setData({ ...data, project_images })
-                                          }
-                                          accept="image/*"
-                                        />{" "}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <p className="primary-text pt-2 pl-2">
-                                    Please note that you can upload up to{" "}
-                                    {5 - images?.length} images only
-                                  </p>
-                                </>
-                              )}
+                        <div className="col-md-4">
+                          <div className="form-field">
+                            <label htmlFor className="siteLabel ps-4 mb-2">Price$<span className="text-danger">*</span></label>
+                            <div className="position-relative">
+                              {is_edit ? (
+                                <InputNumber
+                                  value={price}
+                                  onChange={setprice}
+                                  max={9}
+                                  className="form-control"
+                                />
+                              ) : (
+                                <p>{price}</p>
+                              )}                        </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
 
+                        <div className="col-md-8">
+                          <div className="form-field">
+                            <label htmlFor className="siteLabel ps-4 mb-2">How To Use<span className="text-danger">*</span></label>
+                            <div className="position-relative">
+                              {is_edit ? (
+                                <input type="text" value={howtouse} onChange={(e) => {
+                                  sethowtouse(e.target.value)
+                                }} className="siteInput" placeholder="How To Use" name id />) : (
+                                <p>{howtouse}</p>
+                              )}
                             </div>
                           </div>
-                          <div className="product-form">
-                            <div className="user-block">
-                              <div className="row">
-                                <div className="col-12 col-md-6">
-                                  <div className="form-group mb-2">
-                                    <label style={{ paddingLeft: 0 }}>
-                                      Product Title
-                                    </label>
-                                    {is_edit ? (
-                                      <input
-                                        type="text"
-                                        className="form control"
-                                        value={name}
-                                        onChange={(e) => {
-                                          setname(e.target.value);
-                                        }}
-                                      />
-                                    ) : (
-                                      <p>{name}</p>
-                                    )}
-                                  </div>
-                                  <div className="form-group mb-2">
-                                    <label style={{ paddingLeft: 0 }}>
-                                      Category
-                                    </label>
-                                    {is_edit ? (
-                                      <select
-                                        name
-                                        id
-                                        className="all-input w-100 mb-0"
-                                        value={categoryy}
-                                        onChange={(e) => {
-                                          setcategoryy(e.target.value);
-                                        }}
-                                      >
-                                        {allofcategory?.length > 0 &&
-                                          allofcategory?.map((categ) => (
-                                            <option value={categ?._id}>
-                                              {categ?.categorytitle}
-                                            </option>
-                                          ))}
-                                      </select>
-                                    ) : (
-                                      <p>{category?.categorytitle}</p>
-                                    )}
-                                  </div>
-                                  <div className="form-group mb-2">
-                                    <label style={{ paddingLeft: 0 }}>
-                                      Visible In Menu
-                                    </label>
-                                    {is_edit ? (
-                                      <div className="d-block">
-                                        <div className="form-check form-check-inline radio">
-                                          <input
-                                            value={visible}
-                                            onClick={() => setvisible(true)}
-                                            id="radio-1"
-                                            name="radio"
-                                            type="radio"
-                                            defaultChecked
-                                          />
-                                          <label
-                                            htmlFor="radio-1"
-                                            className="radio-label"
-                                          >
-                                            Yes
-                                          </label>
-                                        </div>
-                                        <div className="radio form-check form-check-inline">
-                                          <input
-                                            value={visible}
-                                            onClick={() => setvisible(false)}
-                                            id="radio-2"
-                                            name="radio"
-                                            type="radio"
-                                          />
-                                          <label
-                                            htmlFor="radio-2"
-                                            className="radio-label"
-                                          >
-                                            No
-                                          </label>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <p>
-                                        {" "}
-                                        {visible == true
-                                          ? "Visible"
-                                          : "Not Visible"}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="col-12 col-md-6">
-                                  <div className="form-group mb-2">
-                                    <label style={{ paddingLeft: 0 }}>
-                                      Base Price
-                                    </label>
-                                    <div className="position-relative">
-                                      {is_edit ? (
-                                        <InputNumber
-                                          value={price}
-                                          onChange={setprice}
-                                          max={9}
-                                          className="form-control"
-                                        />
-                                      ) : (
-                                        <p>{price}</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="form-group mb-2">
-                                    <label style={{ paddingLeft: 0 }}>
-                                      Count Instock
-                                    </label>
-                                    <div className="position-relative">
-                                      {is_edit ? (
-                                        <InputNumber
-                                          value={countInStock}
-                                          onChange={setcountInStock}
-                                          max={12}
-                                          className="form-control"
-                                        />
-                                      ) : (
-                                        <p>{countInStock}</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="form-group mb-2">
-                                  <label style={{ paddingLeft: 0 }}>
-                                    Description
-                                  </label>
-                                  <div className="position-relative">
-                                    {is_edit ? (
-                                      <Editor
-                                        onInit={(evt, editor) =>
-                                          (editorRef.current = editor)
-                                        }
-                                        init={{
-                                          height: 500,
-                                          menubar: true,
-                                          plugins: [
-                                            "advlist autolink lists link image charmap print preview anchor",
-                                            "searchreplace visualblocks code fullscreen",
-                                            "insertdatetime media table paste code help wordcount"
-                                          ],
-                                          toolbar:
-                                            "undo redo | formatselect | " +
-                                            "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
-                                            "alignright alignjustify | bullist numlist outdent indent | " +
-                                            "removeformat | help",
-                                          content_style:
-                                            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
-                                        }}
-                                        value={description}
-                                        onEditorChange={(value) =>
-                                          editorHandler(value)
-                                        }
-                                      />
-                                    ) : (
-                                      <p> {htmlToReactParser.parse(description)}</p>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                        </div>
+                      </div>
+                      <div className="row mb-3">
+                        <div className="col-md-4">
+                          <div className="form-field mb-3">
+                            <label htmlFor className="siteLabel ps-4 mb-2">Categroy<span className="text-danger">*</span></label>
+                            <div className="position-relative">
+                              {is_edit ? (
+                                <select
+                                  name
+                                  id
+                                  className="mainInput filterInput"
+                                  value={categoryy}
+                                  onChange={(e) => {
+                                    setcategoryy(e.target.value);
+                                  }}
+                                >
+                                  {allofcategory?.length > 0 &&
+                                    allofcategory?.map((categ) => (
+                                      <option value={categ?._id}>
+                                        {categ?.categorytitle}
+                                      </option>
+                                    ))}
+                                </select>
+                              ) : (
+                                <p>{category?.categorytitle}</p>
+                              )}                        </div>
+
                           </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="form-field mb-3">
+                            <label htmlFor className="siteLabel ps-4 mb-2">Products<span className="text-danger">*</span></label>
+                            <div className="position-relative">
+                              {is_edit ? (
+                                <InputNumber
+                                  value={countInStock}
+                                  onChange={setcountInStock}
+                                  max={12}
+                                  className="form-control"
+                                />
+                              ) : (
+                                <p>{countInStock}</p>
+                              )}                        </div>
+                          </div>
+                          <div className="form-field mb-3">
+                            <label htmlFor className="siteLabel ps-4 mb-2">Tag*<span className="text-danger">*</span></label>
+                            <div className="position-relative" style={{ zIndex: 11111111111 }}>
+                            <MultiSelect
+                              options={options}
+                              value={selected}
+                              onChange={setSelected}
+                              labelledBy="Select"
+                            />    
+                            </div>
+                           
+                          </div>
+                        </div>
+                        <label htmlFor className="siteLabel ps-4 mb-2">Product Details<span className="text-danger">*</span></label>
+                        <div className="position-relative">
+                        </div>
+                        {is_edit ? (
+                          <Editor
+                            onInit={(evt, editor) =>
+                              (editorRef.current = editor)
+                            }
+                            init={{
+                              height: 500,
+                              menubar: true,
+                              plugins: [
+                                "advlist autolink lists link image charmap print preview anchor",
+                                "searchreplace visualblocks code fullscreen",
+                                "insertdatetime media table paste code help wordcount"
+                              ],
+                              toolbar:
+                                "undo redo | formatselect | " +
+                                "fontsizeselect | bold italic backcolor | alignleft aligncenter " +
+                                "alignright alignjustify | bullist numlist outdent indent | " +
+                                "removeformat | help",
+                              content_style:
+                                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+                            }}
+                            value={description}
+                            onEditorChange={(value) =>
+                              editorHandler(value)
+                            }
+                          />
+                        ) : (
+                          <p> {htmlToReactParser.parse(description)}</p>
+                        )}
+                      </div>
+                      <div className="row mt-4">
+                        <div className="col-md-12">  {!editProductloading ? (
+                          <Link
+                            to="#"
+                            onClick={() => {
+                              if (!is_edit) {
+                                setIsEdit(true);
+                              } else {
+                                updateCourseData();
+                              }
+                            }}
+                            className="btn_darkbluep">{is_edit ? "Update" : "Edit"}
+                          </Link>
+                        ) : (
+                          <i className="fas fa-spinner fa-pulse"></i>
+                        )}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
               </section>
             </div>
           </div>
-        </div>}
+        </div>
+      }
     </div>
   );
 };

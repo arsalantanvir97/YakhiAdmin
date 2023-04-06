@@ -22,316 +22,87 @@ export default function Header(props) {
           <div className="navbar-wrapper">
             <div className="navbar-header">
               <ul className="nav navbar-nav flex-row">
-                <li className="nav-item mobile-menu d-md-none mr-auto">
-                  <Link
-                    to="/Dashboard"
-                    className="nav-link nav-menu-main menu-toggle hidden-xs is-active"
-                  >
-                    <i className="ft-menu font-large-1" />
-                  </Link>
+                <li className="nav-item mobile-menu d-md-none mr-auto">   <Link
+                  to="/Dashboard" className="nav-link nav-menu-main menu-toggle hidden-xs is-active" ><i className="ft-menu font-large-1" /></Link>
                 </li>
-                <li className="nav-item">
-                  {" "}
-                  <Link to="/Dashboard" className="navbar-brand">
-                    {" "}
-                    <img
-                      className="brand-logo img-fluid"
-                      alt="stack admin logo"
-                      src="images/logo.png"
-                    />{" "}
-                  </Link>{" "}
-                </li>
-                <li className="nav-item d-md-none">
-                  {" "}
-                  <a
-                    className="nav-link open-navbar-container"
-                    data-toggle="collapse"
-                    data-target="#navbar-mobile"
-                  >
-                    <i className="fa fa-ellipsis-v" />
-                  </a>{" "}
-                </li>
+                <li className="nav-item"> <Link to="/Dashboard" className="navbar-brand" > <img className="brand-logo img-fluid" alt="stack admin logo" src="images/loginLogo.png" /> </Link> </li>
+                <li className="nav-item d-md-none"> <Link to='#' className="nav-link open-navbar-container" data-bs-toggle="collapse" data-bs-target="#navbar-mobile"><i className="fa fa-ellipsis-v" /></Link> </li>
               </ul>
             </div>
             <div className="navbar-container content">
               <div className="collapse navbar-collapse" id="navbar-mobile">
-                <ul className="nav navbar-nav mr-auto float-left"></ul>
-                <ul className="nav navbar-nav float-right">
+                <ul className="nav navbar-nav me-auto float-start">
+                </ul>
+                <ul className="nav navbar-nav float-end nav-right align-items-center">
+                  {/* <li class="dropdown dropdown-notification nav-item">
+							<a class="nav-link nav-link-label" href="#" data-bs-toggle="dropdown">
+							<i class="fas fa-comment-dots"></i>
+								<span class="badge badge-pill badge-default badge-accent badge-default badge-up">4</span>
+							</a>
+							<ul class="dropdown-menu dropdown-menu-media dropdown-menu-right notificationDiv">
+								<li class="scrollable-container media-list ps-container ps-theme-dark ps-active-y" data-ps-id="a385dd14-315a-f80c-bd87-398bda7b376e">
+									<a href="notifications.php">
+										<div class="media">
+											<div class="media-left">
+												<div class="noti-img">
+													<img src="images/userImage.png" alt="" class="img-fluid">
+												</div>
+											</div>
+											<div class="media-body">
+												<h6 class="media-heading">You have new notification!</h6>
+												<p class="notification-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor. </p>
+												<div class="notificationBelowInfo">
+													<small>
+														<time class="media-meta" datetime="2015-06-11T18:29:20+08:00">5 secs ago</time>
+													</small>
+												</div>
+											</div>
+
+										</div>
+									</a>
+
+									<div class="ps-scrollbar-x-rail" style="left: 0px; bottom: 3px;">
+										<div class="ps-scrollbar-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+									</div>
+									<div class="ps-scrollbar-y-rail" style="top: 0px; height: 255px; right: 0px;">
+										<div class="ps-scrollbar-y" tabindex="0" style="top: 0px; height: 132px;"></div>
+									</div>
+								</li>
+								<li class="dropdown-menu-footer"><a class="dropdown-item notification text-right text-underline" href="notifications.php">View All</a></li>
+							</ul>
+						</li> */}
                   <li className="dropdown dropdown-notification nav-item">
-                    <Link to='/Notification'
-                      className="nav-link nav-link-label"
+                    <Link to='/Notification' className="nav-link nav-link-label" data-bs-toggle="dropdown" aria-expanded="true">
+                      <i onClick={() => {
+                        history?.push('/Notification')
+                      }} className="fal fa-bell" /> <span className="badge badge-pill badge-default badge-danger badge-default badge-up"></span> </Link>
 
-                      data-toggle="dropdown"
-                      aria-expanded="true"
-                    >
-                      <i className="fa fa-bell" />{" "}
-
-                    </Link>
-                    {/* <ul className="dropdown-menu dropdown-menu-media dropdown-menu-right"> */}
-                    {/* <li className="dropdown-menu-header">
-                        <h6 className="dropdown-header m-0 d-flex justify-content-between align-items-center">
-                          {" "}
-                          <span className="grey darken-2">
-                            Notifications
-                          </span>{" "}
-                          <a
-                            href="notifications.php"
-                            className="primary-text float-right m-0"
-                          >
-                            View all
-                          </a>{" "}
-                        </h6>
-                      </li> */}
-                    {/* <li
-                        className="scrollable-container media-list ps-container ps-theme-dark"
-                        data-ps-id="d5fef0e9-91e2-3ba9-4f25-864856e1fad0"
-                      >
-                        <a href="javascript:void(0)">
-                          <div className="media pb-0">
-                            <div className="media-left align-self-start">
-                              <i className="fa fa-bell" />
-                            </div>
-                            <div className="media-body">
-                              <p className="media-heading">
-                                Lorem ipsum dolor sit amet, consectetur elit.
-                                Aenean{" "}
-                              </p>
-                            </div>
-                            <small>
-                              <time
-                                className="media-meta primary-text"
-                                dateTime="2015-06-11T18:29:20+08:00"
-                              >
-                                2 hrs ago{" "}
-                              </time>
-                            </small>
-                          </div>
-                        </a>
-                        <div
-                          className="ps-scrollbar-x-rail"
-                          style={{ left: "0px", bottom: "3px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-x"
-                            tabIndex={0}
-                            style={{ left: "0px", width: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-y-rail"
-                          style={{ top: "0px", right: "0px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-y"
-                            tabIndex={0}
-                            style={{ top: "0px", height: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-x-rail"
-                          style={{ left: "0px", bottom: "3px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-x"
-                            tabIndex={0}
-                            style={{ left: "0px", width: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-y-rail"
-                          style={{ top: "0px", right: "0px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-y"
-                            tabIndex={0}
-                            style={{ top: "0px", height: "0px" }}
-                          />
-                        </div>
-                      </li>
-                      <li
-                        className="scrollable-container media-list ps-container ps-theme-dark"
-                        data-ps-id="f275f0ff-02bc-e216-c752-9111c88db0f0"
-                      >
-                        <a href="javascript:void(0)">
-                          <div className="media pb-0">
-                            <div className="media-left align-self-start">
-                              <i className="fa fa-bell" />
-                            </div>
-                            <div className="media-body">
-                              <p className="media-heading">
-                                Lorem ipsum dolor sit amet, consectetur elit.
-                                Aenean{" "}
-                              </p>
-                            </div>
-                            <small>
-                              <time
-                                className="media-meta primary-text"
-                                dateTime="2015-06-11T18:29:20+08:00"
-                              >
-                                2 hrs ago{" "}
-                              </time>
-                            </small>
-                          </div>
-                        </a>
-                        <div
-                          className="ps-scrollbar-x-rail"
-                          style={{ left: "0px", bottom: "3px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-x"
-                            tabIndex={0}
-                            style={{ left: "0px", width: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-y-rail"
-                          style={{ top: "0px", right: "0px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-y"
-                            tabIndex={0}
-                            style={{ top: "0px", height: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-x-rail"
-                          style={{ left: "0px", bottom: "3px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-x"
-                            tabIndex={0}
-                            style={{ left: "0px", width: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-y-rail"
-                          style={{ top: "0px", right: "0px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-y"
-                            tabIndex={0}
-                            style={{ top: "0px", height: "0px" }}
-                          />
-                        </div>
-                      </li>
-                      <li
-                        className="scrollable-container media-list ps-container ps-theme-dark"
-                        data-ps-id="d68fd9ec-0a27-eddb-e630-4df4c2ab5f64"
-                      >
-                        <a href="javascript:void(0)">
-                          <div className="media pb-0">
-                            <div className="media-left align-self-start">
-                              <i className="fa fa-bell" />
-                            </div>
-                            <div className="media-body">
-                              <p className="media-heading">
-                                Lorem ipsum dolor sit amet, consectetur elit.
-                                Aenean{" "}
-                              </p>
-                            </div>
-                            <small>
-                              <time
-                                className="media-meta primary-text"
-                                dateTime="2015-06-11T18:29:20+08:00"
-                              >
-                                2 hrs ago{" "}
-                              </time>
-                            </small>
-                          </div>
-                        </a>
-                        <div
-                          className="ps-scrollbar-x-rail"
-                          style={{ left: "0px", bottom: "3px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-x"
-                            tabIndex={0}
-                            style={{ left: "0px", width: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-y-rail"
-                          style={{ top: "0px", right: "0px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-y"
-                            tabIndex={0}
-                            style={{ top: "0px", height: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-x-rail"
-                          style={{ left: "0px", bottom: "3px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-x"
-                            tabIndex={0}
-                            style={{ left: "0px", width: "0px" }}
-                          />
-                        </div>
-                        <div
-                          className="ps-scrollbar-y-rail"
-                          style={{ top: "0px", right: "0px" }}
-                        >
-                          <div
-                            className="ps-scrollbar-y"
-                            tabIndex={0}
-                            style={{ top: "0px", height: "0px" }}
-                          />
-                        </div>
-                      </li> */}
-                    {/* </ul> */}
                   </li>
                   <li className="dropdown dropdown-user nav-item">
-                    <a
-                      className="dropdown-toggle nav-link dropdown-user-link"
-                      href="#"
-                      data-toggle="dropdown"
-                    >
-                      <span className="avatar avatar-online">
-                        {" "}
-                        <img
-                          src={
-                            adminData?.userImage &&
-                              adminData?.userImage !== null
-                              ? `${imageURL}${adminData?.userImage}`
-                              : "images/avatar.jpg"
-                          }
-                          alt="avatar"
-                        />{" "}
-                      </span>
-                      <span className="user-name">
-                        {adminData?.firstName + " " + adminData?.lastName}
-                      </span>
+                    <a className="dropdown-toggle nav-link dropdown-user-link" href="#" data-bs-toggle="dropdown">
+                      <span className="avatar avatar-online"> <img src={
+                        adminData?.userImage &&
+                          adminData?.userImage !== null
+                          ? `${imageURL}${adminData?.userImage}`
+                          : "images/profile-avatar.png"
+                      } alt="avatar" /> </span>
+                      <div className="user-details">
+                        <div className="userName">                        {adminData?.firstName + " " + adminData?.lastName}
+                        </div>
+                        {/* <div class="userRole">Admin</div> */}
+                      </div>
                     </a>
                     <div className="dropdown-menu dropdown-menu-right">
-                      <Link to="/EditProfile" className="dropdown-item">
-                        <i className="fa fa-user" />
-                        My Profile
-                      </Link>
-                      <a
-                        className="dropdown-item"
-                        data-toggle="modal"
-                        data-target=".profile-logout"
-                      >
-                        <i className="fa fa-sign-out-alt" />
-                        LogOut
-                      </a>
+                      <Link to="/EditProfile" className="dropdown-item" ><i className="fa fa-user" />My Profile</Link>
+                      <a className="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target=".logout"><i className="fa fa-power-off" />Logout</a>
                     </div>
-                  </li>
-                  <li className="nav-item d-none d-md-block">
-                    <a
-                      className="nav-link nav-menu-main menu-toggle hidden-xs is-active"
-                      href="#"
-                    >
-                      <i className="ft-menu" />
-                    </a>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
         </nav>
+
       </div>
       <div
         className="modal fade profile-logout p-0"
@@ -383,6 +154,29 @@ export default function Header(props) {
           </div>
         </div>
       </div>
+      <div className="default-modal modal fade logout" tabIndex={-1} aria-labelledby="exampleModalCenterTitle" style={{ display: 'none' }} aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content p-0">
+            <div className="head-green">
+              <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
+                <i aria-hidden="true" className="fa fa-times" />
+              </button>
+              <img src="images/logout_icon.png" />
+            </div>
+            <div className="modal-body py-0 row">
+              <div className="col-md-12 py-4 text-center">
+                <p className="mb-0">Are You Sure You Want To Logout Of Your Account?</p>
+              </div>
+              <div className="col-md-12 button text-center mb-5">
+                <Link to='#'                       onClick={logOutHandler}
+  data-bs-toggle="modal" data-bs-target=".logout2" className="btn_darkbluep mt-0 d-inline-block px-5 me-1">Yes</Link>
+                <Link to='#' className="btn_orangebor mt-0 d-inline-block px-5 ml-1">No</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </>
   );
 }

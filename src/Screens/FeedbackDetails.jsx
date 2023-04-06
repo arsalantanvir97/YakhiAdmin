@@ -5,7 +5,7 @@ import moment from "moment";
 import { useQuery, useQueryClient } from "react-query";
 import Loader from "../components/Loader";
 import { getFeedbackDetails } from "./Api/Feedback";
-const FeedbackDetails = ({ match }) => {
+const FeedbackDetails = ({ match,history }) => {
 
   const usequeryClient = new useQueryClient();
 
@@ -16,66 +16,56 @@ const FeedbackDetails = ({ match }) => {
   return (
     <div>
       {feedloading ? <Loader /> :
-        <div className="app-content dashboard content">
+        <div className="app-content content uploadVideoMain">
           <div className="content-wrapper">
             <div className="content-body">
               {/* Basic form layout section start */}
-              <section id="configuration" className="user-page">
+              <section id="configuration">
                 <div className="row">
                   <div className="col-12">
-                    <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                        <div className="page-title">
-                          <div className="row">
-                            <div className="col-12">
-                              <h1>Feedback</h1>
-                            </div>
-                            <div className="col-12">
-                              <h3>Feedback Information </h3>
-                            </div>
+                    <div className="card-content collapse show dashCard py-5 px-5">
+                      <div className="row justify-content-center mb-3">
+                        <div className="col-md-12">
+                          <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                            <h3 className="pageTitle"><i className="fas fa-arrow-left me-3 topMArrow" onClick={() => {
+                              history.goBack()
+                            }} /> Feedback Detail</h3>
                           </div>
                         </div>
-                        <div className="user-block">
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label>First Name</label>
-                            </div>
-                            <div className="col-12">{feedback?.firstName}</div>
+                      </div>
+                      <div className="row mb-3">
+                        <div className="col-md-2">
+                          <div className="felid">
+                            <label className="h_14 gray-colour">Name</label>
+                            <p className="h_16 text-black fw-bold qanelas">{feedback?.firstName + ' ' + feedback?.lastName} </p>
                           </div>
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label>Last Name</label>
-                            </div>
-                            <div className="col-12">{feedback?.lastName}</div>
+                        </div>
+                        <div className="col-md-2">
+                          <div className="felid">
+                            <label className="h_14 gray-colour">Email Address</label>
+                            <p className="h_16 text-black fw-bold qanelas">{feedback?.email}</p>
                           </div>
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label htmlFor>Email</label>
-                            </div>
-                            <div className="col-12">{feedback?.email}</div>
+                        </div>
+                        <div className="col-md-2">
+                          <div className="felid">
+                            <label className="h_14 gray-colour">Date</label>
+                            <p className="h_16 text-black fw-bold qanelas"> {moment.utc(feedback?.createdAt).format("LL")}</p>
                           </div>
-                          {/* <div className="row detail-row">
-                          <div className="col-12 lablename">
-                            <label htmlFor>Subject</label>
-                          </div>
-                          <div className="col-12">Abc</div>
-                        </div> */}
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label htmlFor>Date</label>
-                            </div>
-                            <div className="col-12">
-                              {" "}
-                              {moment.utc(feedback?.createdAt).format("LL")}
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label htmlFor>Message</label>
-                            </div>
-                            <div className="col-12 col-md-5">
-                              <p>{feedback?.message}</p>
-                            </div>
+                        </div>
+                      </div>
+                      {/* <div className="row mb-3">
+                   <div className="col-md-2">
+                     <div className="felid">
+                       <label className="h_14 gray-colour">Ser Type</label>
+                       <p className="h_16 text-black fw-bold qanelas">Abc</p>
+                     </div>
+                   </div>                               
+                 </div>  */}
+                      <div className="row mb-3">
+                        <div className="col-md-6">
+                          <div className="felid">
+                            <label className="h_14 gray-colour">Report</label>
+                            <p className="h_16 text-black fw-bold qanelas">{feedback?.message}</p>
                           </div>
                         </div>
                       </div>
@@ -85,7 +75,8 @@ const FeedbackDetails = ({ match }) => {
               </section>
             </div>
           </div>
-        </div>}
+        </div>
+      }
     </div>
   );
 };
