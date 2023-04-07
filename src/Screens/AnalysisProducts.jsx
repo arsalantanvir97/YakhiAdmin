@@ -39,7 +39,7 @@ const AnalysisProducts = ({ history }) => {
         let data = allofcategory?.find(o => o?._id == id);
         return data?.categorytitle
     }
-    const { data: analysisproductdata } = useQuery(["analysisproducts", year4,
+    const {isLoading, data: analysisproductdata } = useQuery(["analysisproducts", year4,
     ], () =>
         handleGetanalysisproductsdata(year4,
         ),
@@ -53,7 +53,7 @@ const AnalysisProducts = ({ history }) => {
     // }
     return (
         <div>
-                        {catloading ?  <Loader /> :
+                        {isLoading ?  <Loader /> :
 
              <div className="app-content content dashboard">
             <div className="content-wrapper">

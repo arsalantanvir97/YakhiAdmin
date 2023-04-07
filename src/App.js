@@ -84,6 +84,11 @@ const Coupans = lazy(() => import("./Screens/Coupans"));
 const AddCoupan = lazy(() => import("./Screens/AddCoupan"));
 
 const Disputes = lazy(() => import("./Screens/Disputes"));
+const DisputeDetails = lazy(() => import("./Screens/DisputeDetails"));
+
+const ManageAppointmentFees = lazy(() => import("./Screens/ManageAppointmentFees"));
+const ManageAvailibilty = lazy(() => import("./Screens/ManageAvailibilty"));
+const ChatScreen = lazy(() => import("../src/components/ChatScreen"));
 
 
 export default function App() {
@@ -96,12 +101,14 @@ export default function App() {
         <PrivateRoute path="/EditTag/:id" component={EditTag} exact />
 
         <PrivateRoute path="/AddEvent" component={AddEvent} exact />
+        <PrivateRoute path="/ManageAvailibilty" component={ManageAvailibilty} exact />
+
+        
         <PrivateRoute path="/Analytics" component={Analytics} exact />
         <PrivateRoute path="/GeoGeneticsOrders" component={GeoGeneticsOrders} exact />
         <PrivateRoute path="/AddCoupan" component={AddCoupan} exact />
         <PrivateRoute path="/Disputes" component={Disputes} exact />
-
-        
+        <PrivateRoute path="/ManageAppointmentFees" component={ManageAppointmentFees} exact />
         <Route path="/forgotpassword" component={ForgotPassword} exact />
         <Route
           path="/verificationcode:email"
@@ -115,7 +122,9 @@ export default function App() {
         <PrivateRoute exact path="/AddDoctor" component={AddDoctor} />
         <PrivateRoute exact path="/AddTax" component={AddTax} />
         <PrivateRoute exact path="/Coupans" component={Coupans} />
+        <PrivateRoute exact path="/ChatScreen" component={ChatScreen} />
 
+        
 
         <PrivateRoute exact path="/AddVideo" component={AddVideo} />
         <PrivateRoute exact path="/AnalyticsOrder" component={AnalyticsOrder} />
@@ -153,7 +162,9 @@ export default function App() {
         <PrivateRoute exact path="/DoctorDetails/:id" component={DoctorDetails} />
         <PrivateRoute exact path="/DoctorAvailibilites/:id" component={DoctorAvailibilites} />
         <PrivateRoute exact path="/DoctorPassword/:id" component={DoctorPassword} />
+        <PrivateRoute exact path="/DisputeDetails/:id" component={DisputeDetails} />
 
+        
         <PrivateRoute exact path="/VideoDetails/:id" component={VideoDetails} />
 
         <PrivateRoute exact path="/ProductEdit/:id" component={ProductEdit} />

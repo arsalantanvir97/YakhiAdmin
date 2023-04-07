@@ -6,6 +6,8 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { changeStatus, getAppointmentDetails } from "./Api/Appointments";
 import SwalAlert from "../components/SwalAlert";
 import Loader from "../components/Loader";
+import moment from "moment";
+import { Link } from "react-router-dom";
 const AppointmentDetails = ({ match, history }) => {
   // const [appointment, setappointment] = useState("");
   const usequeryClient = new useQueryClient();
@@ -36,132 +38,112 @@ const AppointmentDetails = ({ match, history }) => {
   return (
     <div>
       {apploading ? <Loader /> :
-        <div className="app-content dashboard content">
-          <div className="content-wrapper">
-            <div className="content-body">
-              {/* Basic form layout section start */}
-              <section id="configuration" className="user-page">
-                <div className="row">
-                  <div className="col-12">
-                    <div className="card rounded">
-                      <div className="card-body p-md-2 p-lg-3 p-xl-4">
-                        <div className="page-title">
-                          <div className="row">
-                            <div className="col-12">
-                              <h1>Appointment</h1>
-                            </div>
-                            <div className="col-12">
-                              <h3>Appointment Information </h3>
-                            </div>
-                          </div>
+      <div className="app-content content dashboard">
+      <div className="content-wrapper">
+        <div className="content-body">
+          <section className="myprofile " id="configuration">
+            <div className="box py-5">
+              <div className="row justify-content-center">
+                <div className="col-md-12">
+                  <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
+                    <h3 className="pageTitle"><i className="fas fa-arrow-left me-3 topMArrow" onclick="javascript:history.go(-1)" /> Chat Details</h3>
+                    <div className="div">
+                      {/* <button className="greenBg selectStatus">Completed</button> */}
+                    </div>
+                  </div>
+                </div> 
+              </div>
+              <div className="row">
+                <div className="col-md-8">
+                  <form className="myprofile_main px-5">
+                    <div className="row border-bottom-1 mb-3">
+                      <div className="col-md-4">
+                        <div className="felid d-flex">
+                          <label className="h_20 text-black fw-semibold">Booking ID:</label>
+                          <p className="h_20 gray-colour fw-semibold ps-3">{appointment?._id}</p>
                         </div>
-                        <div className="user-block">
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label>Full name</label>
-                            </div>
-                            <div className="col-12">
-                              {" "}
-                              {appointment?.consultationaddress?.firstName +
-                                " " +
-                                appointment?.consultationaddress?.lastName}
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label>Email</label>
-                            </div>
-                            <div className="col-12">
-                              {appointment?.consultationaddress?.email}
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label htmlFor>Appointment Date</label>
-                            </div>
-                            <div className="col-12">
-                              {appointment?.appointmentdate}
-                            </div>
-                          </div>
-                          {/* <div className="row detail-row">
-                          <div className="col-12 lablename">
-                            <label htmlFor>Subject</label>
-                          </div>
-                          <div className="col-12">Abc</div>
-                        </div> */}
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label htmlFor>Appointment Time</label>
-                            </div>
-                            <div className="col-12">
-                              {appointment?.appointmenttime}
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label htmlFor>Valid Government Issued ID</label>
-                            </div>
-                            <div className="col-12 col-md-5">
-                              <button
-                                type="button"
-                                className="btn btn-primary btn-login"
-                                onClick={() =>
-                                  window.open(
-                                    `${imageURL}${appointment?.governmentid}`,
-                                    "_blank"
-                                  )
-                                }
-                              >
-                                View
-                              </button>
-                            </div>
-                          </div>
-                          <div className="row detail-row">
-                            <div className="col-12 lablename">
-                              <label htmlFor>Appointment Status</label>
-                            </div>
-                            <div className="col-12 col-md-5">
-                              {appointment?.status == "Pending" ? (
-                                <>
-                                  <button
-                                    type="button"
-                                    className="btn btn-secondary mr-1"
-                                    onClick={() => {
-                                      handleChangeStatus.mutate(
-                                        'Accepted'
-                                      )
-                                    }}
-                                  >
-                                    Accept
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="btn btn-primary ml-2"
-                                    onClick={() => {
-                                      handleChangeStatus.mutate(
-                                        'Rejected'
-                                      )
-                                    }}
-                                  >
-                                    Reject
-                                  </button>
-                                </>
-                              ) : (
-                                <div className="col-12">
-                                  {appointment?.status}
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                      </div>
+                      {/* <div className="col-md-4">
+                        <div className="felid d-flex">
+                          <label className="h_20 text-black fw-semibold">Doctor:</label>
+                          <p className="h_20 gray-colour fw-semibold ps-3">Mark Henry</p>
+                        </div>
+                      </div> */}
+                    </div>
+                    <div className="row mb-3">
+                      <div className="col-md-12">
+                        <div className="felid">
+                          <h3 className="fw-semibold">Booking Information</h3>
                         </div>
                       </div>
                     </div>
-                  </div>
+                    <div className="row border-bottom-1 pb-3 mb-3">
+                      <div className="col-md-3">
+                        <div className="felid">
+                          <label className="h_16 gray-colour fw-semibold">Booking Date</label>
+                          <p className="h_16 text-black fw-semibold">{moment
+                                            .utc(appointment?.appointmentdate)
+                                            .format("LL")}</p>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="felid">
+                          <label className="h_16 gray-colour fw-semibold">Booking Time</label>
+                          <p className="h_16 text-black fw-semibold">{appointment?.appointmenttime}</p>
+                        </div>
+                      </div>
+                      {/* <div className="col-md-3">
+                        <div className="felid">
+                          <label className="h_16 gray-colour fw-semibold">Category</label>
+                          <p className="h_16 text-black fw-semibold">Herbalist</p>
+                        </div>
+                      </div> */}
+                    </div>
+                    <div className="row mb-3">
+                      <div className="col-md-12">
+                        <div className="felid">
+                          <h3 className="fw-semibold">Account Information</h3>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row border-bottom-1 pb-3 mb-3">
+                      <div className="col-md-3">
+                        <div className="felid">
+                          <label className="h_16 gray-colour fw-semibold">Name</label>
+                          <p className="h_16 text-black fw-semibold">{appointment?.consultationaddress?.firstName+ " " +appointment?.consultationaddress?.lastName}</p>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="felid">
+                          <label className="h_16 gray-colour fw-semibold">Email Address</label>
+                          <p className="h_16 text-black fw-semibold">{appointment?.consultationaddress?.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      {/* <div className="col-md-12">
+                        <div className="felid">
+                          <h3 className="fw-semibold">Description</h3>
+                          <label className="h_16 gray-colour fw-semibold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam ferment um, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus pronin sapien nunc accuan eget.Lorem</label>
+                        </div>
+                      </div> */}
+                    </div>
+                    <div className="row mt-4">
+                      <div className="col-md-12">
+                        <div className="felid">
+                          <Link to='/ChatScreen' className="btn_darkbluep d-inline-block px-5">View Chat</Link>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                 </div>
-              </section>
-            </div>
-          </div>
-        </div>}
+              </div>
+            </div>          
+          </section>            
+        </div>
+      </div>
+    </div>
+    }
     </div>
   );
 };

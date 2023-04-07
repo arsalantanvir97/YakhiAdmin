@@ -19,7 +19,7 @@ const AnalysisCategories = ({ history }) => {
         getCategories()
     );
 
-    const { data: categoriesummarydata } = useQuery(["categoriesummary", year4, category
+    const { isLoading,data: categoriesummarydata } = useQuery(["categoriesummary", year4, category
     ], () =>
         handleGetcategoriesummarydata(year4, category
         ),
@@ -64,7 +64,7 @@ const AnalysisCategories = ({ history }) => {
     };
     return (
         <div>
-            {topCategoriesLoading ?  <Loader /> :
+            {isLoading ?  <Loader /> :
             <div className="app-content content dashboard">
                 <div className="content-wrapper">
                     <div className="content-body dashCard">

@@ -8,7 +8,7 @@ import Toasty from "../utils/toast";
 import { useRecoilValue } from "recoil";
 import { adminInfo } from "../Recoil";
 import { useQuery } from "react-query";
-import { getLatestOrdersHandler, handleGetcategoriesummarydata, handleGetDashboarddata, handleGetordersummaryrevenuedata, handleGettopCategoriestemsSolddata } from "./Api/Dashboard";
+import { getLatestOrdersHandler, getPageView, handleGetcategoriesummarydata, handleGetDashboarddata, handleGetordersummaryrevenuedata, handleGettopCategoriestemsSolddata } from "./Api/Dashboard";
 import Loader from "../components/Loader";
 import { getCategories } from "./Api/Categories";
 const Dashboard = () => {
@@ -60,8 +60,11 @@ const Dashboard = () => {
     ),
     console.log('abc',)
   );
+  const { isLoading: pageloading, data: pageviewdata } = useQuery(["getPageView"], () =>
+  getPageView()
+);
 
-
+  
 
   const settingDataHandler = (data) => {
     const dataa = JSON.parse(data)
@@ -202,7 +205,7 @@ const Dashboard = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div className="row mb-3">
+                              {/* <div className="row mb-3">
                                 <div className="col-12 col-xl-6">
                                   <div className="summaryB d-flex align-items-center">
                                     <div>
@@ -225,8 +228,8 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                              <div className="row mb-3">
+                              </div> */}
+                              {/* <div className="row mb-3">
                                 <div className="col-12 col-xl-6">
                                   <div className="summaryB d-flex align-items-center">
                                     <div>
@@ -249,7 +252,7 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </div>
@@ -821,29 +824,14 @@ const Dashboard = () => {
                             <div className="col-md-6">
                               <div className="postSummaryLeftMain">
                                 <h4 className="text-danger">Top Posts</h4>
+                              {pageviewdata?.length>0&&pageviewdata?.map(pag=>(
                                 <div className="postSummaryLeftBox mb-2">
-                                  <a href="#" className>Homepage</a>
-                                  <h5>2110 views</h5>
-                                </div>
-                                <div className="postSummaryLeftBox mb-2">
-                                  <a href="#" className>Eat To Live</a>
-                                  <h5>2110 views</h5>
-                                </div>
-                                <div className="postSummaryLeftBox mb-2">
-                                  <a href="#" className>Shop With Us</a>
-                                  <h5>2110 views</h5>
-                                </div>
-                                <div className="postSummaryLeftBox mb-2">
-                                  <a href="#" className>Herbal Store</a>
-                                  <h5>2110 views</h5>
-                                </div>
-                                <div className="postSummaryLeftBox mb-2">
-                                  <a href="#" className>My Shop Account</a>
-                                  <h5>2110 views</h5>
-                                </div>
+                                  <a href="#" className>{pag?.url =='/' ? 'Home Page' : pag?.url }</a>
+                                  <h5>{pag?.qty} views</h5>
+                                </div>))}
                               </div>
                             </div>
-                            <div className="col-md-6">
+                            {/* <div className="col-md-6">
                               <div className="postSummaryLeftMain">
                                 <h4 className="text-danger">Top Searchers</h4>
                                 <div className="postSummaryLeftBox mb-2">
@@ -856,7 +844,7 @@ const Dashboard = () => {
                               <div className="postSummaryMain">
                                 <a href="#" className="btn_darkbluep d-inline-block">View All Stats</a>
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                         {/* Categories Summary */}

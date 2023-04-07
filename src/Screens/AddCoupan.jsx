@@ -50,7 +50,9 @@ const AddCoupan = ({ history }) => {
                                     <div className="row justify-content-center mb-3">
                                         <div className="col-md-12">
                                             <div className="d-block d-md-flex justify-content-between mb-4 align-items-center">
-                                                <h3 className="pageTitle"><i className="fas fa-arrow-left me-3 topMArrow" onclick="javascript:history.go(-1)" /> Add Coupon</h3>
+                                                <h3 className="pageTitle"><i className="fas fa-arrow-left me-3 topMArrow" onClick={() => {
+                                                    history.goBack()
+                                                }} /> Add Coupon</h3>
                                             </div>
                                         </div>
                                     </div>

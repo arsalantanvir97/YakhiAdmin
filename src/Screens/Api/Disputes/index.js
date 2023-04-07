@@ -16,7 +16,7 @@ export const disputeLogs = async (page, perPage, from, to, status, searchString,
         },
 
     });
-    return data?.feedback
+    return data?.dispute
 };
 
 

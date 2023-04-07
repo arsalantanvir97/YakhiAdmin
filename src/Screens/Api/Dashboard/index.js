@@ -13,6 +13,7 @@ export const handleGetDashboarddata = async (year,
     console.log('getCategories', data)
     return data
 };
+
 export const handleGetordersummaryrevenuedata = async (year2,
     ) => {
     const { data } = await api({
@@ -73,6 +74,15 @@ export const getLatestOrdersHandler = async () => {
     console.log('getCategories', data)
     return data?.order
 };
+export const getPageView = async () => {
+    const { data } = await api({
+        url: `${baseURL}/auth/getPageView`,
+        method: "GET",
+    });
+    console.log('getCategories', data)
+    return data?.page
+};
+
 export const addDocument = (searchstring) =>
     api({
         url: `${baseURL}/product/searchProductlogs`,

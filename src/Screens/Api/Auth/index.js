@@ -27,3 +27,24 @@ export const login = (data) =>
     method: "POST",
     data,
   });
+  export const manageFees = (data) =>
+  api({
+    url: `${baseURL}/auth/updateAppointmentFees`,
+    method: "POST",
+    data,
+  });
+  export const getDetails =async (id) =>{
+    const {data}=await api({
+         url: `${baseURL}/auth/getDetails`,
+         method: "GET",
+     })
+     console.log('data',data)
+ return data?.setting
+ }
+ 
+ export const timeslotAdmin = (data) =>
+ api({
+     url: `${baseURL}/auth/timeslotAdmin`,
+     method: "POST",
+     data,
+ });

@@ -8,7 +8,6 @@ import { adminInfo } from "../Recoil";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const adminData = useRecoilValue(adminInfo);
-  console.log('adminInfo',adminData,adminData ? 'yes' : 'no')
   return (
     <Route
       {...rest}
