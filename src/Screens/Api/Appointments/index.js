@@ -12,6 +12,19 @@ export const getAppointments = async(page, perPage, from, to, searchString, sort
      return data?.consultation
  
    };
+   export const getUserAppointments = async(page, perPage, from, to, searchString, sort,id) => {
+    const {data}= await api({
+       url: `${baseURL}/consultationRoutes/userlogs`,
+       method: "GET",
+       params: {
+        page, perPage, from, to, searchString, sort,id
+       },
+     
+     });
+     return data?.consultation
+ 
+   };
+   
    export const changeStatus = (id) =>
 //   console.log('id',id)
   api({
