@@ -150,7 +150,7 @@ const Revenue = ({ history }) => {
                                                                                 <div className="media w-100">
                                                                                     <div className="media-body text-center">
                                                                                         <div className="card-title">Gross SALE</div>
-                                                                                        <h3>${analyticsdata?.overvieworders[0]?.count ? analyticsdata?.overvieworders[0]?.count : 0}</h3>
+                                                                                        <h3>${analyticsdata?.overviewrevenuedata[0]?.count ? analyticsdata?.overviewrevenuedata[0]?.count : 0}</h3>
 
                                                                                     </div>
                                                                                 </div>
@@ -163,7 +163,8 @@ const Revenue = ({ history }) => {
                                                                                 <div className="media w-100">
                                                                                     <div className="media-body text-center ">
                                                                                         <div className="card-title">Net Sales</div>
-                                                                                        <h3>${analyticsdata?.overvieworders[0]?.count ? analyticsdata?.overvieworders[0]?.count : 0}</h3>
+                                                                                        <h3>${analyticsdata?.overviewrevenuedata[0]?.count
+ ? analyticsdata?.overviewrevenuedata[0]?.count : 0}</h3>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -187,7 +188,7 @@ const Revenue = ({ history }) => {
                                                                                 <div className="media w-100">
                                                                                     <div className="media-body text-center ">
                                                                                         <div className="card-title">Total Sales</div>
-                                                                                        <h3>${analyticsdata?.overvieworders[0]?.count ? analyticsdata?.overvieworders[0]?.count : 0}</h3>
+                                                                                        <h3>${analyticsdata?.overviewrevenuedata[0]?.count ? analyticsdata?.overviewrevenuedata[0]?.count : 0}</h3>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>

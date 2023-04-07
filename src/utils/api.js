@@ -3,13 +3,13 @@ import axios from "axios";
 export let baseURL;
 export let imageURL;
 
-if (window.location.hostname == "localhost") {
-  baseURL = "https://localhost:5089/api";
-  imageURL = "https://localhost:5089/";
-} else {
+// if (window.location.hostname == "localhost") {
+//   baseURL = "https://localhost:5089/api";
+//   imageURL = "https://localhost:5089/";
+// } else {
   baseURL = "https://yahkiawakened.store:5089/api";
   imageURL = "https://yahkiawakened.store:5089/";
-}
+// }
 
 let api = axios.create({
   baseURL,
