@@ -23,10 +23,12 @@ Welcome to the admin panel documentation for Yahki, our modern e-commerce platfo
 
 ## Technologies Used
 
-- **Node.js**: Backend runtime environment.
-- **Express.js**: Web framework for Node.js, used for routing and middleware.
-- **MongoDB**: NoSQL database used for storing product, user, order, and category data.
-- **Chart.js**: JavaScript library for creating interactive charts and graphs for data visualization.
+- **React**: JavaScript library for building user interfaces.
+- **React Query**: Data fetching and caching are managed using React Query, ensuring efficient data loading and synchronization.
+- **Recoil**: Application state is managed using Recoil, providing a simple and intuitive way to share state across components.
+- **React Router**: Library for handling routing in React applications.
+- **Lazy Loading**: Components are lazily loaded to improve initial loading times and optimize performance.
+- **Semantic UI React**: UI framework for building responsive and accessible web apps.
 - **Other Dependencies**: Check `package.json` for a full list.
 
 ## Installation
